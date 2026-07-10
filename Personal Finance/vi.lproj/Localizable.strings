@@ -1,0 +1,22 @@
+/* 
+  Localizable.strings
+  Personal Finance
+
+  Created by TiniT on 10/7/26.
+  
+*/
+
+"salary.budget" = "Ngân sách lương";
+"monthly.salary" = "Lương tháng";
+"budget.method" = "Phương pháp lập ngân sách";
+"budget.method.fiftyThirtyTwenty" = "50/30/20";
+"budget.method.sixJars" = "6 chiếc lọ";
+"bucket.needs" = "Nhu cầu";
+"bucket.wants" = "Mong muốn";
+"bucket.savings" = "Tiết kiệm";
+"bucket.necessities" = "Nhu cầu thiết yếu";
+"bucket.financialFreedom" = "Tự do tài chính";
+"bucket.education" = "Giáo dục";
+"bucket.longTermSavings" = "Tiết kiệm dài hạn";
+"bucket.play" = "Hưởng thụ";
+"bucket.give" = "Cho đi";
