@@ -8,7 +8,9 @@
 
 "salary.budget" = "Ngân sách lương";
 "monthly.salary" = "Lương tháng";
+"salary.input.placeholder" = "Thu nhập";
 "budget.method" = "Phương pháp lập ngân sách";
+"keyboard.done" = "Xong";
 "budget.method.fiftyThirtyTwenty" = "50/30/20";
 "budget.method.sixJars" = "6 chiếc lọ";
 "bucket.needs" = "Nhu cầu";

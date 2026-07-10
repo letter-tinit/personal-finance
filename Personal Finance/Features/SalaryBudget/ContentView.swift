@@ -8,61 +8,81 @@
 import SwiftUI
 
 struct ContentView: View {
-    private let income: Decimal = 16_000_000
+    @State private var salaryText: String = ""
+    @FocusState private var isSalaryFocused: Bool
+    
+    private var income: Decimal {
+        salaryText.toDecimal()
+    }
+    
     private let budgetMethod: BudgetMethod = .fiftyThirtyTwenty
     
     var body: some View {
         NavigationStack {
-            VStack {
-                ZStack {
-                    VStack(alignment: .leading) {
-                        Text("monthly.salary".localized)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        
-                        Text(income.formattedVND)
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                        
-                        Divider()
-                        
-                        HStack {
-                            Text("budget.method".localized)
-                                .font(.default)
-                                .fontWeight(.medium)
-                            
-                            Spacer()
-                            
-                            Text(budgetMethod.localizationKey.localized)
+            ScrollView(.vertical) {
+                VStack {
+                    ZStack {
+                        VStack(alignment: .leading) {
+                            Text("monthly.salary".localized)
                                 .font(.subheadline)
-                                .fontWeight(.semibold)
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 4)
-                                .background(
-                                    Capsule()
-                                        .foregroundStyle(Color.lightGreen)
-                                )
+                                .foregroundStyle(.secondary)
+                            
+                            TextField("salary.input.placeholder".localized, text: $salaryText)
+                                .font(.largeTitle)
+                                .fontWeight(.bold)
+                                .keyboardType(.numberPad)
+                                .focused($isSalaryFocused)
+                            
+                            Divider()
+                            
+                            HStack {
+                                Text("budget.method".localized)
+                                    .font(.default)
+                                    .fontWeight(.medium)
+                                
+                                Spacer()
+                                
+                                Text(budgetMethod.localizationKey.localized)
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                                    .padding(.horizontal, 10)
+                                    .padding(.vertical, 4)
+                                    .background(
+                                        Capsule()
+                                            .foregroundStyle(Color.lightGreen)
+                                    )
+                            }
+                        }
+                        .padding()
+                    }
+                    .frame(maxWidth: .infinity)
+                    .borderedBackground()
+                    .padding()
+                    
+                    VStack {
+                        let buckets = budgetMethod.calculate(income)
+                        ForEach(buckets, id: \.self) { bucket in
+                            BudgetBucketView(bucket: bucket)
                         }
                     }
                     .padding()
+                    
+                    Spacer()
                 }
-                .frame(maxWidth: .infinity)
-                .borderedBackground()
-                .padding()
-                
-                VStack {
-                    let buckets = budgetMethod.calculate(income)
-                    ForEach(buckets, id: \.self) { bucket in
-                        BudgetBucketView(bucket: bucket)
-                    }
-                }
-                .padding()
-                
-                Spacer()
             }
+            .scrollDismissesKeyboard(.interactively)
             .navigationTitle("salary.budget".localized)
             .navigationBarTitleDisplayMode(.large)
             .background(Color.Common.background)
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    
+                    Button("keyboard.done".localized) {
+                        isSalaryFocused = false
+                    }
+                }
+            }
         }
         .ignoresSafeArea(.all)
     }

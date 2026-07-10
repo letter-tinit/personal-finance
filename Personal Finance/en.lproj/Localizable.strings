@@ -8,7 +8,9 @@
 
 "salary.budget" = "Salary Budget";
 "monthly.salary" = "Monthly salary";
+"salary.input.placeholder" = "Income";
 "budget.method" = "Budget Method";
+"keyboard.done" = "Done";
 "budget.method.fiftyThirtyTwenty" = "50/30/20";
 "budget.method.sixJars" = "6 Jars";
 "bucket.needs" = "Needs";
