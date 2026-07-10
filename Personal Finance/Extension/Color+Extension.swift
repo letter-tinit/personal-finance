@@ -43,6 +43,11 @@ extension Color {
         )
     }
     
+    struct Common {
+        static let border = Color(hex: "#DDE3DD")
+        static let background = Color(hex: "#F6F7F4")
+    }
+    
     // Greens
     static let lightGreen = Color(hex: "#DCEFE9")
 }

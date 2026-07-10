@@ -12,6 +12,7 @@ struct Personal_FinanceApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .fontDesign(.rounded)
         }
     }
 }

@@ -17,15 +17,25 @@ struct ContentView: View {
                 ZStack {
                     VStack(alignment: .leading) {
                         Text("monthly.salary".localized)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
                         
-                        Text(verbatim: "\(income)")
+                        Text(income.formattedVND)
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                        
+                        Divider()
                         
                         HStack {
                             Text("budget.method".localized)
+                                .font(.default)
+                                .fontWeight(.medium)
                             
                             Spacer()
                             
                             Text(budgetMethod.localizationKey.localized)
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
                                 .padding(.horizontal, 10)
                                 .padding(.vertical, 4)
                                 .background(
@@ -37,10 +47,7 @@ struct ContentView: View {
                     .padding()
                 }
                 .frame(maxWidth: .infinity)
-                .background (
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(.gray, lineWidth: 1)
-                )
+                .borderedBackground()
                 .padding()
                 
                 VStack {
@@ -55,6 +62,7 @@ struct ContentView: View {
             }
             .navigationTitle("salary.budget".localized)
             .navigationBarTitleDisplayMode(.large)
+            .background(Color.Common.background)
         }
         .ignoresSafeArea(.all)
     }
@@ -67,23 +75,37 @@ struct ContentView: View {
 struct BudgetBucketView: View {
     let bucket: BudgetBucket
     var body: some View {
-        VStack {
+        VStack(alignment: .leading) {
             HStack {
                 Text(bucket.kind.localizationKey.localized)
+                    .font(.headline)
+                    .fontWeight(.bold)
                 
                 Spacer()
                 
-                Text(verbatim: "\(bucket.ratio * 100) %")
+                Text(((bucket.ratio.doubleValue * 100).cleanString) + "%")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
             }
             
-            Text(verbatim: "\(bucket.amount)")
+            Text(bucket.amount.formattedVND)
+                .font(.title)
+                .fontWeight(.bold)
+            
+            ZStack {
+                Color.gray
+                    .opacity(0.2)
+                
+                bucket.kind.progressColor
+                    .scaleEffect(x: bucket.ratio.doubleValue, y: 1, anchor: .leading)
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 8)
+            .clipShape(RoundedRectangle(cornerRadius: 4))
         }
         .padding()
         .frame(maxWidth: .infinity)
-        .background (
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(.gray, lineWidth: 1)
-        )
+        .borderedBackground()
     }
 }
 
