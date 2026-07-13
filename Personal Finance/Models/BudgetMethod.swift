@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum BudgetMethod {
+enum BudgetMethod: CaseIterable {
     case fiftyThirtyTwenty
     case sixJars
     
@@ -20,7 +20,7 @@ enum BudgetMethod {
         }
     }
     
-    func calculate(_ income: Decimal) -> [BudgetBucket] {
+    func generateBucketByIncome(_ income: Decimal) -> [BudgetBucket] {
         switch self {
         case .fiftyThirtyTwenty:
             return [

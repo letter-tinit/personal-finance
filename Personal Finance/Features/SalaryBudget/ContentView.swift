@@ -15,7 +15,7 @@ struct ContentView: View {
         salaryText.toDecimal()
     }
     
-    private let budgetMethod: BudgetMethod = .fiftyThirtyTwenty
+    @State private var budgetMethod: BudgetMethod = .fiftyThirtyTwenty
     
     var body: some View {
         NavigationStack {
@@ -24,12 +24,10 @@ struct ContentView: View {
                     ZStack {
                         VStack(alignment: .leading) {
                             Text("monthly.salary".localized)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                                .secondarySubHeadline()
                             
                             TextField("salary.input.placeholder".localized, text: $salaryText)
-                                .font(.largeTitle)
-                                .fontWeight(.bold)
+                                .customLargeTitle()
                                 .keyboardType(.numberPad)
                                 .focused($isSalaryFocused)
                             
@@ -37,14 +35,13 @@ struct ContentView: View {
                             
                             HStack {
                                 Text("budget.method".localized)
-                                    .font(.default)
-                                    .fontWeight(.medium)
+                                    .customHeadline()
                                 
                                 Spacer()
                                 
                                 Text(budgetMethod.localizationKey.localized)
-                                    .font(.subheadline)
-                                    .fontWeight(.semibold)
+                                    .customSubHeadline()
+                                    .foregroundStyle(.black.opacity(0.6))
                                     .padding(.horizontal, 10)
                                     .padding(.vertical, 4)
                                     .background(
@@ -52,6 +49,14 @@ struct ContentView: View {
                                             .foregroundStyle(Color.lightGreen)
                                     )
                             }
+                            
+                            Picker("", selection: $budgetMethod) {
+                                ForEach(BudgetMethod.allCases, id: \.self) { method in
+                                    Text(method.localizationKey.localized)
+                                }
+                            }
+                            .pickerStyle(.segmented)
+                            .padding(.top)
                         }
                         .padding()
                     }
@@ -60,7 +65,18 @@ struct ContentView: View {
                     .padding()
                     
                     VStack {
-                        let buckets = budgetMethod.calculate(income)
+                        let buckets = budgetMethod.generateBucketByIncome(income)
+                        
+                        HStack {
+                            Text("budget.buckets.title".localized)
+                                .customSubTitle()
+                            
+                            Spacer()
+                            
+                            Text(String(format: "budget.buckets.count".localized, buckets.count))
+                                .customSubText()
+                        }
+                        
                         ForEach(buckets, id: \.self) { bucket in
                             BudgetBucketView(bucket: bucket)
                         }
@@ -98,30 +114,29 @@ struct BudgetBucketView: View {
         VStack(alignment: .leading) {
             HStack {
                 Text(bucket.kind.localizationKey.localized)
-                    .font(.headline)
-                    .fontWeight(.bold)
+                    .customHeadline()
                 
                 Spacer()
                 
                 Text(((bucket.ratio.doubleValue * 100).cleanString) + "%")
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
+                    .customSubHeadline()
             }
             
             Text(bucket.amount.formattedVND)
-                .font(.title)
-                .fontWeight(.bold)
+                .customTitle()
             
-            ZStack {
-                Color.gray
-                    .opacity(0.2)
-                
-                bucket.kind.progressColor
-                    .scaleEffect(x: bucket.ratio.doubleValue, y: 1, anchor: .leading)
+            GeometryReader { geomrtry in
+                ZStack(alignment: .leading) {
+                    Color.gray
+                        .opacity(0.2)
+                    
+                    bucket.kind.progressColor
+                        .clipShape(.capsule)
+                        .frame(width: geomrtry.size.width * bucket.ratio.doubleValue)
+                }
             }
-            .frame(maxWidth: .infinity)
-            .frame(height: 8)
-            .clipShape(RoundedRectangle(cornerRadius: 4))
+            .frame(height: 10)
+            .clipShape(.capsule)
         }
         .padding()
         .frame(maxWidth: .infinity)
@@ -131,4 +146,5 @@ struct BudgetBucketView: View {
 
 #Preview {
     ContentView()
+        .fontDesign(.rounded)
 }

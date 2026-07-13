@@ -10,6 +10,8 @@
 "monthly.salary" = "Monthly salary";
 "salary.input.placeholder" = "Income";
 "budget.method" = "Budget Method";
+"budget.buckets.title" = "Budget Buckets";
+"budget.buckets.count" = "%d buckets";
 "keyboard.done" = "Done";
 "budget.method.fiftyThirtyTwenty" = "50/30/20";
 "budget.method.sixJars" = "6 Jars";

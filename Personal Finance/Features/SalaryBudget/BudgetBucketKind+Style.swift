@@ -11,19 +11,19 @@ extension BudgetBucketKind {
     var progressColor: Color {
         switch self {
         case .needs:
-            return .blue
+            return .darkBlue
         case .wants:
-            return .orange
+            return .darkOrange
         case .savings:
-            return .green
+            return .darkGreen
         case .necessities:
-            return .blue
+            return .darkBlue
         case .financialFreedom:
             return .mint
         case .education:
             return .purple
         case .longTermSavings:
-            return .green
+            return .darkGreen
         case .play:
             return .pink
         case .give:

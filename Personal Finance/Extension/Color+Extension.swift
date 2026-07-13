@@ -50,4 +50,12 @@ extension Color {
     
     // Greens
     static let lightGreen = Color(hex: "#DCEFE9")
+    static let darkGreen = Color(hex: "#0f7f68")
+    
+    // Blues
+    static let darkBlue = Color(hex: "#286b8f")
+    
+    // Red
+    static let darkOrange = Color(hex: "#c07318")
+
 }

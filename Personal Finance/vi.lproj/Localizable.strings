@@ -10,6 +10,8 @@
 "monthly.salary" = "Lương tháng";
 "salary.input.placeholder" = "Thu nhập";
 "budget.method" = "Phương pháp lập ngân sách";
+"budget.buckets.title" = "Nhóm ngân sách";
+"budget.buckets.count" = "%d nhóm";
 "keyboard.done" = "Xong";
 "budget.method.fiftyThirtyTwenty" = "50/30/20";
 "budget.method.sixJars" = "6 chiếc lọ";
