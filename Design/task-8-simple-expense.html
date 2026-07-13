@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Task 7 - Create Expense Transactions</title>
+  <title>Task 8 - Create Expense Transactions</title>
   <style>
     :root {
       --bg: #f6f7f4;
@@ -352,18 +352,13 @@
 
       <section class="card">
         <p class="label">Monthly salary</p>
-        <input class="input-large" id="salary" value="16000000" inputmode="numeric" aria-label="Monthly salary">
+        <input class="input-large" id="salary" value="16000000" inputmode="numeric" aria-label="Monthly salary" readonly aria-readonly="true">
 
         <div class="divider"></div>
 
         <div class="method-head">
-          <span>Budget Method</span>
+          <span>Active budget method</span>
           <span class="method-pill" id="method-pill">50/30/20</span>
-        </div>
-
-        <div class="segmented" aria-label="Budget method">
-          <button class="segment active" type="button" data-method="fifty">50/30/20</button>
-          <button class="segment" type="button" data-method="jars">6 Jars</button>
         </div>
       </section>
 
@@ -542,16 +537,6 @@
       }
     }
 
-    document.querySelectorAll(".segment").forEach((button) => {
-      button.addEventListener("click", () => {
-        selectedMethod = button.dataset.method;
-        document.querySelectorAll(".segment").forEach((item) => item.classList.remove("active"));
-        button.classList.add("active");
-        transactions = [];
-        render();
-      });
-    });
-
     bucketSelect.addEventListener("change", () => {
       selectedBucketId = bucketSelect.value;
       render();
@@ -574,8 +559,6 @@
       transactionNoteInput.value = "";
       render();
     });
-
-    salaryInput.addEventListener("input", render);
 
     render();
   </script>

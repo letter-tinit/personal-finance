@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum BudgetMethod: CaseIterable {
+enum BudgetMethod: String, CaseIterable, Hashable, Codable {
     case fiftyThirtyTwenty
     case sixJars
     
@@ -47,7 +47,7 @@ struct BudgetBucket: Hashable {
     let amount: Decimal
 }
 
-enum BudgetBucketKind: Hashable {
+enum BudgetBucketKind: Hashable, Codable {
     case needs
     case wants
     case savings
