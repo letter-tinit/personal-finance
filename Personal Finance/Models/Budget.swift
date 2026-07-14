@@ -9,6 +9,7 @@ import Foundation
 
 enum BudgetError: Error {
     case invalidAmount
+    case invalidTransactionType
     case allocationNotFound
     case allocationBelongsToAnotherBudget
 }
@@ -21,6 +22,7 @@ struct Budget: Identifiable, Hashable {
     private(set) var method: BudgetMethod
     let createdAt: Date
     private(set) var allocations: [BudgetAllocation]
+    private(set) var fixedExpensePlans: [FixedExpensePlan]
     private(set) var transactions: [BudgetTransaction]
 
     init(
@@ -31,19 +33,41 @@ struct Budget: Identifiable, Hashable {
         method: BudgetMethod,
         createdAt: Date = .now,
         allocations: [BudgetAllocation] = [],
+        fixedExpensePlans: [FixedExpensePlan] = [],
         transactions: [BudgetTransaction] = []
     ) {
         let allocationIDs = Set(allocations.map(\.id))
+        let allocationsByID = Dictionary(
+            uniqueKeysWithValues: allocations.map { ($0.id, $0) }
+        )
 
         precondition(
             allocations.allSatisfy { $0.budgetID == id },
             "Every allocation must belong to this budget."
         )
         precondition(
+            fixedExpensePlans.allSatisfy {
+                $0.budgetID == id && allocationIDs.contains($0.allocationID)
+            },
+            "Every fixed expense plan must reference an allocation in this budget."
+        )
+        precondition(
+            fixedExpensePlans.allSatisfy {
+                allocationsByID[$0.allocationID]?.kind.supportsFixedExpensePlan == true
+            },
+            "Fixed expense plans are only supported by essential allocations."
+        )
+        precondition(
             transactions.allSatisfy {
                 $0.budgetID == id && allocationIDs.contains($0.allocationID)
             },
             "Every transaction must reference an allocation in this budget."
+        )
+        precondition(
+            transactions.allSatisfy {
+                allocationsByID[$0.allocationID]?.expectedTransactionType == $0.type
+            },
+            "Every transaction type must match its allocation."
         )
 
         self.id = id
@@ -53,6 +77,7 @@ struct Budget: Identifiable, Hashable {
         self.method = method
         self.createdAt = createdAt
         self.allocations = allocations
+        self.fixedExpensePlans = fixedExpensePlans
         self.transactions = transactions
     }
 }
@@ -76,6 +101,116 @@ struct BudgetAllocation: Identifiable, Hashable {
         self.kind = kind
         self.ratio = ratio
         self.targetAmount = targetAmount
+    }
+}
+
+extension BudgetAllocation {
+    var expectedTransactionType: BudgetTransactionType {
+        kind.isSavingsLike ? .contribution : .expense
+    }
+}
+
+struct FixedExpensePlan: Identifiable, Hashable {
+    let id: UUID
+    let budgetID: UUID
+    let allocationID: UUID
+    private(set) var name: String
+    private(set) var amount: Decimal
+
+    init(
+        id: UUID = UUID(),
+        budgetID: UUID,
+        allocationID: UUID,
+        name: String,
+        amount: Decimal
+    ) {
+        self.id = id
+        self.budgetID = budgetID
+        self.allocationID = allocationID
+        self.name = name
+        self.amount = amount
+    }
+}
+
+extension FixedExpensePlan {
+    static func mocks(
+        budgetID: UUID,
+        allocationID: UUID
+    ) -> [FixedExpensePlan] {
+        [
+            FixedExpensePlan(
+                budgetID: budgetID,
+                allocationID: allocationID,
+                name: "Rent",
+                amount: 3_213_000
+            ),
+            FixedExpensePlan(
+                budgetID: budgetID,
+                allocationID: allocationID,
+                name: "Codex Renewal",
+                amount: .zero
+            ),
+            FixedExpensePlan(
+                budgetID: budgetID,
+                allocationID: allocationID,
+                name: "YouTube Premium",
+                amount: 195_000
+            ),
+            FixedExpensePlan(
+                budgetID: budgetID,
+                allocationID: allocationID,
+                name: "Electricity - Binh Duong",
+                amount: 401_942
+            ),
+            FixedExpensePlan(
+                budgetID: budgetID,
+                allocationID: allocationID,
+                name: "Electricity - HTX",
+                amount: 540_837
+            ),
+            FixedExpensePlan(
+                budgetID: budgetID,
+                allocationID: allocationID,
+                name: "Electricity - Street Lights",
+                amount: 235_600
+            ),
+            FixedExpensePlan(
+                budgetID: budgetID,
+                allocationID: allocationID,
+                name: "Electricity - Nguyen Quoc Hung",
+                amount: 441_461
+            ),
+            FixedExpensePlan(
+                budgetID: budgetID,
+                allocationID: allocationID,
+                name: "Electricity - Tran Bach Tuyet",
+                amount: 325_793
+            ),
+            FixedExpensePlan(
+                budgetID: budgetID,
+                allocationID: allocationID,
+                name: "Internet - Binh Duong",
+                amount: .zero
+            ),
+            FixedExpensePlan(
+                budgetID: budgetID,
+                allocationID: allocationID,
+                name: "iOS Team Fund",
+                amount: 100_000
+            ),
+            FixedExpensePlan(
+                budgetID: budgetID,
+                allocationID: allocationID,
+                name: "Metro",
+                amount: 300_000
+            ),
+            FixedExpensePlan(
+                budgetID: budgetID,
+                allocationID: allocationID,
+                name: "Living expenses",
+                amount: 1_000_000
+            )
+        ]
     }
 }
 
@@ -145,6 +280,14 @@ struct BudgetAllocationSummary: Hashable {
 extension Budget {
     func transactions(for allocation: BudgetAllocation) -> [BudgetTransaction] {
         transactions.filter { $0.allocationID == allocation.id }
+    }
+
+    func fixedExpensePlans(for allocation: BudgetAllocation) -> [FixedExpensePlan] {
+        guard allocation.kind.supportsFixedExpensePlan else {
+            return []
+        }
+
+        return fixedExpensePlans.filter { $0.allocationID == allocation.id }
     }
     
     func allocation(
@@ -240,6 +383,10 @@ extension Budget {
             throw BudgetError.allocationBelongsToAnotherBudget
         }
 
+        guard type == allocation.expectedTransactionType else {
+            throw BudgetError.invalidTransactionType
+        }
+
         transactions.append(
             BudgetTransaction(
                 budgetID: id,
@@ -289,6 +436,10 @@ extension Budget {
             income: 16_020_850,
             method: .fiftyThirtyTwenty,
             allocations: [needs, wants, savings],
+            fixedExpensePlans: FixedExpensePlan.mocks(
+                budgetID: budgetID,
+                allocationID: needs.id
+            ),
             transactions: [
                 BudgetTransaction(
                     budgetID: budgetID,

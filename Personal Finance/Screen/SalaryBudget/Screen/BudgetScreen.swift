@@ -8,9 +8,10 @@
 import SwiftUI
 
 struct BudgetScreen: View {
-    let budget: Budget
-    
     @State private var segmentOption: SegmentOption = .overview
+    @State private var isFixedPlanPresented = false
+
+    let budget: Budget
     
     private var transactionGroups: [TransactionGroup] {
         let groups = Dictionary(grouping: budget.transactions) {
@@ -81,6 +82,21 @@ struct BudgetScreen: View {
             }
             .padding()
             .navigationTitle(budget.name)
+        }
+        .sheet(isPresented: $isFixedPlanPresented) {
+            FixedPlanView(
+                plans: budget.fixedExpensePlans
+            )
+            .presentationDetents([.medium])
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    isFixedPlanPresented = true
+                } label: {
+                    Image(systemName: "gearshape")
+                }
+            }
         }
     }
 }
@@ -337,10 +353,6 @@ struct BudgetTransactionRow: View {
     }
 }
 
-#Preview {
-    BudgetScreen(budget: .mock)
-}
-
 // MARK: - Enum
 extension BudgetScreen {
     struct TransactionGroup: Identifiable {
@@ -365,4 +377,8 @@ extension BudgetScreen {
             }
         }
     }
+}
+
+#Preview {
+    BudgetScreen(budget: .mock)
 }

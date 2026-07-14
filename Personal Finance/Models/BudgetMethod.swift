@@ -96,4 +96,13 @@ enum BudgetBucketKind: Hashable, Codable {
             false
         }
     }
+
+    var supportsFixedExpensePlan: Bool {
+        switch self {
+        case .needs, .necessities:
+            true
+        default:
+            false
+        }
+    }
 }

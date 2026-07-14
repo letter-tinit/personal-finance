@@ -30,6 +30,9 @@
 "budget.status.over" = "Over";
 "budget.status.done" = "Done";
 "budget.status.needMore" = "Need more";
+"fixed.plan.total" = "Planned total";
+"fixed.plan.empty.title" = "No essential expenses";
+"fixed.plan.empty.description" = "Your essential expense plans will appear here.";
 "keyboard.done" = "Done";
 "budget.method.fiftyThirtyTwenty" = "50/30/20";
 "budget.method.sixJars" = "6 Jars";
