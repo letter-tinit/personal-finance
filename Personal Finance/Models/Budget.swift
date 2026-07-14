@@ -219,6 +219,7 @@ struct BudgetTransaction: Identifiable, Hashable {
     let budgetID: UUID
     let allocationID: UUID
     let type: BudgetTransactionType
+    private(set) var title: String
     private(set) var note: String
     private(set) var occurredAt: Date
     private(set) var amount: Decimal
@@ -229,7 +230,8 @@ struct BudgetTransaction: Identifiable, Hashable {
         budgetID: UUID,
         allocationID: UUID,
         type: BudgetTransactionType = .expense,
-        note: String,
+        title: String,
+        note: String = "",
         occurredAt: Date = .now,
         amount: Decimal,
         paymentMethod: PaymentMethod
@@ -238,6 +240,7 @@ struct BudgetTransaction: Identifiable, Hashable {
         self.budgetID = budgetID
         self.allocationID = allocationID
         self.type = type
+        self.title = title
         self.note = note
         self.occurredAt = occurredAt
         self.amount = amount
@@ -364,7 +367,8 @@ extension Budget {
     mutating func addTransaction(
         allocationID: UUID,
         type: BudgetTransactionType,
-        note: String,
+        title: String,
+        note: String = "",
         occurredAt: Date = .now,
         amount: Decimal,
         paymentMethod: PaymentMethod
@@ -392,6 +396,7 @@ extension Budget {
                 budgetID: id,
                 allocationID: allocation.id,
                 type: type,
+                title: title,
                 note: note,
                 occurredAt: occurredAt,
                 amount: amount,
@@ -444,7 +449,7 @@ extension Budget {
                 BudgetTransaction(
                     budgetID: budgetID,
                     allocationID: needs.id,
-                    note: "Electricity - HTX",
+                    title: "Electricity - HTX",
                     occurredAt: date(day: 5),
                     amount: 540_837,
                     paymentMethod: .banking
@@ -452,7 +457,7 @@ extension Budget {
                 BudgetTransaction(
                     budgetID: budgetID,
                     allocationID: needs.id,
-                    note: "Electricity - Binh Duong",
+                    title: "Electricity - Binh Duong",
                     occurredAt: date(day: 6),
                     amount: 401_942,
                     paymentMethod: .banking
@@ -460,7 +465,7 @@ extension Budget {
                 BudgetTransaction(
                     budgetID: budgetID,
                     allocationID: needs.id,
-                    note: "Electricity - Street Lights",
+                    title: "Electricity - Street Lights",
                     occurredAt: date(day: 6),
                     amount: 235_600,
                     paymentMethod: .banking
@@ -468,7 +473,7 @@ extension Budget {
                 BudgetTransaction(
                     budgetID: budgetID,
                     allocationID: needs.id,
-                    note: "Electricity - Nguyen Quoc Hung",
+                    title: "Electricity - Nguyen Quoc Hung",
                     occurredAt: date(day: 6),
                     amount: 441_461,
                     paymentMethod: .banking
@@ -476,7 +481,7 @@ extension Budget {
                 BudgetTransaction(
                     budgetID: budgetID,
                     allocationID: needs.id,
-                    note: "Electricity - Tran Bach Tuyet",
+                    title: "Electricity - Tran Bach Tuyet",
                     occurredAt: date(day: 6),
                     amount: 325_793,
                     paymentMethod: .banking
@@ -484,7 +489,7 @@ extension Budget {
                 BudgetTransaction(
                     budgetID: budgetID,
                     allocationID: needs.id,
-                    note: "Rent",
+                    title: "Rent",
                     occurredAt: date(day: 6),
                     amount: 3_213_000,
                     paymentMethod: .banking
@@ -492,7 +497,7 @@ extension Budget {
                 BudgetTransaction(
                     budgetID: budgetID,
                     allocationID: needs.id,
-                    note: "iOS Team Fund",
+                    title: "iOS Team Fund",
                     occurredAt: date(day: 6),
                     amount: 100_000,
                     paymentMethod: .banking
@@ -500,7 +505,7 @@ extension Budget {
                 BudgetTransaction(
                     budgetID: budgetID,
                     allocationID: needs.id,
-                    note: "Living expenses",
+                    title: "Living expenses",
                     occurredAt: date(day: 7),
                     amount: 700_000,
                     paymentMethod: .banking
@@ -508,7 +513,7 @@ extension Budget {
                 BudgetTransaction(
                     budgetID: budgetID,
                     allocationID: wants.id,
-                    note: "Give Family",
+                    title: "Give Family",
                     occurredAt: date(day: 7),
                     amount: 700_000,
                     paymentMethod: .banking
@@ -517,7 +522,7 @@ extension Budget {
                     budgetID: budgetID,
                     allocationID: savings.id,
                     type: .contribution,
-                    note: "Deposit Savings",
+                    title: "Deposit Savings",
                     occurredAt: date(day: 10),
                     amount: 3_204_170,
                     paymentMethod: .banking
@@ -525,7 +530,7 @@ extension Budget {
                 BudgetTransaction(
                     budgetID: budgetID,
                     allocationID: needs.id,
-                    note: "Youtube Premium",
+                    title: "Youtube Premium",
                     occurredAt: date(day: 12),
                     amount: 195_000,
                     paymentMethod: .banking
@@ -533,7 +538,7 @@ extension Budget {
                 BudgetTransaction(
                     budgetID: budgetID,
                     allocationID: wants.id,
-                    note: "Give Family",
+                    title: "Give Family",
                     occurredAt: date(day: 12),
                     amount: 155_200,
                     paymentMethod: .banking
@@ -541,7 +546,7 @@ extension Budget {
                 BudgetTransaction(
                     budgetID: budgetID,
                     allocationID: needs.id,
-                    note: "Metro",
+                    title: "Metro",
                     occurredAt: date(day: 13),
                     amount: 300_000,
                     paymentMethod: .banking
@@ -549,7 +554,7 @@ extension Budget {
                 BudgetTransaction(
                     budgetID: budgetID,
                     allocationID: needs.id,
-                    note: "Living expenses",
+                    title: "Living expenses",
                     occurredAt: date(day: 13),
                     amount: 300_000,
                     paymentMethod: .banking
@@ -557,7 +562,7 @@ extension Budget {
                 BudgetTransaction(
                     budgetID: budgetID,
                     allocationID: needs.id,
-                    note: "Living expenses",
+                    title: "Living expenses",
                     occurredAt: date(day: 13),
                     amount: 500_000,
                     paymentMethod: .banking
@@ -565,10 +570,139 @@ extension Budget {
                 BudgetTransaction(
                     budgetID: budgetID,
                     allocationID: wants.id,
-                    note: "Bình trà",
+                    title: "Bình trà",
                     occurredAt: date(day: 13),
                     amount: 95_000,
                     paymentMethod: .banking
+                )
+            ]
+        )
+    }()
+
+    static let sixJarsMock: Budget = {
+        let budgetID = UUID()
+        let calendar = Calendar(identifier: .gregorian)
+
+        func date(day: Int) -> Date {
+            calendar.date(
+                from: DateComponents(year: 2026, month: 7, day: day)
+            )!
+        }
+
+        let necessities = BudgetAllocation(
+            budgetID: budgetID,
+            kind: .necessities,
+            ratio: 0.55,
+            targetAmount: 8_811_468
+        )
+        let financialFreedom = BudgetAllocation(
+            budgetID: budgetID,
+            kind: .financialFreedom,
+            ratio: 0.10,
+            targetAmount: 1_602_085
+        )
+        let education = BudgetAllocation(
+            budgetID: budgetID,
+            kind: .education,
+            ratio: 0.10,
+            targetAmount: 1_602_085
+        )
+        let longTermSavings = BudgetAllocation(
+            budgetID: budgetID,
+            kind: .longTermSavings,
+            ratio: 0.10,
+            targetAmount: 1_602_085
+        )
+        let play = BudgetAllocation(
+            budgetID: budgetID,
+            kind: .play,
+            ratio: 0.10,
+            targetAmount: 1_602_085
+        )
+        let give = BudgetAllocation(
+            budgetID: budgetID,
+            kind: .give,
+            ratio: 0.05,
+            targetAmount: 801_042
+        )
+
+        return Budget(
+            id: budgetID,
+            name: "July 2026 - 6 Jars",
+            periodStart: date(day: 1),
+            income: 16_020_850,
+            method: .sixJars,
+            allocations: [
+                necessities,
+                financialFreedom,
+                education,
+                longTermSavings,
+                play,
+                give
+            ],
+            fixedExpensePlans: FixedExpensePlan.mocks(
+                budgetID: budgetID,
+                allocationID: necessities.id
+            ),
+            transactions: [
+                BudgetTransaction(
+                    budgetID: budgetID,
+                    allocationID: necessities.id,
+                    title: "Rent",
+                    occurredAt: date(day: 5),
+                    amount: 3_213_000,
+                    paymentMethod: .banking
+                ),
+                BudgetTransaction(
+                    budgetID: budgetID,
+                    allocationID: necessities.id,
+                    title: "Utilities",
+                    occurredAt: date(day: 6),
+                    amount: 1_000_000,
+                    paymentMethod: .banking
+                ),
+                BudgetTransaction(
+                    budgetID: budgetID,
+                    allocationID: financialFreedom.id,
+                    type: .contribution,
+                    title: "Investment account",
+                    occurredAt: date(day: 7),
+                    amount: 1_000_000,
+                    paymentMethod: .banking
+                ),
+                BudgetTransaction(
+                    budgetID: budgetID,
+                    allocationID: education.id,
+                    title: "Online course",
+                    occurredAt: date(day: 8),
+                    amount: 500_000,
+                    paymentMethod: .card
+                ),
+                BudgetTransaction(
+                    budgetID: budgetID,
+                    allocationID: longTermSavings.id,
+                    type: .contribution,
+                    title: "Long-term deposit",
+                    note: "Over-target example",
+                    occurredAt: date(day: 9),
+                    amount: 1_800_000,
+                    paymentMethod: .banking
+                ),
+                BudgetTransaction(
+                    budgetID: budgetID,
+                    allocationID: play.id,
+                    title: "Weekend activity",
+                    occurredAt: date(day: 10),
+                    amount: 400_000,
+                    paymentMethod: .card
+                ),
+                BudgetTransaction(
+                    budgetID: budgetID,
+                    allocationID: give.id,
+                    title: "Family gift",
+                    occurredAt: date(day: 11),
+                    amount: 200_000,
+                    paymentMethod: .cash
                 )
             ]
         )

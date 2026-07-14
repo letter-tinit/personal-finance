@@ -18,8 +18,14 @@ struct BudgetListScreen: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        budgetRouter.push(.budget)
+                    Menu {
+                        Button("budget.open.mock.fiftyThirtyTwenty".localized) {
+                            budgetRouter.push(.fiftyThirtyTwenty)
+                        }
+                        
+                        Button("budget.open.mock.sixJars".localized) {
+                            budgetRouter.push(.sixJars)
+                        }
                     } label: {
                         Image(systemName: "plus")
                     }
@@ -29,8 +35,10 @@ struct BudgetListScreen: View {
             
         } destination: { route in
             switch route {
-            case .budget:
+            case .fiftyThirtyTwenty:
                 BudgetScreen(budget: .mock)
+            case .sixJars:
+                BudgetScreen(budget: .sixJarsMock)
             }
         }
         

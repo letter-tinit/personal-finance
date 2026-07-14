@@ -10,8 +10,12 @@ import SwiftUI
 struct BudgetScreen: View {
     @State private var segmentOption: SegmentOption = .overview
     @State private var isFixedPlanPresented = false
-
-    let budget: Budget
+    @State private var isTransactionFormPresented = false
+    @State private var budget: Budget
+    
+    init(budget: Budget) {
+        _budget = State(initialValue: budget)
+    }
     
     private var transactionGroups: [TransactionGroup] {
         let groups = Dictionary(grouping: budget.transactions) {
@@ -84,20 +88,58 @@ struct BudgetScreen: View {
             .navigationTitle(budget.name)
         }
         .sheet(isPresented: $isFixedPlanPresented) {
-            FixedPlanView(
-                plans: budget.fixedExpensePlans
-            )
+            NavigationStack {
+                FixedPlanView(
+                    plans: budget.fixedExpensePlans
+                )
+            }
             .presentationDetents([.medium])
         }
+        .sheet(isPresented: $isTransactionFormPresented) {
+            NavigationStack {
+                TransactionFormView(
+                    allocations: budget.allocations,
+                    onSave: addTransaction
+                )
+            }
+        }
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItemGroup(placement: .topBarTrailing) {
                 Button {
                     isFixedPlanPresented = true
                 } label: {
                     Image(systemName: "gearshape")
                 }
+                .accessibilityLabel("fixed.plan.title".localized)
+                
+                Button {
+                    isTransactionFormPresented = true
+                } label: {
+                    Image(systemName: "plus")
+                }
+                .accessibilityLabel("transaction.form.add".localized)
             }
         }
+    }
+}
+
+private extension BudgetScreen {
+    func addTransaction(_ input: ValidatedTransactionInput) throws {
+        guard let allocation = budget.allocations.first(
+            where: { $0.id == input.allocationID }
+        ) else {
+            throw BudgetError.allocationNotFound
+        }
+        
+        try budget.addTransaction(
+            allocationID: allocation.id,
+            type: allocation.expectedTransactionType,
+            title: input.description,
+            note: input.note,
+            occurredAt: input.occurredAt,
+            amount: input.amount,
+            paymentMethod: input.paymentMethod
+        )
     }
 }
 
@@ -155,7 +197,7 @@ struct BudgetAllocationView: View {
     private var allocation: BudgetAllocation {
         summary.allocation
     }
-
+    
     private var isSaving: Bool {
         allocation.kind.isSavingsLike
     }
@@ -163,9 +205,25 @@ struct BudgetAllocationView: View {
     private var planRatioText: String {
         "\((summary.planRatio.doubleValue * 100).ceiledToTwoDecimalPlaces)%"
     }
-
+    
     private var actualRatioText: String {
         "\((summary.actualRatio.doubleValue * 100).ceiledToTwoDecimalPlaces)%"
+    }
+    
+    private var differenceAmount: Decimal {
+        summary.remainingAmount < 0
+        ? -summary.remainingAmount
+        : summary.remainingAmount
+    }
+    
+    private var differenceTitle: String {
+        if summary.remainingAmount < 0 {
+            return "budget.metric.overTarget".localized
+        }
+        
+        return isSaving
+        ? "budget.metric.remainingToSave".localized
+        : "budget.metric.remaining".localized
     }
     
     private let topOffset: CGFloat = 20
@@ -184,7 +242,7 @@ struct BudgetAllocationView: View {
                     value: summary.actualAmount.formattedVND
                 )
             )
-
+            
             Divider()
             
             CommonRowView(
@@ -193,7 +251,7 @@ struct BudgetAllocationView: View {
                     value: planRatioText
                 )
             )
-
+            
             CommonRowView(
                 .init(
                     title: "budget.metric.actualRatio".localized,
@@ -204,8 +262,13 @@ struct BudgetAllocationView: View {
             Divider()
             
             HStack {
-                Text(summary.remainingAmount.formattedVND)
-                    .customTitle()
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(differenceTitle)
+                        .secondarySubHeadline()
+                    
+                    Text(differenceAmount.formattedVND)
+                        .customTitle()
+                }
                 
                 Spacer()
                 
@@ -215,6 +278,7 @@ struct BudgetAllocationView: View {
             progressBar
         }
         .padding()
+        .padding(.top, 6)
         .frame(maxWidth: .infinity)
         .borderedBackground(
             linearGradient: LinearGradient(
@@ -230,7 +294,7 @@ struct BudgetAllocationView: View {
         .overlay(alignment: .top) {
             HStack(spacing: 6) {
                 Image(systemName: allocation.kind.systemImageName)
-
+                
                 Text(allocation.kind.localizationKey.localized)
             }
             .customHeadline()
@@ -249,7 +313,7 @@ struct BudgetAllocationView: View {
     private var statusBadge: some View {
         HStack(spacing: 4) {
             Image(systemName: summary.status.systemImageName)
-
+            
             Text(summary.status.localizationKey.localized)
         }
         .customSubHeadline()
@@ -285,7 +349,7 @@ private extension BudgetAllocationStatus {
             "budget.status.needMore"
         }
     }
-
+    
     var systemImageName: String {
         switch self {
         case .ok, .done:
@@ -296,7 +360,7 @@ private extension BudgetAllocationStatus {
             "circle"
         }
     }
-
+    
     func tintColor(for kind: BudgetBucketKind) -> Color {
         switch self {
         case .ok, .done:
@@ -327,7 +391,7 @@ struct BudgetTransactionRow: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                Text(transaction.note)
+                Text(transaction.title)
                     .secondarySubHeadline()
                 
                 Spacer()
@@ -338,13 +402,25 @@ struct BudgetTransactionRow: View {
             }
             
             if let allocation {
-                Text(allocation.kind.localizationKey.localized)
-                    .customHeadline()
-                    .foregroundStyle(allocation.kind.topicColor)
+                HStack(spacing: 6) {
+                    Text(allocation.kind.localizationKey.localized)
+                        .foregroundStyle(allocation.kind.topicColor)
+                    
+                    Text("•")
+                    
+                    Text(transaction.paymentMethod.localizationKey.localized)
+                        .foregroundStyle(.secondary)
+                }
+                .customHeadline()
             } else {
                 Text("budget.allocation.unknown".localized)
                     .customHeadline()
                     .foregroundStyle(.secondary)
+            }
+            
+            if !transaction.note.isEmpty {
+                Text(transaction.note)
+                    .secondarySubHeadline()
             }
             
             Divider()
