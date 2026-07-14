@@ -24,8 +24,10 @@
 "budget.open.mock" = "Mở ngân sách mẫu";
 "budget.transactions.empty" = "Chưa có giao dịch";
 "budget.metric.overTarget" = "Vượt mục tiêu";
+"budget.status.ok" = "Ổn";
+"budget.status.over" = "Vượt";
 "budget.status.done" = "Đã xong";
-"budget.status.pending" = "Chưa xong";
+"budget.status.needMore" = "Cần thêm";
 "keyboard.done" = "Xong";
 "budget.method.fiftyThirtyTwenty" = "50/30/20";
 "budget.method.sixJars" = "6 chiếc lọ";

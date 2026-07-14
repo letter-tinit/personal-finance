@@ -32,4 +32,29 @@ extension BudgetBucketKind {
             return .gray
         }
     }
+
+    var systemImageName: String {
+        switch self {
+        case .needs:
+            return "house.fill"
+        case .wants:
+            return "sparkles"
+        case .savings:
+            return "dollarsign.bank.building.fill"
+        case .necessities:
+            return "cart.fill"
+        case .financialFreedom:
+            return "chart.line.uptrend.xyaxis"
+        case .education:
+            return "book.fill"
+        case .longTermSavings:
+            return "calendar.badge.clock"
+        case .play:
+            return "gamecontroller.fill"
+        case .give:
+            return "gift.fill"
+        case .custom:
+            return "circle.grid.2x2.fill"
+        }
+    }
 }

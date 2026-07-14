@@ -121,6 +121,25 @@ enum BudgetTransactionType: String, CaseIterable, Hashable {
     case contribution
 }
 
+enum BudgetAllocationStatus: Hashable {
+    // Savings
+    case done
+    case needMore
+
+    // Standard
+    case ok
+    case over
+}
+
+struct BudgetAllocationSummary: Hashable {
+    let allocation: BudgetAllocation
+    let actualAmount: Decimal
+    let remainingAmount: Decimal
+    let status: BudgetAllocationStatus
+    let barProgress: Decimal
+    let displayBarProgress: Double
+}
+
 extension Budget {
     func transactions(for allocation: BudgetAllocation) -> [BudgetTransaction] {
         transactions.filter { $0.allocationID == allocation.id }
@@ -145,12 +164,46 @@ extension Budget {
         allocation.targetAmount - actualAmount(for: allocation)
     }
     
-    func progress(for allocation: BudgetAllocation) -> Decimal {
-        guard allocation.targetAmount > 0 else {
-            return .zero
+    func status(for allocation: BudgetAllocation) -> BudgetAllocationStatus {
+        let actualAmount = actualAmount(for: allocation)
+        let remainingAmount = allocation.targetAmount - actualAmount
+
+        if allocation.kind.isSavingsLike {
+            return actualAmount >= allocation.targetAmount ? .done : .needMore
         }
-        
-        return actualAmount(for: allocation) / allocation.targetAmount
+
+        return remainingAmount >= 0 ? .ok : .over
+    }
+
+    func barProgress(for allocation: BudgetAllocation) -> Decimal {
+        guard allocation.targetAmount > 0 else {
+            if allocation.kind.isSavingsLike {
+                return actualAmount(for: allocation) > 0 ? 1 : .zero
+            }
+
+            return remainingAmount(for: allocation) > 0 ? 1 : .zero
+        }
+
+        if allocation.kind.isSavingsLike {
+            return actualAmount(for: allocation) / allocation.targetAmount
+        }
+
+        return remainingAmount(for: allocation) / allocation.targetAmount
+    }
+
+    func allocationSummary(for allocation: BudgetAllocation) -> BudgetAllocationSummary {
+        let actualAmount = actualAmount(for: allocation)
+        let remainingAmount = allocation.targetAmount - actualAmount
+        let barProgress = barProgress(for: allocation)
+
+        return BudgetAllocationSummary(
+            allocation: allocation,
+            actualAmount: actualAmount,
+            remainingAmount: remainingAmount,
+            status: status(for: allocation),
+            barProgress: barProgress,
+            displayBarProgress: min(max(barProgress.doubleValue, 0), 1)
+        )
     }
 
     mutating func addTransaction(

@@ -48,8 +48,7 @@ struct BudgetScreen: View {
                         VStack {
                             ForEach(budget.allocations) { allocation in
                                 BudgetAllocationView(
-                                    allocation: allocation,
-                                    actualAmount: budget.actualAmount(for: allocation)
+                                    summary: budget.allocationSummary(for: allocation)
                                 )
                             }
                         } // OVERVIEW STACK
@@ -135,35 +134,18 @@ struct BudgetIncomeView: View {
 }
 
 struct BudgetAllocationView: View {
-    let allocation: BudgetAllocation
-    let actualAmount: Decimal
+    let summary: BudgetAllocationSummary
     
-    private var remainingAmount: Decimal {
-        allocation.targetAmount - actualAmount
+    private var allocation: BudgetAllocation {
+        summary.allocation
     }
-    
+
     private var isSaving: Bool {
         allocation.kind.isSavingsLike
     }
     
-    private var isSavingCompleted: Bool {
-        actualAmount >= allocation.targetAmount
-    }
-    
-    private var remainingProgress: Decimal {
-        guard allocation.targetAmount > 0 else {
-            return remainingAmount > 0 ? 1 : .zero
-        }
-        
-        return remainingAmount / allocation.targetAmount
-    }
-    
-    private var displayProgress: Double {
-        min(max(remainingProgress.doubleValue, 0), 1)
-    }
-    
-    private var progressText: String {
-        "\((displayProgress * 100).ceiledToTwoDecimalPlaces)%"
+    private var barProgressText: String {
+        "\((summary.displayBarProgress * 100).ceiledToTwoDecimalPlaces)%"
     }
     
     private let topOffset: CGFloat = 20
@@ -179,29 +161,27 @@ struct BudgetAllocationView: View {
                     title: isSaving
                     ? "budget.metric.saved".localized
                     : "budget.metric.spent".localized,
-                    value: actualAmount.formattedVND
+                    value: summary.actualAmount.formattedVND
                 )
             )
             
             Divider()
             
             HStack {
-                Text(remainingAmount.formattedVND)
+                Text(summary.remainingAmount.formattedVND)
                     .customTitle()
                 
                 Spacer()
                 
-                if isSaving {
-                    savingsStatusBadge
-                } else {
-                    Text(progressText)
+                VStack(alignment: .trailing, spacing: 4) {
+                    statusBadge
+
+                    Text(barProgressText)
                         .customSubHeadline()
                 }
             }
             
-            if !isSaving {
-                progressBar
-            }
+            progressBar
         }
         .padding()
         .frame(maxWidth: .infinity)
@@ -217,39 +197,32 @@ struct BudgetAllocationView: View {
             )
         )
         .overlay(alignment: .top) {
-            Text(allocation.kind.localizationKey.localized)
-                .customHeadline()
-                .foregroundStyle(.white)
-                .padding(8)
-                .padding(.horizontal, 16)
-                .background(
-                    Capsule()
-                        .foregroundStyle(allocation.kind.topicColor)
-                )
-                .offset(y: -topOffset)
+            HStack(spacing: 6) {
+                Image(systemName: allocation.kind.systemImageName)
+
+                Text(allocation.kind.localizationKey.localized)
+            }
+            .customHeadline()
+            .foregroundStyle(.white)
+            .padding(8)
+            .padding(.horizontal, 16)
+            .background(
+                Capsule()
+                    .foregroundStyle(allocation.kind.topicColor)
+            )
+            .offset(y: -topOffset)
         }
         .padding(.top, topOffset)
     }
     
-    private var savingsStatusBadge: some View {
+    private var statusBadge: some View {
         HStack(spacing: 4) {
-            Image(
-                systemName: isSavingCompleted
-                ? "checkmark.circle.fill"
-                : "circle"
-            )
-            Text(
-                isSavingCompleted
-                ? "budget.status.done".localized
-                : "budget.status.pending".localized
-            )
+            Image(systemName: summary.status.systemImageName)
+
+            Text(summary.status.localizationKey.localized)
         }
         .customSubHeadline()
-        .foregroundStyle(
-            isSavingCompleted
-            ? allocation.kind.topicColor
-            : Color.secondary
-        )
+        .foregroundStyle(summary.status.tintColor(for: allocation.kind))
     }
     
     private var progressBar: some View {
@@ -260,11 +233,48 @@ struct BudgetAllocationView: View {
                 
                 allocation.kind.topicColor
                     .clipShape(.capsule)
-                    .frame(width: geometry.size.width * displayProgress)
+                    .frame(width: geometry.size.width * summary.displayBarProgress)
             }
         }
         .frame(height: 10)
         .clipShape(.capsule)
+    }
+}
+
+private extension BudgetAllocationStatus {
+    var localizationKey: String {
+        switch self {
+        case .ok:
+            "budget.status.ok"
+        case .over:
+            "budget.status.over"
+        case .done:
+            "budget.status.done"
+        case .needMore:
+            "budget.status.needMore"
+        }
+    }
+
+    var systemImageName: String {
+        switch self {
+        case .ok, .done:
+            "checkmark.circle.fill"
+        case .over:
+            "exclamationmark.circle.fill"
+        case .needMore:
+            "circle"
+        }
+    }
+
+    func tintColor(for kind: BudgetBucketKind) -> Color {
+        switch self {
+        case .ok, .done:
+            kind.topicColor
+        case .over:
+            Color.Common.failure
+        case .needMore:
+            Color.secondary
+        }
     }
 }
 
@@ -338,17 +348,6 @@ extension BudgetScreen {
             case .transaction:
                 "budget.segment.transactions"
             }
-        }
-    }
-}
-
-private extension BudgetBucketKind {
-    var isSavingsLike: Bool {
-        switch self {
-        case .savings, .financialFreedom, .longTermSavings:
-            true
-        default:
-            false
         }
     }
 }

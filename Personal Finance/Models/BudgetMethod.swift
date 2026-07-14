@@ -87,4 +87,13 @@ enum BudgetBucketKind: Hashable, Codable {
     var localizationKey: String {
         "bucket.\(id)"
     }
+
+    var isSavingsLike: Bool {
+        switch self {
+        case .savings, .financialFreedom, .longTermSavings:
+            true
+        default:
+            false
+        }
+    }
 }

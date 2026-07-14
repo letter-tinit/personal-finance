@@ -24,8 +24,10 @@
 "budget.open.mock" = "Open sample budget";
 "budget.transactions.empty" = "No transactions yet";
 "budget.metric.overTarget" = "Over target";
+"budget.status.ok" = "OK";
+"budget.status.over" = "Over";
 "budget.status.done" = "Done";
-"budget.status.pending" = "Pending";
+"budget.status.needMore" = "Need more";
 "keyboard.done" = "Done";
 "budget.method.fiftyThirtyTwenty" = "50/30/20";
 "budget.method.sixJars" = "6 Jars";
