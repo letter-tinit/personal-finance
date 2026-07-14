@@ -8,22 +8,22 @@
 import SwiftUI
 
 extension BudgetBucketKind {
-    var progressColor: Color {
+    var topicColor: Color {
         switch self {
         case .needs:
-            return .darkBlue
+            return .blue
         case .wants:
-            return .darkOrange
+            return .orange
         case .savings:
-            return .darkGreen
+            return .green
         case .necessities:
-            return .darkBlue
+            return .blue
         case .financialFreedom:
             return .mint
         case .education:
             return .purple
         case .longTermSavings:
-            return .darkGreen
+            return .green
         case .play:
             return .pink
         case .give:

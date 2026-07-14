@@ -8,19 +8,32 @@
 import SwiftUI
 
 extension View {
+    @ViewBuilder
     func borderedBackground(
+        linearGradient: LinearGradient? = nil,
         fillColor: Color = .clear,
         borderColor: Color = Color.Common.border,
         cornerRadius: CGFloat = 16,
         lineWidth: CGFloat = 1
     ) -> some View {
-        background {
-            RoundedRectangle(cornerRadius: cornerRadius)
-                .fill(fillColor)
-                .stroke(
-                    borderColor,
-                    lineWidth: lineWidth
-                )
+        if let linearGradient {
+            background {
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .fill(linearGradient)
+                    .stroke(
+                        borderColor,
+                        lineWidth: lineWidth
+                    )
+            }
+        } else {
+            background {
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .fill(fillColor)
+                    .stroke(
+                        borderColor,
+                        lineWidth: lineWidth
+                    )
+            }
         }
     }
     

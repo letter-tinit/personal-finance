@@ -7,13 +7,21 @@
 
 import Foundation
 
-struct Budget: Identifiable, Hashable, Codable {
+enum BudgetError: Error {
+    case invalidAmount
+    case allocationNotFound
+    case allocationBelongsToAnotherBudget
+}
+
+struct Budget: Identifiable, Hashable {
     let id: UUID
-    var name: String
-    var periodStart: Date
-    var income: Decimal
-    var method: BudgetMethod
+    private(set) var name: String
+    private(set) var periodStart: Date
+    private(set) var income: Decimal
+    private(set) var method: BudgetMethod
     let createdAt: Date
+    private(set) var allocations: [BudgetAllocation]
+    private(set) var transactions: [BudgetTransaction]
 
     init(
         id: UUID = UUID(),
@@ -21,18 +29,35 @@ struct Budget: Identifiable, Hashable, Codable {
         periodStart: Date,
         income: Decimal,
         method: BudgetMethod,
-        createdAt: Date = .now
+        createdAt: Date = .now,
+        allocations: [BudgetAllocation] = [],
+        transactions: [BudgetTransaction] = []
     ) {
+        let allocationIDs = Set(allocations.map(\.id))
+
+        precondition(
+            allocations.allSatisfy { $0.budgetID == id },
+            "Every allocation must belong to this budget."
+        )
+        precondition(
+            transactions.allSatisfy {
+                $0.budgetID == id && allocationIDs.contains($0.allocationID)
+            },
+            "Every transaction must reference an allocation in this budget."
+        )
+
         self.id = id
         self.name = name
         self.periodStart = periodStart
         self.income = income
         self.method = method
         self.createdAt = createdAt
+        self.allocations = allocations
+        self.transactions = transactions
     }
 }
 
-struct BudgetAllocation: Identifiable, Hashable, Codable {
+struct BudgetAllocation: Identifiable, Hashable {
     let id: UUID
     let budgetID: UUID
     let kind: BudgetBucketKind
@@ -54,19 +79,21 @@ struct BudgetAllocation: Identifiable, Hashable, Codable {
     }
 }
 
-struct BudgetTransaction: Identifiable, Hashable, Codable {
+struct BudgetTransaction: Identifiable, Hashable {
     let id: UUID
     let budgetID: UUID
     let allocationID: UUID
-    var note: String
-    var occurredAt: Date
-    var amount: Decimal
-    var paymentMethod: PaymentMethod
+    let type: BudgetTransactionType
+    private(set) var note: String
+    private(set) var occurredAt: Date
+    private(set) var amount: Decimal
+    private(set) var paymentMethod: PaymentMethod
 
     init(
         id: UUID = UUID(),
         budgetID: UUID,
         allocationID: UUID,
+        type: BudgetTransactionType = .expense,
         note: String,
         occurredAt: Date = .now,
         amount: Decimal,
@@ -75,6 +102,7 @@ struct BudgetTransaction: Identifiable, Hashable, Codable {
         self.id = id
         self.budgetID = budgetID
         self.allocationID = allocationID
+        self.type = type
         self.note = note
         self.occurredAt = occurredAt
         self.amount = amount
@@ -88,70 +116,242 @@ enum PaymentMethod: String, CaseIterable, Hashable, Codable {
     case card
 }
 
-struct BudgetDetails: Hashable {
-    let budget: Budget
-    var allocations: [BudgetAllocation]
-    var transactions: [BudgetTransaction]
+enum BudgetTransactionType: String, CaseIterable, Hashable {
+    case expense
+    case contribution
 }
 
-extension BudgetDetails {
-    static let mock: BudgetDetails = {
-        let budget = Budget(
-            name: "July 2026",
-            periodStart: Date(timeIntervalSince1970: 1_782_838_800),
-            income: 20_000_000,
-            method: .fiftyThirtyTwenty
+extension Budget {
+    func transactions(for allocation: BudgetAllocation) -> [BudgetTransaction] {
+        transactions.filter { $0.allocationID == allocation.id }
+    }
+    
+    func allocation(
+        for transaction: BudgetTransaction
+    ) -> BudgetAllocation? {
+        allocations.first {
+            $0.id == transaction.allocationID
+        }
+    }
+    
+    func actualAmount(for allocation: BudgetAllocation) -> Decimal {
+        transactions(for: allocation)
+            .reduce(Decimal.zero) { partialResult, transaction in
+                partialResult + transaction.amount
+            }
+    }
+    
+    func remainingAmount(for allocation: BudgetAllocation) -> Decimal {
+        allocation.targetAmount - actualAmount(for: allocation)
+    }
+    
+    func progress(for allocation: BudgetAllocation) -> Decimal {
+        guard allocation.targetAmount > 0 else {
+            return .zero
+        }
+        
+        return actualAmount(for: allocation) / allocation.targetAmount
+    }
+
+    mutating func addTransaction(
+        allocationID: UUID,
+        type: BudgetTransactionType,
+        note: String,
+        occurredAt: Date = .now,
+        amount: Decimal,
+        paymentMethod: PaymentMethod
+    ) throws {
+        guard amount > 0 else {
+            throw BudgetError.invalidAmount
+        }
+
+        guard let allocation = allocations.first(
+            where: { $0.id == allocationID }
+        ) else {
+            throw BudgetError.allocationNotFound
+        }
+
+        guard allocation.budgetID == id else {
+            throw BudgetError.allocationBelongsToAnotherBudget
+        }
+
+        transactions.append(
+            BudgetTransaction(
+                budgetID: id,
+                allocationID: allocation.id,
+                type: type,
+                note: note,
+                occurredAt: occurredAt,
+                amount: amount,
+                paymentMethod: paymentMethod
+            )
         )
+    }
+}
+
+extension Budget {
+    static let mock: Budget = {
+        let budgetID = UUID()
+        let calendar = Calendar(identifier: .gregorian)
+
+        func date(day: Int) -> Date {
+            calendar.date(from: DateComponents(year: 2026, month: 7, day: day))!
+        }
 
         let needs = BudgetAllocation(
-            budgetID: budget.id,
+            budgetID: budgetID,
             kind: .needs,
             ratio: 0.5,
-            targetAmount: 10_000_000
+            targetAmount: 8_010_425
         )
         let wants = BudgetAllocation(
-            budgetID: budget.id,
+            budgetID: budgetID,
             kind: .wants,
             ratio: 0.3,
-            targetAmount: 6_000_000
+            targetAmount: 4_806_255
         )
         let savings = BudgetAllocation(
-            budgetID: budget.id,
+            budgetID: budgetID,
             kind: .savings,
             ratio: 0.2,
-            targetAmount: 4_000_000
+            targetAmount: 3_204_170
         )
 
-        return BudgetDetails(
-            budget: budget,
+        return Budget(
+            id: budgetID,
+            name: "July 2026",
+            periodStart: date(day: 1),
+            income: 16_020_850,
+            method: .fiftyThirtyTwenty,
             allocations: [needs, wants, savings],
             transactions: [
                 BudgetTransaction(
-                    budgetID: budget.id,
+                    budgetID: budgetID,
                     allocationID: needs.id,
-                    note: "Apartment rent",
-                    amount: 5_000_000,
+                    note: "Electricity - HTX",
+                    occurredAt: date(day: 5),
+                    amount: 540_837,
                     paymentMethod: .banking
                 ),
                 BudgetTransaction(
-                    budgetID: budget.id,
+                    budgetID: budgetID,
                     allocationID: needs.id,
-                    note: "Groceries",
-                    amount: 1_200_000,
-                    paymentMethod: .card
+                    note: "Electricity - Binh Duong",
+                    occurredAt: date(day: 6),
+                    amount: 401_942,
+                    paymentMethod: .banking
                 ),
                 BudgetTransaction(
-                    budgetID: budget.id,
+                    budgetID: budgetID,
+                    allocationID: needs.id,
+                    note: "Electricity - Street Lights",
+                    occurredAt: date(day: 6),
+                    amount: 235_600,
+                    paymentMethod: .banking
+                ),
+                BudgetTransaction(
+                    budgetID: budgetID,
+                    allocationID: needs.id,
+                    note: "Electricity - Nguyen Quoc Hung",
+                    occurredAt: date(day: 6),
+                    amount: 441_461,
+                    paymentMethod: .banking
+                ),
+                BudgetTransaction(
+                    budgetID: budgetID,
+                    allocationID: needs.id,
+                    note: "Electricity - Tran Bach Tuyet",
+                    occurredAt: date(day: 6),
+                    amount: 325_793,
+                    paymentMethod: .banking
+                ),
+                BudgetTransaction(
+                    budgetID: budgetID,
+                    allocationID: needs.id,
+                    note: "Rent",
+                    occurredAt: date(day: 6),
+                    amount: 3_213_000,
+                    paymentMethod: .banking
+                ),
+                BudgetTransaction(
+                    budgetID: budgetID,
+                    allocationID: needs.id,
+                    note: "iOS Team Fund",
+                    occurredAt: date(day: 6),
+                    amount: 100_000,
+                    paymentMethod: .banking
+                ),
+                BudgetTransaction(
+                    budgetID: budgetID,
+                    allocationID: needs.id,
+                    note: "Living expenses",
+                    occurredAt: date(day: 7),
+                    amount: 700_000,
+                    paymentMethod: .banking
+                ),
+                BudgetTransaction(
+                    budgetID: budgetID,
                     allocationID: wants.id,
-                    note: "Coffee with friends",
-                    amount: 150_000,
-                    paymentMethod: .cash
+                    note: "Give Family",
+                    occurredAt: date(day: 7),
+                    amount: 700_000,
+                    paymentMethod: .banking
                 ),
                 BudgetTransaction(
-                    budgetID: budget.id,
+                    budgetID: budgetID,
                     allocationID: savings.id,
-                    note: "Emergency fund",
-                    amount: 2_000_000,
+                    type: .contribution,
+                    note: "Deposit Savings",
+                    occurredAt: date(day: 10),
+                    amount: 3_204_170,
+                    paymentMethod: .banking
+                ),
+                BudgetTransaction(
+                    budgetID: budgetID,
+                    allocationID: needs.id,
+                    note: "Youtube Premium",
+                    occurredAt: date(day: 12),
+                    amount: 195_000,
+                    paymentMethod: .banking
+                ),
+                BudgetTransaction(
+                    budgetID: budgetID,
+                    allocationID: wants.id,
+                    note: "Give Family",
+                    occurredAt: date(day: 12),
+                    amount: 155_200,
+                    paymentMethod: .banking
+                ),
+                BudgetTransaction(
+                    budgetID: budgetID,
+                    allocationID: needs.id,
+                    note: "Metro",
+                    occurredAt: date(day: 13),
+                    amount: 300_000,
+                    paymentMethod: .banking
+                ),
+                BudgetTransaction(
+                    budgetID: budgetID,
+                    allocationID: needs.id,
+                    note: "Living expenses",
+                    occurredAt: date(day: 13),
+                    amount: 300_000,
+                    paymentMethod: .banking
+                ),
+                BudgetTransaction(
+                    budgetID: budgetID,
+                    allocationID: needs.id,
+                    note: "Living expenses",
+                    occurredAt: date(day: 13),
+                    amount: 500_000,
+                    paymentMethod: .banking
+                ),
+                BudgetTransaction(
+                    budgetID: budgetID,
+                    allocationID: wants.id,
+                    note: "Bình trà",
+                    occurredAt: date(day: 13),
+                    amount: 95_000,
                     paymentMethod: .banking
                 )
             ]

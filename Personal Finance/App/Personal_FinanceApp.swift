@@ -11,10 +11,7 @@ import SwiftUI
 struct Personal_FinanceApp: App {
     var body: some Scene {
         WindowGroup {
-            NavigationStack {
-                BudgetListScreen()
-                    .fontDesign(.rounded)
-            }
+            BudgetListScreen()
         }
     }
 }
