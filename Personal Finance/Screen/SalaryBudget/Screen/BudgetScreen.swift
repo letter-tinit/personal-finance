@@ -11,6 +11,7 @@ struct BudgetScreen: View {
     @State private var segmentOption: SegmentOption = .overview
     @State private var isFixedPlanPresented = false
     @State private var isTransactionFormPresented = false
+    @State private var selectedTransaction: BudgetTransaction?
     @State private var budget: Budget
     
     init(budget: Budget) {
@@ -70,9 +71,17 @@ struct BudgetScreen: View {
                                         .customSubTitle()
                                     
                                     ForEach(group.transactions) { transaction in
-                                        BudgetTransactionRow(
-                                            transaction: transaction,
-                                            allocation: budget.allocation(for: transaction)
+                                        Button {
+                                            selectedTransaction = transaction
+                                        } label: {
+                                            BudgetTransactionRow(
+                                                transaction: transaction,
+                                                allocation: budget.allocation(for: transaction)
+                                            )
+                                        }
+                                        .buttonStyle(.plain)
+                                        .accessibilityHint(
+                                            "transaction.edit.accessibilityHint".localized
                                         )
                                     }
                                 }
@@ -100,6 +109,26 @@ struct BudgetScreen: View {
                 TransactionFormView(
                     allocations: budget.allocations,
                     onSave: addTransaction
+                )
+            }
+        }
+        .sheet(item: $selectedTransaction) { transaction in
+            NavigationStack {
+                TransactionFormView(
+                    allocations: budget.allocations,
+                    initialState: TransactionFormState(
+                        transaction: transaction
+                    ),
+                    titleKey: "transaction.form.edit.title",
+                    onSave: { input in
+                        try updateTransaction(
+                            transactionID: transaction.id,
+                            input: input
+                        )
+                    },
+                    onDelete: {
+                        try budget.deleteTransaction(id: transaction.id)
+                    }
                 )
             }
         }
@@ -134,6 +163,21 @@ private extension BudgetScreen {
         try budget.addTransaction(
             allocationID: allocation.id,
             type: allocation.expectedTransactionType,
+            title: input.description,
+            note: input.note,
+            occurredAt: input.occurredAt,
+            amount: input.amount,
+            paymentMethod: input.paymentMethod
+        )
+    }
+
+    func updateTransaction(
+        transactionID: UUID,
+        input: ValidatedTransactionInput
+    ) throws {
+        try budget.updateTransaction(
+            id: transactionID,
+            allocationID: input.allocationID,
             title: input.description,
             note: input.note,
             occurredAt: input.occurredAt,

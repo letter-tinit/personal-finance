@@ -37,7 +37,9 @@
 "fixed.plan.empty.title" = "Chưa có khoản chi thiết yếu";
 "fixed.plan.empty.description" = "Các khoản chi thiết yếu dự kiến sẽ xuất hiện tại đây.";
 "transaction.form.title" = "Giao dịch mới";
+"transaction.form.edit.title" = "Sửa giao dịch";
 "transaction.form.add" = "Thêm giao dịch";
+"transaction.edit.accessibilityHint" = "Mở giao dịch này để chỉnh sửa.";
 "transaction.form.section.details" = "Giao dịch";
 "transaction.form.section.payment" = "Thanh toán";
 "transaction.form.description" = "Nội dung";
@@ -51,6 +53,11 @@
 "transaction.form.error.allocation" = "Hãy chọn nhóm phân bổ.";
 "transaction.form.error.amount" = "Hãy nhập số tiền lớn hơn 0.";
 "transaction.form.error.save" = "Không thể lưu giao dịch.";
+"transaction.form.error.delete" = "Không thể xóa giao dịch.";
+"transaction.form.delete" = "Xóa giao dịch";
+"transaction.form.delete.confirmation.title" = "Xóa giao dịch này?";
+"transaction.form.delete.confirmation.message" = "Bạn không thể hoàn tác thao tác này.";
+"transaction.form.delete.confirmation.action" = "Xóa";
 "payment.method.banking" = "Chuyển khoản";
 "payment.method.cash" = "Tiền mặt";
 "payment.method.card" = "Thẻ";

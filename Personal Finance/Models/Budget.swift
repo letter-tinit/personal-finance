@@ -12,6 +12,7 @@ enum BudgetError: Error {
     case invalidTransactionType
     case allocationNotFound
     case allocationBelongsToAnotherBudget
+    case transactionNotFound
 }
 
 struct Budget: Identifiable, Hashable {
@@ -403,6 +404,58 @@ extension Budget {
                 paymentMethod: paymentMethod
             )
         )
+    }
+
+    mutating func updateTransaction(
+        id transactionID: UUID,
+        allocationID: UUID,
+        title: String,
+        note: String = "",
+        occurredAt: Date,
+        amount: Decimal,
+        paymentMethod: PaymentMethod
+    ) throws {
+        guard amount > 0 else {
+            throw BudgetError.invalidAmount
+        }
+
+        guard let transactionIndex = transactions.firstIndex(
+            where: { $0.id == transactionID }
+        ) else {
+            throw BudgetError.transactionNotFound
+        }
+
+        guard let allocation = allocations.first(
+            where: { $0.id == allocationID }
+        ) else {
+            throw BudgetError.allocationNotFound
+        }
+
+        guard allocation.budgetID == id else {
+            throw BudgetError.allocationBelongsToAnotherBudget
+        }
+
+        transactions[transactionIndex] = BudgetTransaction(
+            id: transactionID,
+            budgetID: id,
+            allocationID: allocation.id,
+            type: allocation.expectedTransactionType,
+            title: title,
+            note: note,
+            occurredAt: occurredAt,
+            amount: amount,
+            paymentMethod: paymentMethod
+        )
+    }
+
+    mutating func deleteTransaction(id transactionID: UUID) throws {
+        guard let transactionIndex = transactions.firstIndex(
+            where: { $0.id == transactionID }
+        ) else {
+            throw BudgetError.transactionNotFound
+        }
+
+        transactions.remove(at: transactionIndex)
     }
 }
 

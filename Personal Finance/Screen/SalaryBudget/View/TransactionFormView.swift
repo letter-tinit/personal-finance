@@ -11,11 +11,33 @@ struct TransactionFormView: View {
     @Environment(\.dismiss) private var dismiss
 
     let allocations: [BudgetAllocation]
+    let titleKey: String
     let onSave: (ValidatedTransactionInput) throws -> Void
+    let onDelete: (() throws -> Void)?
 
-    @State private var formState = TransactionFormState()
+    @State private var formState: TransactionFormState
     @State private var errorMessage: String?
+    @State private var isDeleteConfirmationPresented = false
     @FocusState private var focusedField: Field?
+
+    init(
+        allocations: [BudgetAllocation],
+        initialState: TransactionFormState = TransactionFormState(),
+        titleKey: String = "transaction.form.title",
+        onSave: @escaping (ValidatedTransactionInput) throws -> Void,
+        onDelete: (() throws -> Void)? = nil
+    ) {
+        var formattedState = initialState
+        formattedState.amountText = CurrencyInputFormatter.format(
+            initialState.amountText
+        )
+
+        self.allocations = allocations
+        self.titleKey = titleKey
+        self.onSave = onSave
+        self.onDelete = onDelete
+        _formState = State(initialValue: formattedState)
+    }
 
     var body: some View {
         Form {
@@ -88,8 +110,20 @@ struct TransactionFormView: View {
                         .foregroundStyle(Color.Common.failure)
                 }
             }
+
+            if onDelete != nil {
+                Section {
+                    Button(
+                        "transaction.form.delete".localized,
+                        role: .destructive
+                    ) {
+                        isDeleteConfirmationPresented = true
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+            }
         }
-        .navigationTitle("transaction.form.title".localized)
+        .navigationTitle(titleKey.localized)
         .navigationBarTitleDisplayMode(.inline)
         .scrollDismissesKeyboard(.interactively)
         .toolbar {
@@ -113,6 +147,22 @@ struct TransactionFormView: View {
                 }
             }
         }
+        .confirmationDialog(
+            "transaction.form.delete.confirmation.title".localized,
+            isPresented: $isDeleteConfirmationPresented,
+            titleVisibility: .visible
+        ) {
+            Button(
+                "transaction.form.delete.confirmation.action".localized,
+                role: .destructive
+            ) {
+                deleteTransaction()
+            }
+
+            Button("common.cancel".localized, role: .cancel) {}
+        } message: {
+            Text("transaction.form.delete.confirmation.message".localized)
+        }
     }
 }
 
@@ -132,6 +182,15 @@ private extension TransactionFormView {
             errorMessage = error.localizationKey.localized
         } catch {
             errorMessage = "transaction.form.error.save".localized
+        }
+    }
+
+    func deleteTransaction() {
+        do {
+            try onDelete?()
+            dismiss()
+        } catch {
+            errorMessage = "transaction.form.error.delete".localized
         }
     }
 }

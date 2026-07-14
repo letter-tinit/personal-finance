@@ -37,7 +37,9 @@
 "fixed.plan.empty.title" = "No essential expenses";
 "fixed.plan.empty.description" = "Your essential expense plans will appear here.";
 "transaction.form.title" = "New Transaction";
+"transaction.form.edit.title" = "Edit Transaction";
 "transaction.form.add" = "Add transaction";
+"transaction.edit.accessibilityHint" = "Opens this transaction for editing.";
 "transaction.form.section.details" = "Transaction";
 "transaction.form.section.payment" = "Payment";
 "transaction.form.description" = "Description";
@@ -51,6 +53,11 @@
 "transaction.form.error.allocation" = "Select an allocation.";
 "transaction.form.error.amount" = "Enter an amount greater than zero.";
 "transaction.form.error.save" = "The transaction could not be saved.";
+"transaction.form.error.delete" = "The transaction could not be deleted.";
+"transaction.form.delete" = "Delete Transaction";
+"transaction.form.delete.confirmation.title" = "Delete this transaction?";
+"transaction.form.delete.confirmation.message" = "This action cannot be undone.";
+"transaction.form.delete.confirmation.action" = "Delete";
 "payment.method.banking" = "Bank transfer";
 "payment.method.cash" = "Cash";
 "payment.method.card" = "Card";

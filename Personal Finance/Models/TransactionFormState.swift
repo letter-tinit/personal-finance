@@ -30,6 +30,17 @@ struct TransactionFormState: Equatable {
     var paymentMethod: PaymentMethod = .banking
     var note = ""
 
+    init() {}
+
+    init(transaction: BudgetTransaction) {
+        description = transaction.title
+        allocationID = transaction.allocationID
+        amountText = NSDecimalNumber(decimal: transaction.amount).stringValue
+        occurredAt = transaction.occurredAt
+        paymentMethod = transaction.paymentMethod
+        note = transaction.note
+    }
+
     func validatedInput() throws -> ValidatedTransactionInput {
         let trimmedDescription = description.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedDescription.isEmpty else {
