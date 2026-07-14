@@ -136,6 +136,8 @@ struct BudgetAllocationSummary: Hashable {
     let actualAmount: Decimal
     let remainingAmount: Decimal
     let status: BudgetAllocationStatus
+    let planRatio: Decimal
+    let actualRatio: Decimal
     let barProgress: Decimal
     let displayBarProgress: Double
 }
@@ -191,6 +193,14 @@ extension Budget {
         return remainingAmount(for: allocation) / allocation.targetAmount
     }
 
+    func actualRatio(for allocation: BudgetAllocation) -> Decimal {
+        guard income > 0 else {
+            return .zero
+        }
+
+        return actualAmount(for: allocation) / income
+    }
+
     func allocationSummary(for allocation: BudgetAllocation) -> BudgetAllocationSummary {
         let actualAmount = actualAmount(for: allocation)
         let remainingAmount = allocation.targetAmount - actualAmount
@@ -201,6 +211,8 @@ extension Budget {
             actualAmount: actualAmount,
             remainingAmount: remainingAmount,
             status: status(for: allocation),
+            planRatio: allocation.ratio,
+            actualRatio: actualRatio(for: allocation),
             barProgress: barProgress,
             displayBarProgress: min(max(barProgress.doubleValue, 0), 1)
         )

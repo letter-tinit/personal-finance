@@ -18,6 +18,8 @@
 "budget.metric.spent" = "Đã chi";
 "budget.metric.saved" = "Đã tiết kiệm";
 "budget.metric.remaining" = "Còn lại";
+"budget.metric.planRatio" = "Tỷ lệ kế hoạch";
+"budget.metric.actualRatio" = "Tỷ lệ thực tế";
 "budget.allocation.unknown" = "Không xác định phân bổ";
 "budget.list.empty" = "Chưa có ngân sách";
 "budget.view.mode" = "Chế độ xem ngân sách";

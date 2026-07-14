@@ -18,6 +18,8 @@
 "budget.metric.spent" = "Spent";
 "budget.metric.saved" = "Saved";
 "budget.metric.remaining" = "Remaining";
+"budget.metric.planRatio" = "Plan Ratio";
+"budget.metric.actualRatio" = "Actual Ratio";
 "budget.allocation.unknown" = "Unknown allocation";
 "budget.list.empty" = "No budgets yet";
 "budget.view.mode" = "Budget view";

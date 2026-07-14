@@ -144,8 +144,12 @@ struct BudgetAllocationView: View {
         allocation.kind.isSavingsLike
     }
     
-    private var barProgressText: String {
-        "\((summary.displayBarProgress * 100).ceiledToTwoDecimalPlaces)%"
+    private var planRatioText: String {
+        "\((summary.planRatio.doubleValue * 100).ceiledToTwoDecimalPlaces)%"
+    }
+
+    private var actualRatioText: String {
+        "\((summary.actualRatio.doubleValue * 100).ceiledToTwoDecimalPlaces)%"
     }
     
     private let topOffset: CGFloat = 20
@@ -164,6 +168,22 @@ struct BudgetAllocationView: View {
                     value: summary.actualAmount.formattedVND
                 )
             )
+
+            Divider()
+            
+            CommonRowView(
+                .init(
+                    title: "budget.metric.planRatio".localized,
+                    value: planRatioText
+                )
+            )
+
+            CommonRowView(
+                .init(
+                    title: "budget.metric.actualRatio".localized,
+                    value: actualRatioText
+                )
+            )
             
             Divider()
             
@@ -173,12 +193,7 @@ struct BudgetAllocationView: View {
                 
                 Spacer()
                 
-                VStack(alignment: .trailing, spacing: 4) {
-                    statusBadge
-
-                    Text(barProgressText)
-                        .customSubHeadline()
-                }
+                statusBadge
             }
             
             progressBar
