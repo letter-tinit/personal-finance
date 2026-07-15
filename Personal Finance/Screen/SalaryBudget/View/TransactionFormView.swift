@@ -220,9 +220,15 @@ extension PaymentMethod {
 }
 
 #Preview {
+    let budget = Budget.make(
+        periodStart: .now,
+        income: 16_020_850,
+        method: .fiftyThirtyTwenty
+    )
+
     NavigationStack {
         TransactionFormView(
-            allocations: Budget.mock.allocations,
+            allocations: budget.allocations,
             onSave: { _ in }
         )
     }

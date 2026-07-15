@@ -222,7 +222,7 @@ private extension FixedPlanView {
 #Preview {
     NavigationStack {
         FixedPlanView(
-            plans: Budget.mock.fixedExpensePlans
+            plans: []
         )
     }
 }

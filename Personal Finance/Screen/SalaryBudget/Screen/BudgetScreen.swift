@@ -15,10 +15,10 @@ struct BudgetScreen: View {
     @State private var transactionPendingDeletion: BudgetTransaction?
     @State private var isDeleteConfirmationPresented = false
     @State private var isDeleteErrorPresented = false
-    @State private var budget: Budget
+    @Binding private var budget: Budget
     
-    init(budget: Budget) {
-        _budget = State(initialValue: budget)
+    init(budget: Binding<Budget>) {
+        _budget = budget
     }
     
     private var transactionGroups: [TransactionGroup] {
@@ -608,6 +608,18 @@ extension BudgetScreen {
     }
 }
 
+private struct BudgetScreenPreview: View {
+    @State private var budget = Budget.make(
+        periodStart: .now,
+        income: 16_020_850,
+        method: .fiftyThirtyTwenty
+    )
+
+    var body: some View {
+        BudgetScreen(budget: $budget)
+    }
+}
+
 #Preview {
-    BudgetScreen(budget: .mock)
+    BudgetScreenPreview()
 }

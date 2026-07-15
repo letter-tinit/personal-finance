@@ -9,8 +9,7 @@ import SwiftUI
 import Observation
 
 enum BudgetRoute: Hashable {
-    case fiftyThirtyTwenty
-    case sixJars
+    case budget(UUID)
 }
 
 @Observable
