@@ -11,6 +11,7 @@ struct TransactionFormView: View {
     @Environment(\.dismiss) private var dismiss
 
     let allocations: [BudgetAllocation]
+    let showsAllocationPicker: Bool
     let titleKey: String
     let onSave: (ValidatedTransactionInput) throws -> Void
     let onDelete: (() throws -> Void)?
@@ -22,6 +23,7 @@ struct TransactionFormView: View {
 
     init(
         allocations: [BudgetAllocation],
+        showsAllocationPicker: Bool = true,
         initialState: TransactionFormState = TransactionFormState(),
         titleKey: String = "transaction.form.title",
         onSave: @escaping (ValidatedTransactionInput) throws -> Void,
@@ -33,6 +35,7 @@ struct TransactionFormView: View {
         )
 
         self.allocations = allocations
+        self.showsAllocationPicker = showsAllocationPicker
         self.titleKey = titleKey
         self.onSave = onSave
         self.onDelete = onDelete
@@ -48,19 +51,21 @@ struct TransactionFormView: View {
                 )
                 .focused($focusedField, equals: .description)
 
-                Picker(
-                    "transaction.form.allocation".localized,
-                    selection: $formState.allocationID
-                ) {
-                    Text("transaction.form.allocation.placeholder".localized)
-                        .tag(nil as UUID?)
+                if showsAllocationPicker {
+                    Picker(
+                        "transaction.form.allocation".localized,
+                        selection: $formState.allocationID
+                    ) {
+                        Text("transaction.form.allocation.placeholder".localized)
+                            .tag(nil as UUID?)
 
-                    ForEach(allocations) { allocation in
-                        Label(
-                            allocation.kind.localizationKey.localized,
-                            systemImage: allocation.kind.systemImageName
-                        )
-                        .tag(allocation.id as UUID?)
+                        ForEach(allocations) { allocation in
+                            Label(
+                                allocation.kind.localizationKey.localized,
+                                systemImage: allocation.kind.systemImageName
+                            )
+                            .tag(allocation.id as UUID?)
+                        }
                     }
                 }
 

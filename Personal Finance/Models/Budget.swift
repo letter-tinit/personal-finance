@@ -13,6 +13,10 @@ enum BudgetError: Error {
     case allocationNotFound
     case allocationBelongsToAnotherBudget
     case transactionNotFound
+    case fixedExpensePlanNotFound
+    case fixedExpensePlanAlreadyCompleted
+    case invalidFixedExpensePlanAmount
+    case unsupportedFixedExpensePlanAllocation
 }
 
 struct Budget: Identifiable, Hashable {
@@ -40,6 +44,9 @@ struct Budget: Identifiable, Hashable {
         let allocationIDs = Set(allocations.map(\.id))
         let allocationsByID = Dictionary(
             uniqueKeysWithValues: allocations.map { ($0.id, $0) }
+        )
+        let transactionsByID = Dictionary(
+            uniqueKeysWithValues: transactions.map { ($0.id, $0) }
         )
 
         precondition(
@@ -69,6 +76,18 @@ struct Budget: Identifiable, Hashable {
                 allocationsByID[$0.allocationID]?.expectedTransactionType == $0.type
             },
             "Every transaction type must match its allocation."
+        )
+        precondition(
+            fixedExpensePlans.allSatisfy { plan in
+                guard let transactionID = plan.transactionID,
+                      let transaction = transactionsByID[transactionID] else {
+                    return plan.transactionID == nil
+                }
+
+                return transaction.budgetID == id
+                    && transaction.allocationID == plan.allocationID
+            },
+            "Every completed fixed expense plan must reference its transaction."
         )
 
         self.id = id
@@ -111,25 +130,36 @@ extension BudgetAllocation {
     }
 }
 
+enum FixedExpensePlanAmountType: String, CaseIterable, Hashable, Codable {
+    case fixed
+    case estimated
+}
+
 struct FixedExpensePlan: Identifiable, Hashable {
     let id: UUID
     let budgetID: UUID
     let allocationID: UUID
     private(set) var name: String
     private(set) var amount: Decimal
+    private(set) var amountType: FixedExpensePlanAmountType
+    private(set) var transactionID: UUID?
 
     init(
         id: UUID = UUID(),
         budgetID: UUID,
         allocationID: UUID,
         name: String,
-        amount: Decimal
+        amount: Decimal,
+        amountType: FixedExpensePlanAmountType = .estimated,
+        transactionID: UUID? = nil
     ) {
         self.id = id
         self.budgetID = budgetID
         self.allocationID = allocationID
         self.name = name
         self.amount = amount
+        self.amountType = amountType
+        self.transactionID = transactionID
     }
 }
 
@@ -143,19 +173,22 @@ extension FixedExpensePlan {
                 budgetID: budgetID,
                 allocationID: allocationID,
                 name: "Rent",
-                amount: 3_213_000
+                amount: 3_213_000,
+                amountType: .fixed
             ),
             FixedExpensePlan(
                 budgetID: budgetID,
                 allocationID: allocationID,
                 name: "Codex Renewal",
-                amount: .zero
+                amount: .zero,
+                amountType: .fixed
             ),
             FixedExpensePlan(
                 budgetID: budgetID,
                 allocationID: allocationID,
                 name: "YouTube Premium",
-                amount: 195_000
+                amount: 195_000,
+                amountType: .fixed
             ),
             FixedExpensePlan(
                 budgetID: budgetID,
@@ -197,7 +230,8 @@ extension FixedExpensePlan {
                 budgetID: budgetID,
                 allocationID: allocationID,
                 name: "iOS Team Fund",
-                amount: 100_000
+                amount: 100_000,
+                amountType: .fixed
             ),
             FixedExpensePlan(
                 budgetID: budgetID,
@@ -446,6 +480,20 @@ extension Budget {
             amount: amount,
             paymentMethod: paymentMethod
         )
+
+        if let linkedPlanIndex = fixedExpensePlans.firstIndex(
+            where: { $0.transactionID == transactionID }
+        ), fixedExpensePlans[linkedPlanIndex].allocationID != allocationID {
+            let linkedPlan = fixedExpensePlans[linkedPlanIndex]
+            fixedExpensePlans[linkedPlanIndex] = FixedExpensePlan(
+                id: linkedPlan.id,
+                budgetID: linkedPlan.budgetID,
+                allocationID: linkedPlan.allocationID,
+                name: linkedPlan.name,
+                amount: linkedPlan.amount,
+                amountType: linkedPlan.amountType
+            )
+        }
     }
 
     mutating func deleteTransaction(id transactionID: UUID) throws {
@@ -456,6 +504,153 @@ extension Budget {
         }
 
         transactions.remove(at: transactionIndex)
+
+        if let linkedPlanIndex = fixedExpensePlans.firstIndex(
+            where: { $0.transactionID == transactionID }
+        ) {
+            let linkedPlan = fixedExpensePlans[linkedPlanIndex]
+            fixedExpensePlans[linkedPlanIndex] = FixedExpensePlan(
+                id: linkedPlan.id,
+                budgetID: linkedPlan.budgetID,
+                allocationID: linkedPlan.allocationID,
+                name: linkedPlan.name,
+                amount: linkedPlan.amount,
+                amountType: linkedPlan.amountType
+            )
+        }
+    }
+
+    mutating func addFixedExpensePlan(
+        allocationID: UUID,
+        name: String,
+        amount: Decimal,
+        amountType: FixedExpensePlanAmountType
+    ) throws {
+        let allocation = try fixedExpensePlanAllocation(id: allocationID)
+        guard amount >= 0 else {
+            throw BudgetError.invalidFixedExpensePlanAmount
+        }
+
+        fixedExpensePlans.append(
+            FixedExpensePlan(
+                budgetID: id,
+                allocationID: allocation.id,
+                name: name,
+                amount: amount,
+                amountType: amountType
+            )
+        )
+    }
+
+    mutating func updateFixedExpensePlan(
+        id planID: UUID,
+        name: String,
+        amount: Decimal,
+        amountType: FixedExpensePlanAmountType
+    ) throws {
+        guard let planIndex = fixedExpensePlans.firstIndex(
+            where: { $0.id == planID }
+        ) else {
+            throw BudgetError.fixedExpensePlanNotFound
+        }
+
+        guard amount >= 0 else {
+            throw BudgetError.invalidFixedExpensePlanAmount
+        }
+
+        let currentPlan = fixedExpensePlans[planIndex]
+        _ = try fixedExpensePlanAllocation(id: currentPlan.allocationID)
+
+        fixedExpensePlans[planIndex] = FixedExpensePlan(
+            id: planID,
+            budgetID: id,
+            allocationID: currentPlan.allocationID,
+            name: name,
+            amount: amount,
+            amountType: amountType,
+            transactionID: currentPlan.transactionID
+        )
+    }
+
+    mutating func completeFixedExpensePlan(
+        id planID: UUID,
+        title: String,
+        note: String = "",
+        occurredAt: Date,
+        amount: Decimal,
+        paymentMethod: PaymentMethod
+    ) throws {
+        guard amount > 0 else {
+            throw BudgetError.invalidAmount
+        }
+
+        guard let planIndex = fixedExpensePlans.firstIndex(
+            where: { $0.id == planID }
+        ) else {
+            throw BudgetError.fixedExpensePlanNotFound
+        }
+
+        let plan = fixedExpensePlans[planIndex]
+        guard plan.transactionID == nil else {
+            throw BudgetError.fixedExpensePlanAlreadyCompleted
+        }
+
+        let allocation = try fixedExpensePlanAllocation(id: plan.allocationID)
+        let transactionID = UUID()
+
+        transactions.append(
+            BudgetTransaction(
+                id: transactionID,
+                budgetID: id,
+                allocationID: allocation.id,
+                type: allocation.expectedTransactionType,
+                title: title,
+                note: note,
+                occurredAt: occurredAt,
+                amount: amount,
+                paymentMethod: paymentMethod
+            )
+        )
+
+        fixedExpensePlans[planIndex] = FixedExpensePlan(
+            id: plan.id,
+            budgetID: plan.budgetID,
+            allocationID: plan.allocationID,
+            name: plan.name,
+            amount: plan.amount,
+            amountType: plan.amountType,
+            transactionID: transactionID
+        )
+    }
+
+    mutating func deleteFixedExpensePlan(id planID: UUID) throws {
+        guard let planIndex = fixedExpensePlans.firstIndex(
+            where: { $0.id == planID }
+        ) else {
+            throw BudgetError.fixedExpensePlanNotFound
+        }
+
+        fixedExpensePlans.remove(at: planIndex)
+    }
+
+    private func fixedExpensePlanAllocation(
+        id allocationID: UUID
+    ) throws -> BudgetAllocation {
+        guard let allocation = allocations.first(
+            where: { $0.id == allocationID }
+        ) else {
+            throw BudgetError.allocationNotFound
+        }
+
+        guard allocation.budgetID == id else {
+            throw BudgetError.allocationBelongsToAnotherBudget
+        }
+
+        guard allocation.kind.supportsFixedExpensePlan else {
+            throw BudgetError.unsupportedFixedExpensePlanAllocation
+        }
+
+        return allocation
     }
 }
 

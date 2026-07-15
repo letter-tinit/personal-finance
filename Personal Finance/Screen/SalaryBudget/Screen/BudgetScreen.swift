@@ -12,6 +12,9 @@ struct BudgetScreen: View {
     @State private var isFixedPlanPresented = false
     @State private var isTransactionFormPresented = false
     @State private var selectedTransaction: BudgetTransaction?
+    @State private var transactionPendingDeletion: BudgetTransaction?
+    @State private var isDeleteConfirmationPresented = false
+    @State private var isDeleteErrorPresented = false
     @State private var budget: Budget
     
     init(budget: Budget) {
@@ -34,6 +37,10 @@ struct BudgetScreen: View {
             }
             .sorted { $0.date > $1.date }
     }
+
+    private var essentialAllocation: BudgetAllocation? {
+        budget.allocations.first { $0.kind.supportsFixedExpensePlan }
+    }
     
     var body: some View {
         BaseScreen {
@@ -49,49 +56,20 @@ struct BudgetScreen: View {
                 .labelsHidden()
                 .padding(.top)
                 
-                AppScrollView(.vertical) {
-                    if segmentOption == .overview {
+                if segmentOption == .overview {
+                    AppScrollView(.vertical) {
                         VStack {
                             ForEach(budget.allocations) { allocation in
                                 BudgetAllocationView(
                                     summary: budget.allocationSummary(for: allocation)
                                 )
                             }
-                        } // OVERVIEW STACK
-                    } else {
-                        if budget.transactions.isEmpty {
-                            Text("budget.transactions.empty".localized)
-                                .secondarySubHeadline()
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 32)
-                        } else {
-                            LazyVStack(alignment: .leading, spacing: 16) {
-                                ForEach(transactionGroups) { group in
-                                    Text(group.date.toString(withFormat: .dayNameWithNo))
-                                        .customSubTitle()
-                                    
-                                    ForEach(group.transactions) { transaction in
-                                        Button {
-                                            selectedTransaction = transaction
-                                        } label: {
-                                            BudgetTransactionRow(
-                                                transaction: transaction,
-                                                allocation: budget.allocation(for: transaction)
-                                            )
-                                        }
-                                        .buttonStyle(.plain)
-                                        .accessibilityHint(
-                                            "transaction.edit.accessibilityHint".localized
-                                        )
-                                    }
-                                }
-                            }
                         }
-                    } // TRANSACTION STACK
-                    
-                    Spacer()
+                    }
+                    .padding(.top)
+                } else {
+                    transactionList
                 }
-                .padding(.top)
             }
             .padding()
             .navigationTitle(budget.name)
@@ -99,10 +77,15 @@ struct BudgetScreen: View {
         .sheet(isPresented: $isFixedPlanPresented) {
             NavigationStack {
                 FixedPlanView(
-                    plans: budget.fixedExpensePlans
+                    plans: budget.fixedExpensePlans,
+                    onAdd: addFixedExpensePlan,
+                    onUpdate: updateFixedExpensePlan,
+                    onDelete: { planID in
+                        try budget.deleteFixedExpensePlan(id: planID)
+                    },
+                    onComplete: completeFixedExpensePlan
                 )
             }
-            .presentationDetents([.medium])
         }
         .sheet(isPresented: $isTransactionFormPresented) {
             NavigationStack {
@@ -132,6 +115,30 @@ struct BudgetScreen: View {
                 )
             }
         }
+        .confirmationDialog(
+            "transaction.form.delete.confirmation.title".localized,
+            isPresented: $isDeleteConfirmationPresented,
+            titleVisibility: .visible
+        ) {
+            Button(
+                "transaction.form.delete.confirmation.action".localized,
+                role: .destructive
+            ) {
+                deletePendingTransaction()
+            }
+
+            Button("common.cancel".localized, role: .cancel) {
+                transactionPendingDeletion = nil
+            }
+        } message: {
+            Text("transaction.form.delete.confirmation.message".localized)
+        }
+        .alert(
+            "transaction.form.error.delete".localized,
+            isPresented: $isDeleteErrorPresented
+        ) {
+            Button("common.ok".localized, role: .cancel) {}
+        }
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 Button {
@@ -153,6 +160,95 @@ struct BudgetScreen: View {
 }
 
 private extension BudgetScreen {
+    func addFixedExpensePlan(
+        _ input: ValidatedFixedExpensePlanInput
+    ) throws {
+        guard let essentialAllocation else {
+            throw BudgetError.allocationNotFound
+        }
+
+        try budget.addFixedExpensePlan(
+            allocationID: essentialAllocation.id,
+            name: input.name,
+            amount: input.amount,
+            amountType: input.amountType
+        )
+    }
+
+    func updateFixedExpensePlan(
+        planID: UUID,
+        input: ValidatedFixedExpensePlanInput
+    ) throws {
+        try budget.updateFixedExpensePlan(
+            id: planID,
+            name: input.name,
+            amount: input.amount,
+            amountType: input.amountType
+        )
+    }
+
+    func completeFixedExpensePlan(
+        planID: UUID,
+        input: ValidatedTransactionInput
+    ) throws {
+        try budget.completeFixedExpensePlan(
+            id: planID,
+            title: input.description,
+            note: input.note,
+            occurredAt: input.occurredAt,
+            amount: input.amount,
+            paymentMethod: input.paymentMethod
+        )
+    }
+
+    @ViewBuilder
+    var transactionList: some View {
+        if budget.transactions.isEmpty {
+            ContentUnavailableView(
+                "budget.transactions.empty".localized,
+                systemImage: "list.bullet.rectangle"
+            )
+        } else {
+            List {
+                ForEach(transactionGroups) { group in
+                    Section {
+                        ForEach(group.transactions) { transaction in
+                            Button {
+                                selectedTransaction = transaction
+                            } label: {
+                                BudgetTransactionRow(
+                                    transaction: transaction,
+                                    allocation: budget.allocation(for: transaction)
+                                )
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityHint(
+                                "transaction.edit.accessibilityHint".localized
+                            )
+                            .swipeActions(edge: .trailing) {
+                                Button {
+                                    transactionPendingDeletion = transaction
+                                    isDeleteConfirmationPresented = true
+                                } label: {
+                                    Label(
+                                        "transaction.form.delete.confirmation.action".localized,
+                                        systemImage: "trash"
+                                    )
+                                }
+                                .tint(Color.Common.failure)
+                            }
+                        }
+                    } header: {
+                        Text(group.date.toString(withFormat: .dayNameWithNo))
+                    }
+                }
+            }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .padding(.horizontal, -16)
+        }
+    }
+
     func addTransaction(_ input: ValidatedTransactionInput) throws {
         guard let allocation = budget.allocations.first(
             where: { $0.id == input.allocationID }
@@ -184,6 +280,20 @@ private extension BudgetScreen {
             amount: input.amount,
             paymentMethod: input.paymentMethod
         )
+    }
+
+    func deletePendingTransaction() {
+        guard let transactionPendingDeletion else {
+            return
+        }
+
+        do {
+            try budget.deleteTransaction(id: transactionPendingDeletion.id)
+            self.transactionPendingDeletion = nil
+        } catch {
+            self.transactionPendingDeletion = nil
+            isDeleteErrorPresented = true
+        }
     }
 }
 
@@ -467,7 +577,6 @@ struct BudgetTransactionRow: View {
                     .secondarySubHeadline()
             }
             
-            Divider()
         }
         .frame(maxWidth: .infinity)
     }

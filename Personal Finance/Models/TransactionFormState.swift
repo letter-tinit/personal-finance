@@ -41,6 +41,13 @@ struct TransactionFormState: Equatable {
         note = transaction.note
     }
 
+    init(fixedExpensePlan: FixedExpensePlan, occurredAt: Date = .now) {
+        description = fixedExpensePlan.name
+        allocationID = fixedExpensePlan.allocationID
+        amountText = NSDecimalNumber(decimal: fixedExpensePlan.amount).stringValue
+        self.occurredAt = occurredAt
+    }
+
     func validatedInput() throws -> ValidatedTransactionInput {
         let trimmedDescription = description.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedDescription.isEmpty else {
