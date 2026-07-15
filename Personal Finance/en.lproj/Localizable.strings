@@ -26,6 +26,9 @@
 "budget.list.empty.description" = "Create this month's budget to start tracking income, transactions, and essential expenses.";
 "budget.detail.missing" = "Budget not found";
 "budget.view.mode" = "Budget view";
+"networth.tab.title" = "Net Worth";
+"networth.empty.title" = "Net Worth";
+"networth.empty.description" = "This tab is ready for asset and liability tracking.";
 "budget.create.title" = "Create Budget";
 "budget.create.action" = "Create";
 "budget.create.section.setup" = "Budget setup";

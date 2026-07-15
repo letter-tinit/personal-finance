@@ -25,7 +25,7 @@ struct BudgetListScreen: View {
             first.periodStart < second.periodStart
         }
     }
-    
+
     var body: some View {
         AppNavigationStack(path: $budgetRouter.path) {
             Group {
@@ -99,7 +99,6 @@ struct BudgetListScreen: View {
 
                 saveBudgets()
             }
-            
         } destination: { route in
             switch route {
             case .budget(let budgetID):
@@ -113,7 +112,6 @@ struct BudgetListScreen: View {
                 }
             }
         }
-        
     }
 }
 

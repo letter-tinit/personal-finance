@@ -11,7 +11,7 @@ import SwiftUI
 struct Personal_FinanceApp: App {
     var body: some Scene {
         WindowGroup {
-            BudgetListScreen()
+            MainTabScreen()
         }
     }
 }

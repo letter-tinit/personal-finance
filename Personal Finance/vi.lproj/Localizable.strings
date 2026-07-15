@@ -26,6 +26,9 @@
 "budget.list.empty.description" = "Tạo ngân sách tháng này để bắt đầu theo dõi thu nhập, giao dịch và chi thiết yếu.";
 "budget.detail.missing" = "Không tìm thấy ngân sách";
 "budget.view.mode" = "Chế độ xem ngân sách";
+"networth.tab.title" = "Tài sản ròng";
+"networth.empty.title" = "Tài sản ròng";
+"networth.empty.description" = "Tab này sẵn sàng cho việc theo dõi tài sản và nợ phải trả.";
 "budget.create.title" = "Tạo ngân sách";
 "budget.create.action" = "Tạo";
 "budget.create.section.setup" = "Thiết lập ngân sách";
