@@ -6,7 +6,7 @@
   
 */
 
-"salary.budget" = "Ngân sách lương";
+"salary.budget" = "Ngân sách";
 "monthly.salary" = "Lương tháng";
 "salary.input.placeholder" = "Thu nhập";
 "budget.method" = "Phương pháp lập ngân sách";
@@ -94,7 +94,7 @@
 "budget.create.title" = "Tạo ngân sách";
 "budget.create.action" = "Tạo";
 "budget.create.section.setup" = "Thiết lập ngân sách";
-"budget.create.section.preview" = "Xem trước phân bổ";
+"budget.create.section.preview" = "Tỉ lệ phân bổ";
 "budget.create.month" = "Tháng ngân sách";
 "budget.create.income" = "Thu nhập tháng";
 "budget.create.method" = "Phương pháp ngân sách";

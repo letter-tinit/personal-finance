@@ -15,7 +15,6 @@ struct BudgetListScreen: View {
     @State private var hasLoadedBudgets = false
 
     private let budgetStore: BudgetStore?
-
     init(budgetStore: BudgetStore? = try? BudgetStore()) {
         self.budgetStore = budgetStore
     }
@@ -46,14 +45,19 @@ struct BudgetListScreen: View {
                         }
                     }
                 } else {
-                    List {
-                        ForEach(budgets.sorted { $0.periodStart > $1.periodStart }) { budget in
-                            Button {
-                                budgetRouter.push(.budget(budget.id))
-                            } label: {
-                                BudgetListRow(budget: budget)
+                    List(sortedBudgetGroupByYear()) { section in
+                        Section(String(describing: section.year)) {
+                            ForEach(section.budgets, id: \.self) { budget in
+                                Button {
+                                    budgetRouter.push(.budget(budget.id))
+                                } label: {
+                                    BudgetListRow(budget: budget)
+                                }
+                                .buttonStyle(.plain)
                             }
-                            .buttonStyle(.plain)
+                            .onDelete { indexSet in
+                                deleteBudget(offset: indexSet, section: section)
+                            }
                         }
                     }
                     .listStyle(.plain)
@@ -162,6 +166,38 @@ private extension BudgetListScreen {
         } catch {
             errorMessage = "budget.storage.error.save".localized
         }
+    }
+    
+    private func deleteBudget(offset: IndexSet, section: BudgetYearSection) {
+        let idsToDelete = offset.map { index in
+            section.budgets[index].id
+        }
+        
+        budgets.removeAll { budget in
+            idsToDelete.contains(budget.id)
+        }
+    }
+    
+    private func sortedBudgetGroupByYear() -> [BudgetYearSection] {
+        let grouped = Dictionary(grouping: budgets) { budget in
+            Calendar.current.component(.year, from: budget.periodStart)
+        }
+        
+        return grouped
+            .map { year, budgets in
+                BudgetYearSection(
+                    year: year,
+                    budgets: budgets.sorted(by: { $0.periodStart > $1.periodStart })
+                )
+            }
+            .sorted { $0.year > $1.year }
+    }
+    
+    struct BudgetYearSection: Identifiable, Hashable {
+        let year: Int
+        let budgets: [Budget]
+
+        var id: Int { year }
     }
 }
 

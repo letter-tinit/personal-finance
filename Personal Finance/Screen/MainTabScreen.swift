@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MainTabScreen: View {
     @AppStorage(AppLanguage.preferenceKey) private var languageCode = AppLanguage.system.rawValue
-    @State private var selectedTab: AppTab = .netWorth
+    @State private var selectedTab: AppTab = .budget
 
     private var selectedLanguage: AppLanguage {
         AppLanguage(rawValue: languageCode) ?? .system

@@ -17,6 +17,7 @@ struct CreateBudgetView: View {
     @State private var formState: CreateBudgetFormState
     @State private var errorMessage: String?
     @FocusState private var focusedField: Field?
+    @State private var showPicker = false
 
     init(
         existingBudgets: [Budget],
@@ -36,11 +37,12 @@ struct CreateBudgetView: View {
     var body: some View {
         Form {
             Section {
-                DatePicker(
-                    "budget.create.month".localized,
-                    selection: $formState.periodStart,
-                    displayedComponents: .date
-                )
+                Button {
+                    showPicker = true
+                } label: {
+                    Text(formState.periodStart.toString(withFormat: .monthAndYear).capitalizingFirstLetter)
+                        .customHeadline()
+                }
 
                 TextField(
                     "budget.create.income".localized,
@@ -115,6 +117,12 @@ struct CreateBudgetView: View {
         .navigationTitle("budget.create.title".localized)
         .navigationBarTitleDisplayMode(.inline)
         .scrollDismissesKeyboard(.interactively)
+        .sheet(isPresented: $showPicker) {
+            let currentYear = Calendar.current.component(.year, from: .now)
+            let yearRange = (currentYear - 100)...(currentYear + 100)
+            MonthYearPickerSheet(selectedDate: $formState.periodStart, yearRange: yearRange)
+                .presentationDetents([.medium])
+        }
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button("common.cancel".localized) {

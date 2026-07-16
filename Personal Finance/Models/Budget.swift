@@ -22,7 +22,6 @@ enum BudgetError: Error {
 
 struct Budget: Identifiable, Hashable, Codable {
     let id: UUID
-    private(set) var name: String
     private(set) var periodStart: Date
     private(set) var income: Decimal
     private(set) var method: BudgetMethod
@@ -33,7 +32,6 @@ struct Budget: Identifiable, Hashable, Codable {
 
     init(
         id: UUID = UUID(),
-        name: String,
         periodStart: Date,
         income: Decimal,
         method: BudgetMethod,
@@ -92,7 +90,6 @@ struct Budget: Identifiable, Hashable, Codable {
         )
 
         self.id = id
-        self.name = name
         self.periodStart = periodStart
         self.income = income
         self.method = method
@@ -231,6 +228,10 @@ struct BudgetAllocationSummary: Hashable {
 }
 
 extension Budget {
+    var name: String {
+        Calendar.current.startOfMonth(for: periodStart).toString(withFormat: .month).capitalizingFirstLetter
+    }
+    
     static func make(
         periodStart: Date,
         income: Decimal,
@@ -250,7 +251,6 @@ extension Budget {
 
         return Budget(
             id: budgetID,
-            name: monthStart.toString(withFormat: .monthAndYear),
             periodStart: monthStart,
             income: income,
             method: method,

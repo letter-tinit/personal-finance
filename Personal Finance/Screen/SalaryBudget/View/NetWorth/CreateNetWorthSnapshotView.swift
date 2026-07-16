@@ -88,14 +88,3 @@ private extension CreateNetWorthSnapshotView {
         }
     }
 }
-
-//#Preview {
-//    NavigationStack {
-//        CreateNetWorthSnapshotView(
-//            existingSnapshots: [.july2026],
-//            year: 2026,
-//            suggestedMonth: Calendar.current.nextMonth(after: .july2026.asOfDate),
-//            onCreate: { _ in }
-//        )
-//    }
-//}

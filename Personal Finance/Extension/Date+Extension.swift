@@ -14,6 +14,7 @@ enum DateFormat {
     case dayNo // 26 (Number of day only)
     case dayNameWithNo // Tue, 26 (combine of day number and day name)
     case monthAndYear // July 2026
+    case month
     case custom(String) // Passing date format throught string
     
     var value: String {
@@ -30,6 +31,8 @@ enum DateFormat {
             "EEE, d"
         case .monthAndYear:
             "MMMM yyyy"
+        case .month:
+            "MMMM"
         case .custom(let value):
             value
         }
@@ -42,8 +45,10 @@ extension Date {
     }
     
     func toString(withFormat dateFormat: DateFormat) -> String {
+        let appLanguage = AppLanguage.selected
         let formatter = DateFormatter()
         formatter.dateFormat = dateFormat.value
+        formatter.locale = appLanguage.locale
         return formatter.string(from: self)
     }
     
@@ -53,20 +58,5 @@ extension Date {
 
     func isFutureDay() -> Bool {
         Calendar.current.startOfDay(for: self) > Calendar.current.startOfDay(for: Date())
-    }
-}
-
-extension Calendar {
-    func startOfMonth(for date: Date) -> Date {
-        let components = dateComponents([.year, .month], from: date)
-        return self.date(from: components) ?? startOfDay(for: date)
-    }
-
-    func nextMonth(after date: Date) -> Date {
-        self.date(
-            byAdding: .month,
-            value: 1,
-            to: startOfMonth(for: date)
-        ) ?? startOfMonth(for: date)
     }
 }

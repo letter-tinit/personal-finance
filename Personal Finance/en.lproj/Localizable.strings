@@ -94,7 +94,7 @@
 "budget.create.title" = "Create Budget";
 "budget.create.action" = "Create";
 "budget.create.section.setup" = "Budget setup";
-"budget.create.section.preview" = "Allocation preview";
+"budget.create.section.preview" = "Allocation";
 "budget.create.month" = "Budget month";
 "budget.create.income" = "Monthly income";
 "budget.create.method" = "Budget method";

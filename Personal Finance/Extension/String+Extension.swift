@@ -21,6 +21,10 @@ extension String {
         return NSLocalizedString(self, comment: "")
     }
     
+    var capitalizingFirstLetter: String {
+        prefix(1).uppercased() + dropFirst()
+    }
+    
     func toDecimal() -> Decimal {
         Decimal(string: self) ?? 0
     }
