@@ -17,21 +17,27 @@ struct MainTabScreen: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
+            BalanceScreen()
+                .tabItem {
+                    Label(AppTab.balance.name.localized, systemImage: AppTab.balance.icon)
+                }
+                .tag(AppTab.balance)
+            
             NetWorthListScreen()
                 .tabItem {
-                    Label("networth.tab.title".localized, systemImage: "chart.bar.xaxis")
+                    Label(AppTab.netWorth.name.localized, systemImage: AppTab.netWorth.icon)
                 }
                 .tag(AppTab.netWorth)
             
             BudgetListScreen()
                 .tabItem {
-                    Label("salary.budget".localized, systemImage: "wallet.bifold")
+                    Label(AppTab.budget.name.localized, systemImage: AppTab.budget.icon)
                 }
                 .tag(AppTab.budget)
 
             ProfileScreen()
                 .tabItem {
-                    Label("profile.tab.title".localized, systemImage: "person.crop.circle")
+                    Label(AppTab.budget.name.localized, systemImage: AppTab.budget.icon)
                 }
                 .tag(AppTab.profile)
         }
@@ -42,9 +48,36 @@ struct MainTabScreen: View {
 }
 
 private enum AppTab: Hashable {
+    case balance
     case netWorth
     case budget
     case profile
+    
+    var name: String {
+        switch self {
+        case .balance:
+            "balance"
+        case .netWorth:
+            "networth.tab.title"
+        case .budget:
+            "salary.budget"
+        case .profile:
+            "profile.tab.title"
+        }
+    }
+    
+    var icon: String {
+        switch self {
+        case .balance:
+            "banknote"
+        case .netWorth:
+            "chart.bar.xaxis"
+        case .budget:
+            "wallet.bifold"
+        case .profile:
+            "person.crop.circle"
+        }
+    }
 }
 
 #Preview {

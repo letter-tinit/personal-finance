@@ -123,8 +123,8 @@ struct BudgetAllocation: Identifiable, Hashable, Codable {
 }
 
 extension BudgetAllocation {
-    var expectedTransactionType: BudgetTransactionType {
-        kind.isSavingsLike ? .contribution : .expense
+    var expectedTransactionType: TransactionType {
+        kind.isSavingsLike ? .income : .expense
     }
 }
 
@@ -165,7 +165,7 @@ struct BudgetTransaction: Identifiable, Hashable, Codable {
     let id: UUID
     let budgetID: UUID
     let allocationID: UUID
-    let type: BudgetTransactionType
+    let type: TransactionType
     private(set) var title: String
     private(set) var note: String
     private(set) var occurredAt: Date
@@ -176,7 +176,7 @@ struct BudgetTransaction: Identifiable, Hashable, Codable {
         id: UUID = UUID(),
         budgetID: UUID,
         allocationID: UUID,
-        type: BudgetTransactionType = .expense,
+        type: TransactionType = .expense,
         title: String,
         note: String = "",
         occurredAt: Date = .now,
@@ -201,9 +201,18 @@ enum PaymentMethod: String, CaseIterable, Hashable, Codable {
     case card
 }
 
-enum BudgetTransactionType: String, CaseIterable, Hashable, Codable {
+enum TransactionType: String, CaseIterable, Hashable, Codable {
     case expense
-    case contribution
+    case income
+    
+    var icon: String {
+        switch self {
+        case .expense:
+            "arrow.down"
+        case .income:
+            "arrow.up"
+        }
+    }
 }
 
 enum BudgetAllocationStatus: Hashable {
@@ -361,7 +370,7 @@ extension Budget {
 
     mutating func addTransaction(
         allocationID: UUID,
-        type: BudgetTransactionType,
+        type: TransactionType,
         title: String,
         note: String = "",
         occurredAt: Date = .now,

@@ -165,6 +165,7 @@
 "common.cancel" = "Cancel";
 "common.save" = "Save";
 "common.ok" = "OK";
+"common.delete" = "Delete";
 "keyboard.done" = "Done";
 "budget.method.fiftyThirtyTwenty" = "50/30/20";
 "budget.method.sixJars" = "6 Jars";
@@ -177,3 +178,8 @@
 "bucket.longTermSavings" = "Long-term Savings";
 "bucket.play" = "Play";
 "bucket.give" = "Give";
+"balance" = "balance";
+"balance.status.positive" = "Positive";
+"balance.status.negative" = "Negative";
+"balance.status.balanced" = "Balanced";
+

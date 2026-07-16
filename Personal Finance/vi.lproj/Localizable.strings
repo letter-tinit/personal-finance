@@ -165,6 +165,7 @@
 "common.cancel" = "Hủy";
 "common.save" = "Lưu";
 "common.ok" = "OK";
+"common.delete" = "Xoá";
 "keyboard.done" = "Xong";
 "budget.method.fiftyThirtyTwenty" = "50/30/20";
 "budget.method.sixJars" = "6 chiếc lọ";
@@ -177,3 +178,7 @@
 "bucket.longTermSavings" = "Tiết kiệm dài hạn";
 "bucket.play" = "Hưởng thụ";
 "bucket.give" = "Cho đi";
+"balance" = "Số dư";
+"balance.status.positive" = "Tốt";
+"balance.status.negative" = "Cảnh báo";
+"balance.status.balanced" = "Ổn";

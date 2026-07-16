@@ -1,5 +1,5 @@
 //
-//  BudgetBucketKind+Style.swift
+//  Enum+Style.swift
 //  Personal Finance
 //
 //  Created by TiniT on 10/7/26.
@@ -55,6 +55,45 @@ extension BudgetBucketKind {
             return "gift.fill"
         case .custom:
             return "circle.grid.2x2.fill"
+        }
+    }
+}
+
+extension Balance {
+    var color: Color {
+        switch status {
+        case .positive:
+            return Color.Common.success
+        case .negative:
+            return Color.Common.failure
+        case .balanced:
+            return Color.Common.surface
+        }
+    }
+}
+
+extension TransactionType {
+    var color: Color {
+        switch self {
+        case .expense:
+            return Color.Common.failure
+        case .income:
+            return Color.Common.success
+        }
+    }
+}
+
+extension PaymentMethod {
+    var color: Color {
+        switch self {
+        case .banking:
+            return .blue
+            
+        case .cash:
+            return .green
+            
+        case .card:
+            return .indigo
         }
     }
 }

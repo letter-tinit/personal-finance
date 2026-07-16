@@ -532,12 +532,12 @@ struct BudgetTransactionRow: View {
     let allocation: BudgetAllocation?
     
     private var formattedAmount: String {
-        let sign = transaction.type == .contribution ? "+" : "-"
+        let sign = transaction.type == .income ? "+" : "-"
         return sign + transaction.amount.formattedVND
     }
     
     private var amountColor: Color {
-        transaction.type == .contribution
+        transaction.type == .income
         ? Color.Common.success
         : Color.Common.failure
     }
