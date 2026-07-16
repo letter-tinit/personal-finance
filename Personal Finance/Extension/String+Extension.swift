@@ -14,6 +14,10 @@ extension String {
     ///
     /// - returns: localized key or same text
     var localized: String {
+        if let bundle = AppLanguage.selected.bundle {
+            return NSLocalizedString(self, bundle: bundle, comment: "")
+        }
+
         return NSLocalizedString(self, comment: "")
     }
     

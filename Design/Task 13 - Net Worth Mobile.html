@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Task 13 - Net Worth Mobile</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #eef3ef;
+      --surface: #ffffff;
+      --surface-soft: #f7faf7;
+      --surface-tint: #e4f1ea;
+      --text: #18221d;
+      --muted: #637169;
+      --line: #d7e1d7;
+      --line-strong: #b6c8b7;
+      --accent: #2d6a57;
+      --accent-2: #1f5344;
+      --positive: #27624c;
+      --warning: #8a6119;
+      --warning-bg: #f5ecd1;
+      --shadow: 0 12px 28px rgba(26, 42, 34, 0.10);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top, rgba(45, 106, 87, 0.10), transparent 28%),
+        radial-gradient(circle at 85% 12%, rgba(138, 97, 25, 0.08), transparent 18%),
+        var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      padding: 18px 12px 24px;
+    }
+
+    .phone {
+      max-width: 430px;
+      margin: 0 auto;
+      border-radius: 34px;
+      background: linear-gradient(180deg, #fbfdfb 0%, #f4f8f4 100%);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(182, 200, 183, 0.70);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .statusbar {
+      height: 34px;
+      padding: 10px 18px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.01em;
+    }
+
+    .notch {
+      width: 110px;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(24, 34, 29, 0.12);
+      margin: 0 auto;
+      position: absolute;
+      left: 50%;
+      top: 10px;
+      transform: translateX(-50%);
+    }
+
+    .screen {
+      padding: 6px 14px 18px;
+    }
+
+    .header {
+      padding: 10px 2px 14px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: var(--surface-tint);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .title-row {
+      margin-top: 10px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .month-pill {
+      flex: 0 0 auto;
+      padding: 9px 11px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.9);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .subtitle {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .hero {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .hero-card {
+      border-radius: var(--radius-xl);
+      background:
+        linear-gradient(180deg, rgba(45, 106, 87, 0.10), rgba(255, 255, 255, 0.96) 70%),
+        var(--surface);
+      border: 1px solid rgba(182, 200, 183, 0.75);
+      padding: 16px;
+      box-shadow: 0 8px 20px rgba(26, 42, 34, 0.06);
+    }
+
+    .hero-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .hero-value {
+      margin-top: 8px;
+      font-size: 32px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: 0;
+      color: var(--accent-2);
+    }
+
+    .hero-chip {
+      display: inline-flex;
+      margin-top: 10px;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: rgba(39, 98, 76, 0.10);
+      color: var(--positive);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .summary-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .summary-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 12px;
+      min-height: 98px;
+      box-shadow: 0 6px 16px rgba(26, 42, 34, 0.05);
+    }
+
+    .summary-card .label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .summary-card .value {
+      margin-top: 8px;
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1.1;
+      color: var(--text);
+    }
+
+    .summary-card .caption {
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .section {
+      margin-top: 14px;
+      background: var(--surface);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--line);
+      box-shadow: 0 10px 22px rgba(26, 42, 34, 0.05);
+      overflow: hidden;
+    }
+
+    .section-head {
+      padding: 14px 14px 12px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #fff, #fbfcfb);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .section-title {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .section-title strong {
+      font-size: 14px;
+      line-height: 1.2;
+    }
+
+    .section-title span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .section-total {
+      flex: 0 0 auto;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .group {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(215, 225, 215, 0.8);
+    }
+
+    .group:last-child {
+      border-bottom: 0;
+    }
+
+    .group-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .group-name {
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.3;
+      margin: 0;
+    }
+
+    .group-count {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 3px;
+    }
+
+    .group-sum {
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .rows {
+      display: grid;
+      gap: 8px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 10px 0;
+      border-top: 1px solid rgba(215, 225, 215, 0.65);
+    }
+
+    .row:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .row-label {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.35;
+    }
+
+    .row-meta {
+      margin-top: 3px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .row-value {
+      font-size: 14px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .footer {
+      margin-top: 14px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .footer-card {
+      border-radius: var(--radius-lg);
+      padding: 14px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, #ffffff, #f8fbf8);
+    }
+
+    .footer-card.networth {
+      background: linear-gradient(135deg, rgba(45, 106, 87, 0.12), #fff 72%);
+      border-color: rgba(45, 106, 87, 0.20);
+    }
+
+    .footer-card .label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .footer-card .value {
+      margin-top: 6px;
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .helper {
+      margin: 14px 0 0;
+      padding: 14px;
+      border-radius: var(--radius-lg);
+      background: var(--warning-bg);
+      border: 1px solid rgba(138, 97, 25, 0.18);
+      color: #634510;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.92em;
+    }
+
+    @media (max-width: 390px) {
+      .screen {
+        padding-inline: 12px;
+      }
+
+      .summary-row {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-value {
+        font-size: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="statusbar">
+      <span>9:41</span>
+      <span>Net Worth</span>
+      <span>100%</span>
+    </div>
+
+    <div class="screen">
+      <header class="header">
+        <div class="eyebrow">Net Worth</div>
+        <div class="title-row">
+          <div>
+            <h1>July 2026 Snapshot</h1>
+            <div class="subtitle">
+              Workbook-aligned mock for the first mobile Net Worth screen.
+            </div>
+          </div>
+          <div class="month-pill">2026-07</div>
+        </div>
+      </header>
+
+      <section class="hero">
+        <div class="hero-card">
+          <div class="hero-label">Net Worth</div>
+          <div class="hero-value">29,300,000 ₫</div>
+          <div class="hero-chip">Total assets - total liabilities</div>
+        </div>
+
+        <div class="summary-row">
+          <div class="summary-card">
+            <div class="label">Assets</div>
+            <div class="value">32,800,000 ₫</div>
+            <div class="caption">Cash, property, and other holdings</div>
+          </div>
+          <div class="summary-card">
+            <div class="label">Liabilities</div>
+            <div class="value">3,500,000 ₫</div>
+            <div class="caption">Current debt snapshot</div>
+          </div>
+          <div class="summary-card">
+            <div class="label">Equity Gap</div>
+            <div class="value">29,300,000 ₫</div>
+            <div class="caption">Matches workbook total</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div class="section-title">
+            <strong>Assets</strong>
+            <span>Four groups, workbook order</span>
+          </div>
+          <div class="section-total">32,800,000 ₫</div>
+        </div>
+        <div class="group">
+          <div class="group-head">
+            <div>
+              <div class="group-name">Cash and equivalents</div>
+              <div class="group-count">2 items</div>
+            </div>
+            <div class="group-sum">25,000,000 ₫</div>
+          </div>
+          <div class="rows">
+            <div class="row">
+              <div>
+                <div class="row-label">Bank checking</div>
+                <div class="row-meta">Cash</div>
+              </div>
+              <div class="row-value">10,000,000 ₫</div>
+            </div>
+            <div class="row">
+              <div>
+                <div class="row-label">Bank term deposit</div>
+                <div class="row-meta">Cash</div>
+              </div>
+              <div class="row-value">15,000,000 ₫</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="group">
+          <div class="group-head">
+            <div>
+              <div class="group-name">Receivables</div>
+              <div class="group-count">1 item</div>
+            </div>
+            <div class="group-sum">0 ₫</div>
+          </div>
+          <div class="rows">
+            <div class="row">
+              <div>
+                <div class="row-label">Loan receivable</div>
+                <div class="row-meta">Receivable</div>
+              </div>
+              <div class="row-value">0 ₫</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="group">
+          <div class="group-head">
+            <div>
+              <div class="group-name">Tangible assets</div>
+              <div class="group-count">2 items</div>
+            </div>
+            <div class="group-sum">7,800,000 ₫</div>
+          </div>
+          <div class="rows">
+            <div class="row">
+              <div>
+                <div class="row-label">Samsung TV 55 inch</div>
+                <div class="row-meta">Tangible</div>
+              </div>
+              <div class="row-value">2,800,000 ₫</div>
+            </div>
+            <div class="row">
+              <div>
+                <div class="row-label">Motorbike</div>
+                <div class="row-meta">Tangible</div>
+              </div>
+              <div class="row-value">5,000,000 ₫</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="group">
+          <div class="group-head">
+            <div>
+              <div class="group-name">Financial assets</div>
+              <div class="group-count">4 items</div>
+            </div>
+            <div class="group-sum">0 ₫</div>
+          </div>
+          <div class="rows">
+            <div class="row">
+              <div>
+                <div class="row-label">Stocks</div>
+                <div class="row-meta">Financial</div>
+              </div>
+              <div class="row-value">0 ₫</div>
+            </div>
+            <div class="row">
+              <div>
+                <div class="row-label">Bonds</div>
+                <div class="row-meta">Financial</div>
+              </div>
+              <div class="row-value">0 ₫</div>
+            </div>
+            <div class="row">
+              <div>
+                <div class="row-label">Mutual funds</div>
+                <div class="row-meta">Financial</div>
+              </div>
+              <div class="row-value">0 ₫</div>
+            </div>
+            <div class="row">
+              <div>
+                <div class="row-label">Insurance cash value</div>
+                <div class="row-meta">Financial</div>
+              </div>
+              <div class="row-value">0 ₫</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div class="section-title">
+            <strong>Liabilities</strong>
+            <span>Current debt snapshot</span>
+          </div>
+          <div class="section-total">3,500,000 ₫</div>
+        </div>
+
+        <div class="group">
+          <div class="group-head">
+            <div>
+              <div class="group-name">Short-term liabilities</div>
+              <div class="group-count">1 item</div>
+            </div>
+            <div class="group-sum">3,500,000 ₫</div>
+          </div>
+          <div class="rows">
+            <div class="row">
+              <div>
+                <div class="row-label">Savings debt</div>
+                <div class="row-meta">Liability</div>
+              </div>
+              <div class="row-value">3,500,000 ₫</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="group">
+          <div class="group-head">
+            <div>
+              <div class="group-name">Long-term liabilities</div>
+              <div class="group-count">1 item</div>
+            </div>
+            <div class="group-sum">0 ₫</div>
+          </div>
+          <div class="rows">
+            <div class="row">
+              <div>
+                <div class="row-label">None</div>
+                <div class="row-meta">Liability</div>
+              </div>
+              <div class="row-value">0 ₫</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="footer">
+        <div class="footer-card">
+          <div class="label">Total Assets</div>
+          <div class="value">32,800,000 ₫</div>
+        </div>
+        <div class="footer-card">
+          <div class="label">Total Liabilities</div>
+          <div class="value">3,500,000 ₫</div>
+        </div>
+        <div class="footer-card networth">
+          <div class="label">Net Worth</div>
+          <div class="value">29,300,000 ₫</div>
+        </div>
+      </div>
+
+      <div class="helper">
+        Mock seed follows <code>Monthly/2026-07.xlsx</code>. This layout is intentionally
+        mobile-first so you can wire a native screen against it without translating a desktop web composition.
+      </div>
+    </div>
+  </div>
+</body>
+</html>

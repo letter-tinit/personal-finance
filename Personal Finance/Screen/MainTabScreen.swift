@@ -8,31 +8,43 @@
 import SwiftUI
 
 struct MainTabScreen: View {
+    @AppStorage(AppLanguage.preferenceKey) private var languageCode = AppLanguage.system.rawValue
+    @State private var selectedTab: AppTab = .netWorth
+
+    private var selectedLanguage: AppLanguage {
+        AppLanguage(rawValue: languageCode) ?? .system
+    }
+
     var body: some View {
-        TabView {
+        TabView(selection: $selectedTab) {
+            NetWorthListScreen()
+                .tabItem {
+                    Label("networth.tab.title".localized, systemImage: "chart.bar.xaxis")
+                }
+                .tag(AppTab.netWorth)
+            
             BudgetListScreen()
                 .tabItem {
                     Label("salary.budget".localized, systemImage: "wallet.bifold")
                 }
-            
-            NetWorthPlaceholderScreen()
+                .tag(AppTab.budget)
+
+            ProfileScreen()
                 .tabItem {
-                    Label("networth.tab.title".localized, systemImage: "chart.bar.xaxis")
+                    Label("profile.tab.title".localized, systemImage: "person.crop.circle")
                 }
+                .tag(AppTab.profile)
         }
+        .id(languageCode)
         .tint(.cyan)
+        .environment(\.locale, selectedLanguage.locale)
     }
 }
 
-private struct NetWorthPlaceholderScreen: View {
-    var body: some View {
-        ContentUnavailableView(
-            "networth.empty.title".localized,
-            systemImage: "chart.bar.xaxis",
-            description: Text("networth.empty.description".localized)
-        )
-        .padding()
-    }
+private enum AppTab: Hashable {
+    case netWorth
+    case budget
+    case profile
 }
 
 #Preview {
