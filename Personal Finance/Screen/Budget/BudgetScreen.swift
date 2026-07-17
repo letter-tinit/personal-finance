@@ -121,7 +121,7 @@ struct BudgetScreen: View {
             titleVisibility: .visible
         ) {
             Button(
-                "transaction.form.delete.confirmation.action".localized,
+                "common.delete".localized,
                 role: .destructive
             ) {
                 deletePendingTransaction()
@@ -131,7 +131,7 @@ struct BudgetScreen: View {
                 transactionPendingDeletion = nil
             }
         } message: {
-            Text("transaction.form.delete.confirmation.message".localized)
+            Text("common.delete.warning".localized)
         }
         .alert(
             "transaction.form.error.delete".localized,
@@ -231,7 +231,7 @@ private extension BudgetScreen {
                                     isDeleteConfirmationPresented = true
                                 } label: {
                                     Label(
-                                        "transaction.form.delete.confirmation.action".localized,
+                                        "common.delete".localized,
                                         systemImage: "trash"
                                     )
                                 }

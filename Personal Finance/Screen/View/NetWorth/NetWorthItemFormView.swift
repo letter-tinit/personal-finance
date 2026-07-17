@@ -122,7 +122,7 @@ struct NetWorthItemFormView: View {
             titleVisibility: .visible
         ) {
             Button(
-                "networth.item.delete.confirmation.action".localized,
+                "common.delete".localized,
                 role: .destructive
             ) {
                 deleteItem()

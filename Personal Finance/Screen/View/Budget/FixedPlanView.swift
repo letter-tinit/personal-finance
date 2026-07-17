@@ -88,7 +88,7 @@ struct FixedPlanView: View {
                                 isDeleteConfirmationPresented = true
                             } label: {
                                 Label(
-                                    "fixed.plan.delete.confirmation.action".localized,
+                                    "common.delete".localized,
                                     systemImage: "trash"
                                 )
                             }
@@ -153,7 +153,7 @@ struct FixedPlanView: View {
             titleVisibility: .visible
         ) {
             Button(
-                "fixed.plan.delete.confirmation.action".localized,
+                "common.delete".localized,
                 role: .destructive
             ) {
                 deletePendingPlan()

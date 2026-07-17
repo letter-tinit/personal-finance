@@ -13,6 +13,8 @@ struct BudgetListScreen: View {
     @State private var isCreateBudgetPresented = false
     @State private var errorMessage: String?
     @State private var hasLoadedBudgets = false
+    @State private var budgetToDelete: Budget?
+    @State private var isDeleteConfirmationPresented = false
 
     private let budgetStore: BudgetStore?
     init(budgetStore: BudgetStore? = try? BudgetStore()) {
@@ -54,9 +56,20 @@ struct BudgetListScreen: View {
                                     BudgetListRow(budget: budget)
                                 }
                                 .buttonStyle(.plain)
-                            }
-                            .onDelete { indexSet in
-                                deleteBudget(offset: indexSet, section: section)
+                                .swipeActions {
+                                    Button {
+                                        budgetToDelete = budget
+                                        isDeleteConfirmationPresented = true
+                                    } label: {
+                                        VStack {
+                                            Text("common.delete".localized)
+                                                .secondarySubHeadline()
+                                            
+                                            Image(module: "trash")
+                                                .tint(.red)
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -72,6 +85,20 @@ struct BudgetListScreen: View {
                         }
                     }
                 }
+            }
+            .confirmationDialog(
+                "budget.delete.title".localized,
+                isPresented: $isDeleteConfirmationPresented,
+                titleVisibility: .visible
+            ) {
+                Button(
+                    "common.delete".localized,
+                    role: .destructive
+                ) {
+                    deleteBudget()
+                }
+            } message: {
+                Text("common.delete.warning".localized)
             }
             .navigationTitle("salary.budget".localized)
             .toolbar {
@@ -130,7 +157,6 @@ private extension BudgetListScreen {
 
     func createBudget(_ budget: Budget) {
         budgets.append(budget)
-        budgetRouter.push(.budget(budget.id))
     }
 
     func loadBudgetsIfNeeded() {
@@ -168,13 +194,17 @@ private extension BudgetListScreen {
         }
     }
     
-    private func deleteBudget(offset: IndexSet, section: BudgetYearSection) {
+    private func getBudget(offset: IndexSet, section: BudgetYearSection) -> Budget? {
         let idsToDelete = offset.map { index in
             section.budgets[index].id
         }
         
-        budgets.removeAll { budget in
-            idsToDelete.contains(budget.id)
+        return budgets.first { idsToDelete.contains($0.id) }
+    }
+    
+    private func deleteBudget() {
+        if let budgetToDelete {
+            budgets.removeAll { $0 == budgetToDelete }
         }
     }
     

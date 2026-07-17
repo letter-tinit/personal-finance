@@ -64,7 +64,6 @@
 "networth.item.form.delete" = "Delete Item";
 "networth.item.delete.confirmation.title" = "Delete this item?";
 "networth.item.delete.confirmation.message" = "It will be removed from every Net Worth month. This action cannot be undone.";
-"networth.item.delete.confirmation.action" = "Delete";
 "networth.list.empty" = "No Net Worth table";
 "networth.list.empty.description" = "Create a monthly table to start tracking assets and liabilities.";
 "networth.list.title" = "Net Worth Years";
@@ -136,7 +135,6 @@
 "fixed.plan.form.delete" = "Delete Planned Expense";
 "fixed.plan.delete.confirmation.title" = "Delete this planned expense?";
 "fixed.plan.delete.confirmation.message" = "This action cannot be undone.";
-"fixed.plan.delete.confirmation.action" = "Delete";
 "transaction.form.title" = "New Transaction";
 "transaction.form.edit.title" = "Edit Transaction";
 "transaction.form.add" = "Add transaction";
@@ -157,8 +155,6 @@
 "transaction.form.error.delete" = "The transaction could not be deleted.";
 "transaction.form.delete" = "Delete Transaction";
 "transaction.form.delete.confirmation.title" = "Delete this transaction?";
-"transaction.form.delete.confirmation.message" = "This action cannot be undone.";
-"transaction.form.delete.confirmation.action" = "Delete";
 "payment.method.banking" = "Bank transfer";
 "payment.method.cash" = "Cash";
 "payment.method.card" = "Card";
@@ -166,9 +162,11 @@
 "common.save" = "Save";
 "common.ok" = "OK";
 "common.delete" = "Delete";
+"common.delete.warning" = "This action cannot be undone.";
 "keyboard.done" = "Done";
 "budget.method.fiftyThirtyTwenty" = "50/30/20";
 "budget.method.sixJars" = "6 Jars";
+"budget.delete.title" = "Delete this budget?";
 "bucket.needs" = "Needs";
 "bucket.wants" = "Wants";
 "bucket.savings" = "Savings";

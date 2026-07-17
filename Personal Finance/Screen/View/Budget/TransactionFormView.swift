@@ -158,7 +158,7 @@ struct TransactionFormView: View {
             titleVisibility: .visible
         ) {
             Button(
-                "transaction.form.delete.confirmation.action".localized,
+                "common.delete".localized,
                 role: .destructive
             ) {
                 deleteTransaction()
@@ -166,7 +166,7 @@ struct TransactionFormView: View {
 
             Button("common.cancel".localized, role: .cancel) {}
         } message: {
-            Text("transaction.form.delete.confirmation.message".localized)
+            Text("common.delete.warning".localized)
         }
     }
 }

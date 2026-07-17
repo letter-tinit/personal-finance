@@ -118,7 +118,7 @@ struct FixedExpensePlanFormView: View {
             titleVisibility: .visible
         ) {
             Button(
-                "fixed.plan.delete.confirmation.action".localized,
+                "common.delete".localized,
                 role: .destructive
             ) {
                 deletePlan()

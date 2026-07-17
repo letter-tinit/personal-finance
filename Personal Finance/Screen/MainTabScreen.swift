@@ -37,7 +37,7 @@ struct MainTabScreen: View {
 
             ProfileScreen()
                 .tabItem {
-                    Label(AppTab.budget.name.localized, systemImage: AppTab.budget.icon)
+                    Label(AppTab.profile.name.localized, systemImage: AppTab.profile.icon)
                 }
                 .tag(AppTab.profile)
         }
