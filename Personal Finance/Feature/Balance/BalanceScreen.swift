@@ -17,28 +17,24 @@ struct BalanceScreen: View {
     }
     
     var body: some View {
-        AppNavigationStack(path: $router.path) {
-            if let balance = viewModel.balance {
-                VStack {
-                    // MARK: - BALANCE VIEW
-                    BalanceCard(balance: balance)
-                    
-                    // MARK: - TRANSACTIONS
-                    BalanceList(transactions: balance.transactions)
-                }
-                .padding(.horizontal)
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button {
-                            viewModel.addTransaction(.mockLunch)
-                        } label: {
-                            Image(systemName: "plus")
-                        }
+        if let balance = viewModel.balance {
+            VStack {
+                // MARK: - BALANCE VIEW
+                BalanceCard(balance: balance)
+                
+                // MARK: - TRANSACTIONS
+                BalanceList(transactions: balance.transactions)
+            }
+            .padding(.horizontal)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        viewModel.addTransaction(.mockLunch)
+                    } label: {
+                        Image(systemName: "plus")
                     }
                 }
             }
-        } destination: { route in
-            
         }
     }
 }

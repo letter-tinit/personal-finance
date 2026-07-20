@@ -15,10 +15,10 @@ struct BudgetScreen: View {
     @State private var transactionPendingDeletion: BudgetTransaction?
     @State private var isDeleteConfirmationPresented = false
     @State private var isDeleteErrorPresented = false
-    @Binding private var budget: Budget
+    private var budget: Budget
     
-    init(budget: Binding<Budget>) {
-        _budget = budget
+    init(_ budget: Budget) {
+        self.budget = budget
     }
     
     private var transactionGroups: [TransactionGroup] {
@@ -616,7 +616,7 @@ private struct BudgetScreenPreview: View {
     )
 
     var body: some View {
-        BudgetScreen(budget: $budget)
+        BudgetScreen(budget)
     }
 }
 

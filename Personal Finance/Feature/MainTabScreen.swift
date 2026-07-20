@@ -8,47 +8,91 @@
 import SwiftUI
 
 typealias MainTabFactory = BalanceViewModelFactory
+
 struct MainTabScreen: View {
     private let factory: MainTabFactory
-    @State private var balanceViewModel: BalanceViewModel
     
-    @AppStorage(AppLanguage.preferenceKey) private var languageCode = AppLanguage.system.rawValue
+    // MARK: - Bindable
+    @State private var balanceViewModel: BalanceViewModel
     @State private var selectedTab: AppTab = .balance
-
+    
+    // MARK: - AppStorage
+    @AppStorage(AppLanguage.preferenceKey) private var languageCode = AppLanguage.system.rawValue
+    
+    // MARK: - Router
+    @State private var balanceRouter = BalanceRouter()
+    @State private var netWorthRouter = NetWorthRouter()
+    @State private var budgetRouter = BudgetRouter()
+    @State private var profileRouter = ProfileRouter()
+    
     private var selectedLanguage: AppLanguage {
         AppLanguage(rawValue: languageCode) ?? .system
     }
     
+    // MARK: - Init
     init(factory: MainTabFactory) {
         self.factory = factory
         _balanceViewModel = State(initialValue: factory.makeBalanceViewModel())
     }
-
+    
+    // MARK: - View
     var body: some View {
         TabView(selection: $selectedTab) {
-            BalanceScreen(balanceViewModel)
-                .tabItem {
-                    Label(AppTab.balance.name.localized, systemImage: AppTab.balance.icon)
-                }
-                .tag(AppTab.balance)
+            // MARK: - Balance
+            AppNavigationStack(path: $balanceRouter.path) {
+                BalanceScreen(balanceViewModel)
+            } destination: { _ in
+            }
+            .tabItem {
+                Label(AppTab.balance.name.localized, systemImage: AppTab.balance.icon)
+            }
+            .tag(AppTab.balance)
             
-            NetWorthListScreen()
-                .tabItem {
-                    Label(AppTab.netWorth.name.localized, systemImage: AppTab.netWorth.icon)
+            // MARK: - Networth
+            AppNavigationStack(path: $netWorthRouter.path) {
+                NetWorthListScreen()
+                    .environment(netWorthRouter)
+            } destination: { route in
+                switch route {
+                case .yearNetworth(let data):
+                    NetWorthYearScreen(data: data)
                 }
-                .tag(AppTab.netWorth)
+            }
+            .tabItem {
+                Label(AppTab.netWorth.name.localized, systemImage: AppTab.netWorth.icon)
+            }
+            .tag(AppTab.netWorth)
             
-            BudgetListScreen()
-                .tabItem {
-                    Label(AppTab.budget.name.localized, systemImage: AppTab.budget.icon)
+            // MARK: - Budget
+            AppNavigationStack(path: $budgetRouter.path) {
+                BudgetListScreen()
+                    .environment(budgetRouter)
+            } destination: { route in
+                switch route {
+                case .budget(let budget):
+                    BudgetScreen(budget)
                 }
-                .tag(AppTab.budget)
-
-            ProfileScreen()
-                .tabItem {
-                    Label(AppTab.profile.name.localized, systemImage: AppTab.profile.icon)
+            }
+            .tabItem {
+                Label(AppTab.budget.name.localized, systemImage: AppTab.budget.icon)
+            }
+            .tag(AppTab.budget)
+            
+            // MARK: - Profilte
+            AppNavigationStack(path: $profileRouter.path) {
+                ProfileScreen()
+                    .environment(profileRouter)
+            } destination: { route in
+                switch route {
+                case .changeLanguage:
+                    AppSettingsScreen()
                 }
-                .tag(AppTab.profile)
+            }
+            .tabItem {
+                Label(AppTab.profile.name.localized, systemImage: AppTab.profile.icon)
+            }
+            .tag(AppTab.profile)
+            
         }
         .id(languageCode)
         .tint(.cyan)
@@ -56,6 +100,7 @@ struct MainTabScreen: View {
     }
 }
 
+// MARK: - Tab Enum
 private enum AppTab: Hashable {
     case balance
     case netWorth

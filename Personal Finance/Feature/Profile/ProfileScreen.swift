@@ -6,49 +6,48 @@
 import SwiftUI
 
 struct ProfileScreen: View {
+    @Environment(ProfileRouter.self) private var router
     @AppStorage(AppLanguage.preferenceKey) private var languageCode = AppLanguage.system.rawValue
 
     private var selectedLanguage: AppLanguage {
         AppLanguage(rawValue: languageCode) ?? .system
     }
-
+    
     var body: some View {
-        NavigationStack {
-            BaseScreen {
-                List {
-                    Section {
-                        profileHeader
-                    }
-                    .listRowBackground(Color.clear)
-
-                    Section("profile.preferences".localized) {
-                        NavigationLink {
-                            AppSettingsScreen()
-                        } label: {
-                            Label {
-                                HStack {
-                                    Text("settings.language".localized)
-
-                                    Spacer()
-
-                                    Text(selectedLanguage.localizationKey.localized)
-                                        .foregroundStyle(.secondary)
-                                }
-                            } icon: {
-                                Image(systemName: "globe")
-                                    .foregroundStyle(.tint)
+        BaseScreen {
+            List {
+                Section {
+                    profileHeader
+                }
+                .listRowBackground(Color.clear)
+                
+                Section("profile.preferences".localized) {
+                    Button {
+                        router.push(.changeLanguage)
+                    } label: {
+                        Label {
+                            HStack {
+                                Text("settings.language".localized)
+                                
+                                Spacer()
+                                
+                                Text(selectedLanguage.localizationKey.localized)
+                                    .foregroundStyle(.secondary)
                             }
+                        } icon: {
+                            Image(systemName: "globe")
+                                .foregroundStyle(.tint)
                         }
                     }
                 }
-                .listStyle(.insetGrouped)
-                .scrollContentBackground(.hidden)
             }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
             .navigationTitle("profile.tab.title".localized)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink {
-                        AppSettingsScreen()
+                    Button {
+                        router.push(.changeLanguage)
                     } label: {
                         Image(systemName: "gearshape")
                     }

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Observation
 
 enum BudgetError: Error {
     case invalidAmount
@@ -20,7 +21,8 @@ enum BudgetError: Error {
     case duplicatePeriod
 }
 
-struct Budget: Identifiable, Hashable, Codable {
+@Observable
+final class Budget: Identifiable, Hashable, Codable {
     let id: UUID
     private(set) var periodStart: Date
     private(set) var income: Decimal
@@ -97,6 +99,14 @@ struct Budget: Identifiable, Hashable, Codable {
         self.allocations = allocations
         self.fixedExpensePlans = fixedExpensePlans
         self.transactions = transactions
+    }
+    
+    static func == (lhs: Budget, rhs: Budget) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
 }
 
@@ -267,7 +277,7 @@ extension Budget {
         )
     }
 
-    mutating func copyFixedExpensePlans(from sourceBudget: Budget) {
+    func copyFixedExpensePlans(from sourceBudget: Budget) {
         guard let destinationAllocation = allocations.first(
             where: { $0.kind.supportsFixedExpensePlan }
         ) else {
@@ -368,7 +378,7 @@ extension Budget {
         )
     }
 
-    mutating func addTransaction(
+    func addTransaction(
         allocationID: UUID,
         type: TransactionType,
         title: String,
@@ -409,7 +419,7 @@ extension Budget {
         )
     }
 
-    mutating func updateTransaction(
+    func updateTransaction(
         id transactionID: UUID,
         allocationID: UUID,
         title: String,
@@ -465,7 +475,7 @@ extension Budget {
         }
     }
 
-    mutating func deleteTransaction(id transactionID: UUID) throws {
+    func deleteTransaction(id transactionID: UUID) throws {
         guard let transactionIndex = transactions.firstIndex(
             where: { $0.id == transactionID }
         ) else {
@@ -489,7 +499,7 @@ extension Budget {
         }
     }
 
-    mutating func addFixedExpensePlan(
+    func addFixedExpensePlan(
         allocationID: UUID,
         name: String,
         amount: Decimal,
@@ -511,7 +521,7 @@ extension Budget {
         )
     }
 
-    mutating func updateFixedExpensePlan(
+    func updateFixedExpensePlan(
         id planID: UUID,
         name: String,
         amount: Decimal,
@@ -541,7 +551,7 @@ extension Budget {
         )
     }
 
-    mutating func completeFixedExpensePlan(
+    func completeFixedExpensePlan(
         id planID: UUID,
         title: String,
         note: String = "",
@@ -592,7 +602,7 @@ extension Budget {
         )
     }
 
-    mutating func deleteFixedExpensePlan(id planID: UUID) throws {
+    func deleteFixedExpensePlan(id planID: UUID) throws {
         guard let planIndex = fixedExpensePlans.firstIndex(
             where: { $0.id == planID }
         ) else {

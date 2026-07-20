@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct NetWorthScreen: View {
-    @Binding private var snapshot: NetWorthSnapshot
+    private let snapshot: NetWorthSnapshot
     @Binding private var plan: NetWorthPlan
     @Binding private var selectedSnapshotID: UUID
     let snapshots: [NetWorthSnapshot]
@@ -20,7 +20,7 @@ struct NetWorthScreen: View {
     @State private var isEditingUnlocked = false
 
     init(
-        snapshot: Binding<NetWorthSnapshot>,
+        snapshot: NetWorthSnapshot,
         plan: Binding<NetWorthPlan>,
         snapshots: [NetWorthSnapshot],
         selectedSnapshotID: Binding<UUID>,
@@ -28,7 +28,7 @@ struct NetWorthScreen: View {
         onDeleteItem: @escaping (UUID) throws -> Void,
         onCreateSnapshot: @escaping () -> Void
     ) {
-        _snapshot = snapshot
+        self.snapshot = snapshot
         _plan = plan
         self.snapshots = snapshots
         _selectedSnapshotID = selectedSnapshotID

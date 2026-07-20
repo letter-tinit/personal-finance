@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct BudgetListScreen: View {
-    @State private var budgetRouter = BudgetRouter()
+    @Environment(BudgetRouter.self) private var router
     @State private var budgets: [Budget] = []
     @State private var isCreateBudgetPresented = false
     @State private var errorMessage: String?
@@ -28,7 +28,6 @@ struct BudgetListScreen: View {
     }
 
     var body: some View {
-        AppNavigationStack(path: $budgetRouter.path) {
             Group {
                 if budgets.isEmpty {
                     VStack(spacing: 12) {
@@ -51,7 +50,7 @@ struct BudgetListScreen: View {
                         Section(String(describing: section.year)) {
                             ForEach(section.budgets, id: \.self) { budget in
                                 Button {
-                                    budgetRouter.push(.budget(budget.id))
+                                    router.push(.budget(budget))
                                 } label: {
                                     BudgetListRow(budget: budget)
                                 }
@@ -130,31 +129,10 @@ struct BudgetListScreen: View {
 
                 saveBudgets()
             }
-        } destination: { route in
-            switch route {
-            case .budget(let budgetID):
-                if let budgetBinding = binding(for: budgetID) {
-                    BudgetScreen(budget: budgetBinding)
-                } else {
-                    ContentUnavailableView(
-                        "budget.detail.missing".localized,
-                        systemImage: "exclamationmark.triangle"
-                    )
-                }
-            }
-        }
     }
 }
 
 private extension BudgetListScreen {
-    func binding(for budgetID: UUID) -> Binding<Budget>? {
-        guard let index = budgets.firstIndex(where: { $0.id == budgetID }) else {
-            return nil
-        }
-
-        return $budgets[index]
-    }
-
     func createBudget(_ budget: Budget) {
         budgets.append(budget)
     }

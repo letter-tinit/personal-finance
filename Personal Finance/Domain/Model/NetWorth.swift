@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Observation
 
 /// App-owned classification. Its localized labels live in the presentation layer.
 enum NetWorthCategory: String, CaseIterable, Hashable, Codable {
@@ -149,7 +150,8 @@ struct NetWorthPlanItem: Identifiable, Hashable, Codable {
 }
 
 /// One month-end net-worth measurement. It stores only values, not duplicated labels.
-struct NetWorthSnapshot: Identifiable, Hashable, Codable {
+@Observable
+final class NetWorthSnapshot: Identifiable, Hashable, Codable {
     let id: UUID
     let planID: UUID
     let asOfDate: Date
@@ -171,7 +173,7 @@ struct NetWorthSnapshot: Identifiable, Hashable, Codable {
         values.first(where: { $0.planItemID == itemID })?.amount
     }
 
-    mutating func setAmount(_ amount: Decimal?, for itemID: UUID) {
+    func setAmount(_ amount: Decimal?, for itemID: UUID) {
         if let index = values.firstIndex(where: { $0.planItemID == itemID }) {
             values[index].amount = amount
         } else {
@@ -201,6 +203,14 @@ struct NetWorthSnapshot: Identifiable, Hashable, Codable {
     func netWorth(using plan: NetWorthPlan) -> Decimal {
         total(for: .assets, using: plan) - total(for: .liabilities, using: plan)
     }
+    
+    static func == (lhs: NetWorthSnapshot, rhs: NetWorthSnapshot) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
 }
 
 /// Nil represents a blank cell in the workbook; zero represents an explicitly entered 0.
@@ -217,7 +227,8 @@ struct NetWorthValue: Identifiable, Hashable, Codable {
 }
 
 /// One year's reusable item plan and its monthly measurements.
-struct NetWorthData: Identifiable, Hashable, Codable {
+@Observable
+final class NetWorthData: Identifiable, Hashable, Codable {
     let id: UUID
     let year: Int
     var plan: NetWorthPlan
@@ -254,19 +265,32 @@ struct NetWorthData: Identifiable, Hashable, Codable {
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.plan = try container.decode(NetWorthPlan.self, forKey: .plan)
+
+        let decodedPlan = try container.decode(NetWorthPlan.self, forKey: .plan)
+
+        let decodedSnapshots: [NetWorthSnapshot]
 
         if let snapshots = try container.decodeIfPresent(
             [NetWorthSnapshot].self,
             forKey: .snapshots
         ) {
-            self.snapshots = snapshots
+            decodedSnapshots = snapshots
         } else {
-            self.snapshots = [try container.decode(NetWorthSnapshot.self, forKey: .snapshot)]
+            decodedSnapshots = [
+                try container.decode(NetWorthSnapshot.self, forKey: .snapshot)
+            ]
         }
+
         self.id = try container.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
+
+        self.plan = decodedPlan
+        self.snapshots = decodedSnapshots
+
         self.year = try container.decodeIfPresent(Int.self, forKey: .year)
-            ?? Calendar.current.component(.year, from: self.snapshots.first?.asOfDate ?? Date())
+            ?? Calendar.current.component(
+                .year,
+                from: decodedSnapshots.first?.asOfDate ?? Date()
+            )
     }
 
     func encode(to encoder: Encoder) throws {
@@ -285,7 +309,7 @@ struct NetWorthData: Identifiable, Hashable, Codable {
         snapshots.contains { calendar.isDate($0.asOfDate, equalTo: month, toGranularity: .month) }
     }
 
-    mutating func addSnapshot(
+    func addSnapshot(
         for month: Date,
         calendar: Calendar = .current
     ) throws -> NetWorthSnapshot {
@@ -338,7 +362,7 @@ struct NetWorthData: Identifiable, Hashable, Codable {
         }
     }
 
-    mutating func removeItem(id: UUID) throws {
+    func removeItem(id: UUID) throws {
         try plan.removeItem(id: id)
 
         for index in snapshots.indices {
@@ -364,6 +388,14 @@ struct NetWorthData: Identifiable, Hashable, Codable {
         let firstMonth = Calendar.current.date(from: DateComponents(year: year, month: 1, day: 1))!
         try? data.addSnapshot(for: firstMonth)
         return data
+    }
+    
+    static func == (lhs: NetWorthData, rhs: NetWorthData) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
 }
 
