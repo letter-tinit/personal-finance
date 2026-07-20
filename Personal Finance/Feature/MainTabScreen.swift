@@ -7,17 +7,26 @@
 
 import SwiftUI
 
+typealias MainTabFactory = BalanceViewModelFactory
 struct MainTabScreen: View {
+    private let factory: MainTabFactory
+    @State private var balanceViewModel: BalanceViewModel
+    
     @AppStorage(AppLanguage.preferenceKey) private var languageCode = AppLanguage.system.rawValue
-    @State private var selectedTab: AppTab = .budget
+    @State private var selectedTab: AppTab = .balance
 
     private var selectedLanguage: AppLanguage {
         AppLanguage(rawValue: languageCode) ?? .system
     }
+    
+    init(factory: MainTabFactory) {
+        self.factory = factory
+        _balanceViewModel = State(initialValue: factory.makeBalanceViewModel())
+    }
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            BalanceScreen()
+            BalanceScreen(balanceViewModel)
                 .tabItem {
                     Label(AppTab.balance.name.localized, systemImage: AppTab.balance.icon)
                 }
@@ -80,6 +89,10 @@ private enum AppTab: Hashable {
     }
 }
 
+import SwiftData
 #Preview {
-    MainTabScreen()
+    let container = AppContainer()
+    
+    MainTabScreen(factory: container)
+        .modelContainer(container.modelContainer)
 }

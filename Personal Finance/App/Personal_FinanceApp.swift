@@ -6,12 +6,16 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct Personal_FinanceApp: App {
+    private let container = AppContainer()
+    
     var body: some Scene {
         WindowGroup {
-            MainTabScreen()
+            MainTabScreen(factory: container)
+                .modelContainer(container.modelContainer)
         }
     }
 }

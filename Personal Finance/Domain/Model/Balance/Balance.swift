@@ -6,21 +6,17 @@
 //
 
 import Foundation
+import SwiftData
 
-struct Balance {
-    let transactions: [BalanceTransaction]
+final class Balance {
+    var transactions: [BalanceTransaction]
+    
+    init(transactions: [BalanceTransaction] = []) {
+        self.transactions = transactions
+    }
 }
 
-struct BalanceTransaction: Hashable {
-    let note: String
-    let transactionType: TransactionType
-    let occurredAt: Date
-    let amount: Decimal
-    let balanceSnapshot: Decimal
-    let paymentMethod: PaymentMethod
-}
-
-enum BalanceStatus {
+enum BalanceStatus: Codable {
     case positive
     case negative
     case balanced
@@ -103,13 +99,13 @@ extension Balance {
 extension Balance {
     static let mock = Balance(
         transactions: [
-            .test,
-            .mockSalary,
-            .mockFreelance,
-            .mockCoffee,
-            .mockLunch,
-            .mockNetflix,
-            .mockGroceries
+//            .test,
+//            .mockSalary,
+//            .mockFreelance,
+//            .mockCoffee,
+//            .mockLunch,
+//            .mockNetflix,
+//            .mockGroceries
         ]
     )
 }
