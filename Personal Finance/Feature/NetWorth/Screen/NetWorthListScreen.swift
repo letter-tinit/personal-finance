@@ -10,7 +10,7 @@ import SwiftUI
 struct NetWorthListScreen: View {
     @Environment(NetWorthRouter.self) private var router
     
-    @State private var yearlyData: [NetWorthData] = [.july2026]
+    @State private var yearlyData: [NetWorthYear] = []
     @State private var errorMessage: String?
     @State private var hasLoadedData = false
 
@@ -62,7 +62,10 @@ struct NetWorthListScreen: View {
 private extension NetWorthListScreen {
     func createNextYear() {
         guard let latestData = yearlyData.max(by: { $0.year < $1.year }) else {
-            yearlyData = [.july2026]
+            let year = Calendar.current.component(.year, from: .now)
+            let data: NetWorthYear = .init(year: year)
+            _ = try? data.addSnapshot(for: .now)
+            yearlyData = [data]
             return
         }
 
@@ -108,7 +111,7 @@ private extension NetWorthListScreen {
 }
 
 private struct NetWorthYearRow: View {
-    let data: NetWorthData
+    let data: NetWorthYear
 
     var body: some View {
         HStack {

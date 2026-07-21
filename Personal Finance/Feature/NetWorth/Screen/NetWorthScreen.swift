@@ -8,10 +8,8 @@
 import SwiftUI
 
 struct NetWorthScreen: View {
-    private let snapshot: NetWorthSnapshot
-    @Binding private var plan: NetWorthPlan
-    @Binding private var selectedSnapshotID: UUID
-    let snapshots: [NetWorthSnapshot]
+    let year: NetWorthYear
+    @State private var selectedSnapshot: NetWorthSnapshot
     let statusMessage: String?
     let onDeleteItem: (UUID) throws -> Void
     let onCreateSnapshot: () -> Void
@@ -20,25 +18,21 @@ struct NetWorthScreen: View {
     @State private var isEditingUnlocked = false
 
     init(
+        year: NetWorthYear,
         snapshot: NetWorthSnapshot,
-        plan: Binding<NetWorthPlan>,
-        snapshots: [NetWorthSnapshot],
-        selectedSnapshotID: Binding<UUID>,
         statusMessage: String?,
         onDeleteItem: @escaping (UUID) throws -> Void,
         onCreateSnapshot: @escaping () -> Void
     ) {
-        self.snapshot = snapshot
-        _plan = plan
-        self.snapshots = snapshots
-        _selectedSnapshotID = selectedSnapshotID
+        self.year = year
+        _selectedSnapshot = State(initialValue: snapshot)
         self.statusMessage = statusMessage
         self.onDeleteItem = onDeleteItem
         self.onCreateSnapshot = onCreateSnapshot
     }
 
     private var missingValueCount: Int {
-        snapshot.missingValueCount(using: plan)
+        selectedSnapshot.missingValueCount(using: year.planItems)
     }
 
     var body: some View {
@@ -57,8 +51,8 @@ struct NetWorthScreen: View {
 
                     NetWorthGroupView(
                         group: .assets,
-                        snapshot: snapshot,
-                        plan: plan,
+                        snapshot: selectedSnapshot,
+                        year: year,
                         isEditingUnlocked: isEditingUnlocked,
                         onEdit: { item in
                             selectedItem = item
@@ -67,8 +61,8 @@ struct NetWorthScreen: View {
 
                     NetWorthGroupView(
                         group: .liabilities,
-                        snapshot: snapshot,
-                        plan: plan,
+                        snapshot: selectedSnapshot,
+                        year: year,
                         isEditingUnlocked: isEditingUnlocked,
                         onEdit: { item in
                             selectedItem = item
@@ -121,7 +115,7 @@ struct NetWorthScreen: View {
                 NetWorthItemFormView(
                     initialState: NetWorthItemFormState(
                         item: item,
-                        amount: snapshot.amount(for: item.id)
+                        amount: selectedSnapshot.amount(for: item)
                     ),
                     titleKey: "networth.item.form.edit.title",
                     reuseHelpKey: "networth.item.form.edit.reuse.help",
@@ -139,23 +133,24 @@ struct NetWorthScreen: View {
 
 private extension NetWorthScreen {
     func addItem(_ input: ValidatedNetWorthItemInput) throws {
-        let item = plan.addItem(
+        let item = year.addItem(
             category: input.category,
             name: input.name
         )
-        snapshot.setAmount(input.amount, for: item.id)
+        selectedSnapshot.setAmount(input.amount, for: item)
     }
 
     func updateItem(
         itemID: UUID,
         input: ValidatedNetWorthItemInput
     ) throws {
-        try plan.updateItem(
+        try year.updateItem(
             id: itemID,
             category: input.category,
             name: input.name
         )
-        snapshot.setAmount(input.amount, for: itemID)
+        guard let item = year.planItems.first(where: { $0.id == itemID }) else { return }
+        selectedSnapshot.setAmount(input.amount, for: item)
     }
 
     func deleteItem(itemID: UUID) throws {
@@ -172,11 +167,11 @@ private extension NetWorthScreen {
 
                     Picker(
                         "networth.snapshot.picker".localized,
-                        selection: $selectedSnapshotID
+                        selection: $selectedSnapshot
                     ) {
-                        ForEach(snapshots.sorted { $0.asOfDate > $1.asOfDate }) { snapshot in
+                        ForEach(year.snapshots.sorted { $0.asOfDate > $1.asOfDate }) { snapshot in
                             Text(snapshot.asOfDate, format: .dateTime.month(.wide).year())
-                                .tag(snapshot.id)
+                                .tag(snapshot)
                         }
                     }
                     .pickerStyle(.menu)
@@ -199,7 +194,7 @@ private extension NetWorthScreen {
                 .customSubHeadline()
                 .foregroundStyle(.secondary)
 
-            Text(snapshot.netWorth(using: plan).formattedVND)
+            Text(selectedSnapshot.netWorth(using: year.planItems).formattedVND)
                 .font(.system(.largeTitle, design: .rounded, weight: .bold))
                 .foregroundStyle(.primary)
 
@@ -232,13 +227,13 @@ private extension NetWorthScreen {
         HStack(spacing: 12) {
             NetWorthSummaryView(
                 title: "networth.total.assets".localized,
-                amount: snapshot.total(for: .assets, using: plan),
+                amount: selectedSnapshot.total(for: .assets, using: year.planItems),
                 tint: .green
             )
 
             NetWorthSummaryView(
                 title: "networth.total.liabilities".localized,
-                amount: snapshot.total(for: .liabilities, using: plan),
+                amount: selectedSnapshot.total(for: .liabilities, using: year.planItems),
                 tint: .orange
             )
         }
@@ -275,15 +270,12 @@ private struct NetWorthSummaryView: View {
 private struct NetWorthGroupView: View {
     let group: NetWorthGroup
     let snapshot: NetWorthSnapshot
-    let plan: NetWorthPlan
+    let year: NetWorthYear
     let isEditingUnlocked: Bool
     let onEdit: (NetWorthPlanItem) -> Void
-
+    
     private var categories: [NetWorthCategory] {
-        NetWorthCatalog.categories
-            .filter { $0.category.group == group }
-            .sorted { $0.displayOrder < $1.displayOrder }
-            .map(\.category)
+        group.categories
     }
 
     var body: some View {
@@ -305,7 +297,7 @@ private struct NetWorthGroupView: View {
             ForEach(categories, id: \.self) { category in
                 NetWorthSectionView(
                     category: category,
-                    items: plan.items(in: category),
+                    items: year.items(in: category),
                     snapshot: snapshot,
                     isEditingUnlocked: isEditingUnlocked,
                     onEdit: onEdit
@@ -321,7 +313,7 @@ private struct NetWorthGroupView: View {
 
                 Spacer()
 
-                Text(snapshot.total(for: group, using: plan).formattedVND)
+                Text(snapshot.total(for: group, using: year.planItems).formattedVND)
                     .customHeadline()
                     .foregroundStyle(.primary)
             }
@@ -335,12 +327,3 @@ private struct NetWorthGroupView: View {
         )
     }
 }
-
-//#Preview {
-//    NavigationStack {
-//        NetWorthScreen(
-//            snapshot: .july2026,
-//            plan: .july2026
-//        )
-//    }
-//}

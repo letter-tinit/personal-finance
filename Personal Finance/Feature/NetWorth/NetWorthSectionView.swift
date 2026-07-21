@@ -16,7 +16,7 @@ struct NetWorthSectionView: View {
 
     private var subtotal: Decimal {
         items
-            .compactMap { snapshot.amount(for: $0.id) }
+            .compactMap { snapshot.amount(for: $0) }
             .reduce(.zero, +)
     }
 
@@ -42,7 +42,7 @@ struct NetWorthSectionView: View {
                 ForEach(items) { item in
                     NetWorthItemRow(
                         name: item.name,
-                        amount: snapshot.amount(for: item.id),
+                        amount: snapshot.amount(for: item),
                         isEditingUnlocked: isEditingUnlocked,
                         onEdit: {
                             onEdit(item)

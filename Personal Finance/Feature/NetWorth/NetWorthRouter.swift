@@ -6,10 +6,10 @@
 //
 
 import SwiftUI
-import Observation
+import SwiftData
 
-enum NetWorthRoute: Hashable {
-    case yearNetworth(NetWorthData)
+enum NetWorthRoute: Hashable, Equatable{
+    case yearNetworth(NetWorthYear)
 }
 
 @Observable

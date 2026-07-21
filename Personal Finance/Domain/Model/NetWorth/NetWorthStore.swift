@@ -39,24 +39,25 @@ struct NetWorthStore {
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
     }
 
-    func loadData() throws -> [NetWorthData]? {
-        guard fileManager.fileExists(atPath: fileURL.path) else {
-            return nil
-        }
-
-        let data = try Data(contentsOf: fileURL)
-        if let yearlyData = try? decoder.decode([NetWorthData].self, from: data) {
-            try yearlyData.forEach { try $0.validate() }
-            return yearlyData
-        }
-
-        let legacyData = try decoder.decode(NetWorthData.self, from: data)
-        try legacyData.validate()
-        return [legacyData]
+    func loadData() throws -> [NetWorthYear]? {
+//        guard fileManager.fileExists(atPath: fileURL.path) else {
+//            return nil
+//        }
+//
+//        let data = try Data(contentsOf: fileURL)
+//        if let yearlyData = try? decoder.decode([NetWorthYear].self, from: data) {
+//            try yearlyData.forEach { try $0.validate() }
+//            return yearlyData
+//        }
+//
+//        let legacyData = try decoder.decode(NetWorthYear.self, from: data)
+//        try legacyData.validate()
+//        return [legacyData]
+        return []
     }
 
-    func saveData(_ data: [NetWorthData]) throws {
-        try data.forEach { try $0.validate() }
-        try encoder.encode(data).write(to: fileURL, options: [.atomic])
+    func saveData(_ data: [NetWorthYear]) throws {
+//        try data.forEach { try $0.validate() }
+//        try encoder.encode(data).write(to: fileURL, options: [.atomic])
     }
 }

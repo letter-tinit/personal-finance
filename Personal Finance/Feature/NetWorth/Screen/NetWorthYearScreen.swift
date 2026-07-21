@@ -8,26 +8,19 @@
 import SwiftUI
 
 struct NetWorthYearScreen: View {
-    let data: NetWorthData
-    @State private var selectedSnapshotID: UUID
+    let data: NetWorthYear
     @State private var isSnapshotFormPresented = false
-
-    init(data: NetWorthData) {
+    
+    init(data: NetWorthYear) {
         self.data = data
-        _selectedSnapshotID = State(
-            initialValue: data.snapshots.max(by: { $0.asOfDate < $1.asOfDate })?.id
-                ?? NetWorthSnapshot.july2026.id
-        )
     }
-
+    
     var body: some View {
         @Bindable var data = data
-        if let snapshot = data.snapshots.first(where: { $0.id == selectedSnapshotID }) {
+        if let snapshot = data.snapshots.first {
             NetWorthScreen(
+                year: data,
                 snapshot: snapshot,
-                plan: $data.plan,
-                snapshots: data.snapshots,
-                selectedSnapshotID: $selectedSnapshotID,
                 statusMessage: nil,
                 onDeleteItem: deleteItem,
                 onCreateSnapshot: {
@@ -51,9 +44,9 @@ struct NetWorthYearScreen: View {
         Calendar.current.nextMonth(after: data.snapshots.max(by: { $0.asOfDate < $1.asOfDate })?.asOfDate
             ?? Calendar.current.startOfMonth(for: Date()))
     }
+    
     private func createSnapshot(for month: Date) throws {
         let snapshot = try data.addSnapshot(for: month)
-        selectedSnapshotID = snapshot.id
     }
 
     private func deleteItem(id: UUID) throws {
