@@ -14,7 +14,7 @@ struct MainTabScreen: View {
     
     // MARK: - Bindable
     @State private var balanceViewModel: BalanceViewModel
-    @State private var selectedTab: AppTab = .balance
+    @State private var selectedTab: AppTab = .netWorth
     
     // MARK: - AppStorage
     @AppStorage(AppLanguage.preferenceKey) private var languageCode = AppLanguage.system.rawValue
