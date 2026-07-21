@@ -24,7 +24,7 @@ struct BaseScreen<Content: View>: View {
     
     var body: some View {
         ZStack {
-            Color.white
+            Color.Common.background
                 .ignoresSafeArea()
 
             content()

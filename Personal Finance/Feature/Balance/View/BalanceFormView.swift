@@ -10,11 +10,27 @@ import SwiftUI
 struct BalanceFormView: View {
     @Environment(\.dismiss) private var dismiss
     
-    @State private var title: String = "transaction.form.title".localized
-    @State private var input: TransactionInput = .template
+    @State private var title: String
+    @State private var input: TransactionInput
     @State private var errorMessage: String?
+    @State private var isUpdate: Bool = false
     
-    var onCreate: ((Transaction) -> Void)? = nil
+    private let originalTransacion: Transaction?
+
+    var onSave: ((Transaction) -> Void)? = nil
+    
+    init(transaction: Transaction? = nil, onSave: ((Transaction) -> Void)? = nil) {
+        self.originalTransacion = transaction
+        self.onSave = onSave
+        
+        if let transaction {
+            _title = State(initialValue: "transaction.form.edit.title".localized)
+            _input = State(initialValue: .init(transaction: transaction))
+        } else {
+            _title = State(initialValue: "transaction.form.title".localized)
+            _input = State(initialValue: .template)
+        }
+    }
     
     var body: some View {
         BaseScreen($title) {
@@ -94,7 +110,14 @@ struct BalanceFormView: View {
     
     private func handleSave() {
         do {
-            onCreate?(try input.validatedInputTransaction())
+            if let transaction = originalTransacion {
+                try input.apply(to: transaction)
+                onSave?(transaction)
+            } else {
+                let transaction = try input.validatedInputTransaction()
+                onSave?(transaction)
+            }
+
             dismiss()
         } catch let error as TransactionFormValidationError {
             errorMessage = error.errorDescription

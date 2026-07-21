@@ -32,4 +32,12 @@ final class BalanceViewModel {
             errorMessage = error.localizedDescription
         }
     }
+    
+    func updateTransaction(_ transaction: Transaction) {
+        do {
+            try repository.updateTransaction(transaction)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
 }

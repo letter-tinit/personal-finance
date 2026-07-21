@@ -9,58 +9,20 @@ import SwiftUI
 
 struct BalanceList: View {
     @Environment(BalanceViewModel.self) private var balanceViewModel: BalanceViewModel
+    @State private var selectedTransaction: Transaction?
+    
     let transactions: [TransactionRowModel]
     
     var body: some View {
-        List(transactions, id: \.self) { row in
-            let transaction = row.transaction
-            let color = transaction.type.color
-            let sign = transaction.type == .income ? "+" : "-"
-            let paymentMethod = transaction.method
-            HStack {
-                VStack {
-                    let transactionTime = transaction.occurredAt
-                    Text(transactionTime.toString(withFormat: .custom("d/M")))
-                        .customHeadline()
-                    
-                    Text(transactionTime.toString(withFormat: .custom("yyyy")))
-                        .customSubText()
-                    
-                    Text(transactionTime.toString(withFormat: .custom("EEE")))
-                        .secondarySubHeadline()
-                }
-                
-                Divider()
-                
-                VStack(alignment: .leading) {
-                    Text(transaction.title)
-                        .secondarySubHeadline()
-                        .lineLimit(nil)
-                    
-                    Text(paymentMethod.localizationKey.localized)
-                        .font(.caption)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 3)
-                        .background(
-                            Capsule()
-                                .foregroundStyle(paymentMethod.color.opacity(0.3))
-                        )
-                }
-                
-                Spacer()
-                
-                VStack(alignment: .trailing) {
-                    Text("\(sign)\(transaction.amount.formattedVND)")
-                        .customSubHeadline()
-                        .foregroundStyle(color)
-                    
-                    Text(row.balanceSnapshot.formattedVND)
-                        .font(.caption)
-                }
+        List(transactions) { rowModel in
+            Button {
+                selectedTransaction = rowModel.transaction
+            } label: {
+                BalanceRowItem(rowModel: rowModel)
             }
             .swipeActions(edge: .trailing) {
                 Button {
-                    balanceViewModel.removeTransaction(transaction)
+                    balanceViewModel.removeTransaction(rowModel.transaction)
                 } label: {
                     Label(
                         "common.delete".localized,
@@ -71,8 +33,15 @@ struct BalanceList: View {
             }
             .lineSpacing(0)
         }
+        .sheet(item: $selectedTransaction) { transaction in
+            NavigationStack {
+                BalanceFormView(transaction: transaction, onSave: balanceViewModel.updateTransaction)
+            }
+        }
+        .contentMargins(.top, 10, for: .scrollContent)
         .listStyle(.insetGrouped)
         .scrollIndicators(.hidden)
+        .scrollContentBackground(.hidden)
     }
 }
 

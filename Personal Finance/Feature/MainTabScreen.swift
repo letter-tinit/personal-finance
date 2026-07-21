@@ -95,7 +95,6 @@ struct MainTabScreen: View {
             
         }
         .id(languageCode)
-        .tint(.cyan)
         .environment(\.locale, selectedLanguage.locale)
     }
 }
@@ -136,7 +135,7 @@ private enum AppTab: Hashable {
 
 import SwiftData
 #Preview {
-    let container = AppContainer()
+    let container = AppContainer(inMemory: true)
     
     MainTabScreen(factory: container)
         .modelContainer(container.modelContainer)

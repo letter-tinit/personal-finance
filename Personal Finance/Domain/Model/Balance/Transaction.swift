@@ -9,7 +9,7 @@ import SwiftData
 import Foundation
 
 @Model
-final class Transaction {
+final class Transaction: Identifiable {
     var id: UUID
     
     var title: String
@@ -39,26 +39,6 @@ final class Transaction {
 }
 
 extension Transaction {
-    static func make(
-        title: String,
-        note: String? = nil,
-        type: TransactionType,
-        category: TransactionCategory,
-        amount: Decimal,
-        method: PaymentMethod,
-        occurredAt: Date
-    ) -> Transaction {
-        return Transaction(
-            title: title,
-            note: note,
-            type: type,
-            category: category,
-            method: method,
-            amount: amount,
-            occurredAt: occurredAt
-        )
-    }
-    
     func snapshot(from previousBalance: Decimal) -> Decimal {
         switch type {
         case .expense:

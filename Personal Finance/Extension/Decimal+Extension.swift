@@ -26,6 +26,20 @@ extension Decimal {
         return ""
     }
     
+    var toAmountString: String {
+        let priceNumber = NSDecimalNumber(decimal: self)
+        
+        let formatter = NumberFormatter()
+        formatter.groupingSeparator = ","
+        formatter.groupingSize = 3
+        formatter.usesGroupingSeparator = true
+        formatter.locale = Locale(identifier: "vi_VN")
+        formatter.numberStyle = .none
+        formatter.maximumFractionDigits = 0
+        
+        return formatter.string(from: priceNumber) ?? ""
+    }
+    
     var doubleValue: Double {
         NSDecimalNumber(decimal: self).doubleValue
     }

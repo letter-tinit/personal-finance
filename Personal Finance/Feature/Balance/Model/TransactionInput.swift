@@ -28,39 +28,80 @@ struct TransactionInput: Equatable {
         )
     }
     
-    func validatedInputTransaction() throws -> Transaction {
+    private var amount: Decimal = .zero
+    
+    init(title: String, description: String, transactionType: TransactionType, category: TransactionCategory, occurredAt: Date, amountText: String, paymentMethod: PaymentMethod) {
+        self.title = title
+        self.description = description
+        self.transactionType = transactionType
+        self.category = category
+        self.occurredAt = occurredAt
+        self.amountText = amountText
+        self.paymentMethod = paymentMethod
+    }
+    
+    init(transaction: Transaction) {
+        self.title = transaction.title
+        self.description = transaction.note ?? ""
+        self.transactionType = transaction.type
+        self.category = transaction.category
+        self.occurredAt = transaction.occurredAt
+        self.amountText = transaction.amount.toAmountString
+        self.paymentMethod = transaction.method
+    }
+    
+    mutating func validate() throws {
+        let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedDescription = description.trimmingCharacters(in: .whitespacesAndNewlines)
-        
+
         let normalizedAmount = amountText
             .replacingOccurrences(of: ".", with: "")
             .replacingOccurrences(of: ",", with: "")
             .trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        if title.isEmpty {
+
+        guard !trimmedTitle.isEmpty else {
             throw TransactionFormValidationError.titleRequired
         }
-        
-        if amountText.isEmpty {
+
+        guard !normalizedAmount.isEmpty else {
             throw TransactionFormValidationError.amountRequired
         }
 
         guard let amount = Decimal(string: normalizedAmount) else {
             throw TransactionFormValidationError.invalidAmount
         }
-        
-        if amount <= 0 {
+
+        guard amount > 0 else {
             throw TransactionFormValidationError.amountMustBePositive
         }
+        
+        self.amount = amount
+    }
+    
+    mutating func validatedInputTransaction() throws -> Transaction {
+        try validate()
 
         return Transaction(
             title: title,
-            note: trimmedDescription,
+            note: description.trimmingCharacters(in: .whitespacesAndNewlines),
             type: transactionType,
             category: category,
             method: paymentMethod,
             amount: amount,
             occurredAt: occurredAt
         )
+    }
+    
+    mutating func apply(to transaction: Transaction) throws {
+        try validate()
+
+        transaction.title = title
+        transaction.note = description.trimmingCharacters(in: .whitespacesAndNewlines)
+        transaction.type = transactionType
+        transaction.category = category
+        transaction.method = paymentMethod
+        transaction.amount = amount
+        transaction.occurredAt = occurredAt
     }
 }
 

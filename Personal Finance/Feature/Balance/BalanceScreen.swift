@@ -9,10 +9,11 @@ import SwiftUI
 import SwiftData
 
 struct BalanceScreen: View {
+    @State var router: BalanceRouter = BalanceRouter()
     @State private var title = "balance".localized
     @State private var isCreateNewBalancePresented: Bool = false
     @State private var viewModel: BalanceViewModel
-    @State var router: BalanceRouter = BalanceRouter()
+    
     @Query(
         sort: \Transaction.occurredAt,
         order: .reverse
@@ -48,8 +49,9 @@ struct BalanceScreen: View {
                 }
             }
         }
-        .sheet(isPresented: $isCreateNewBalancePresented) {NavigationStack {
-                BalanceFormView(onCreate: viewModel.addTransaction)
+        .sheet(isPresented: $isCreateNewBalancePresented) {
+            NavigationStack {
+                BalanceFormView(onSave: viewModel.addTransaction)
             }
         }
     }
