@@ -8,10 +8,10 @@
 import Foundation
 import SwiftData
 
-final class Balance {
-    var transactions: [BalanceTransaction]
+struct Balance {
+    var transactions: [Transaction]
     
-    init(transactions: [BalanceTransaction] = []) {
+    init(transactions: [Transaction] = []) {
         self.transactions = transactions
     }
 }
@@ -25,7 +25,7 @@ enum BalanceStatus: Codable {
 extension Balance {
     var inflow: Decimal {
         transactions
-            .filter{ $0.transactionType == .income }
+            .filter{ $0.type == .income }
             .reduce(Decimal.zero) { partialResult, transaction in
                 partialResult + transaction.amount
             }
@@ -33,7 +33,7 @@ extension Balance {
     
     var outflow: Decimal {
         transactions
-            .filter{ $0.transactionType == .expense }
+            .filter{ $0.type == .expense }
             .reduce(Decimal.zero) { partialResult, transaction in
                 partialResult + transaction.amount
             }
@@ -94,83 +94,33 @@ extension Balance {
     var balance: Decimal {
         abs((inflow - outflow))
     }
-}
-
-extension Balance {
-    static let mock = Balance(
-        transactions: [
-//            .test,
-//            .mockSalary,
-//            .mockFreelance,
-//            .mockCoffee,
-//            .mockLunch,
-//            .mockNetflix,
-//            .mockGroceries
-        ]
-    )
-}
-
-extension BalanceTransaction {
-    static let test = BalanceTransaction(
-        note: "test",
-        transactionType: .expense,
-        occurredAt: Calendar.current.date(byAdding: .day, value: -20, to: Date())!,
-        amount: 1_850_000,
-        balanceSnapshot: 15_000_000,
-        paymentMethod: .banking
-    )
     
-    static let mockSalary = BalanceTransaction(
-        note: "Monthly Salary",
-        transactionType: .income,
-        occurredAt: Calendar.current.date(byAdding: .day, value: -20, to: Date())!,
-        amount: 15_000_000,
-        balanceSnapshot: 15_000_000,
-        paymentMethod: .banking
-    )
+    var transactionRows: [TransactionRowModel] {
+        var balance: Decimal = 0
+        
+        let rows = transactions
+            .sorted {
+                $0.occurredAt < $1.occurredAt
+            }
+            .map { transaction in
+                
+                balance += transaction.type == .income
+                ? transaction.amount
+                : -transaction.amount
+                
+                return TransactionRowModel(
+                    id: transaction.id,
+                    transaction: transaction,
+                    balanceSnapshot: balance
+                )
+            }
+        
+        return Array(rows.reversed())
+    }
+}
 
-    static let mockFreelance = BalanceTransaction(
-        note: "Freelance Project",
-        transactionType: .income,
-        occurredAt: Calendar.current.date(byAdding: .day, value: -15, to: Date())!,
-        amount: 2_000_000,
-        balanceSnapshot: 17_000_000,
-        paymentMethod: .banking
-    )
-
-    static let mockCoffee = BalanceTransaction(
-        note: "Coffee",
-        transactionType: .expense,
-        occurredAt: Calendar.current.date(byAdding: .day, value: -10, to: Date())!,
-        amount: 65_000,
-        balanceSnapshot: 16_935_000,
-        paymentMethod: .banking
-    )
-
-    static let mockLunch = BalanceTransaction(
-        note: "Lunch",
-        transactionType: .expense,
-        occurredAt: Calendar.current.date(byAdding: .day, value: -8, to: Date())!,
-        amount: 120_000,
-        balanceSnapshot: 16_815_000,
-        paymentMethod: .banking
-    )
-
-    static let mockNetflix = BalanceTransaction(
-        note: "Netflix",
-        transactionType: .expense,
-        occurredAt: Calendar.current.date(byAdding: .day, value: -5, to: Date())!,
-        amount: 260_000,
-        balanceSnapshot: 16_555_000,
-        paymentMethod: .banking
-    )
-
-    static let mockGroceries = BalanceTransaction(
-        note: "Groceries",
-        transactionType: .expense,
-        occurredAt: Calendar.current.date(byAdding: .day, value: -2, to: Date())!,
-        amount: 14_705_000,
-        balanceSnapshot: 1_850_000,
-        paymentMethod: .banking
-    )
+struct TransactionRowModel: Identifiable, Hashable {
+    let id: PersistentIdentifier
+    let transaction: Transaction
+    let balanceSnapshot: Decimal
 }

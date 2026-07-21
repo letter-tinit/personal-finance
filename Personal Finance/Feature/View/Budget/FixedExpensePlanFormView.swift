@@ -51,12 +51,7 @@ struct FixedExpensePlanFormView: View {
                 )
                 .keyboardType(.numberPad)
                 .focused($focusedField, equals: .amount)
-                .onChange(of: formState.amountText) { _, newValue in
-                    let formattedAmount = CurrencyInputFormatter.format(newValue)
-                    if formattedAmount != newValue {
-                        formState.amountText = formattedAmount
-                    }
-                }
+                .currencyInputFormat($formState.amountText)
 
                 Text("fixed.plan.form.amount.help".localized)
                     .secondarySubHeadline()
@@ -107,7 +102,7 @@ struct FixedExpensePlanFormView: View {
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
 
-                Button("keyboard.done".localized) {
+                Button("common.done".localized) {
                     focusedField = nil
                 }
             }

@@ -16,24 +16,24 @@ final class ImplBalanceRepository: BalanceRepository {
         self.modelContext = modelContext
     }
     
-    func fetchTransactions() throws -> [BalanceTransaction] {
-        let descriptor = FetchDescriptor<BalanceTransaction>(
+    func fetchTransactions() throws -> [Transaction] {
+        let descriptor = FetchDescriptor<Transaction>(
             sortBy: [SortDescriptor(\.occurredAt, order: .reverse)]
         )
         
         return try modelContext.fetch(descriptor)
     }
     
-    func addTransaction(_ transaction: BalanceTransaction) throws {
+    func addTransaction(_ transaction: Transaction) throws {
         modelContext.insert(transaction)
         try save()
     }
     
-    func updateTransaction(_ transaction: BalanceTransaction) throws {
+    func updateTransaction(_ transaction: Transaction) throws {
         try save()
     }
     
-    func deleteTransaction(_ transaction: BalanceTransaction) throws {
+    func deleteTransaction(_ transaction: Transaction) throws {
         modelContext.delete(transaction)
         try save()
     }

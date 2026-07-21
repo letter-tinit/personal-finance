@@ -13,7 +13,7 @@ struct TransactionFormView: View {
     let allocations: [BudgetAllocation]
     let showsAllocationPicker: Bool
     let titleKey: String
-    let onSave: (ValidatedTransactionInput) throws -> Void
+    let onSave: (ValidatedBudgetTransactionInput) throws -> Void
     let onDelete: (() throws -> Void)?
 
     @State private var formState: TransactionFormState
@@ -26,7 +26,7 @@ struct TransactionFormView: View {
         showsAllocationPicker: Bool = true,
         initialState: TransactionFormState = TransactionFormState(),
         titleKey: String = "transaction.form.title",
-        onSave: @escaping (ValidatedTransactionInput) throws -> Void,
+        onSave: @escaping (ValidatedBudgetTransactionInput) throws -> Void,
         onDelete: (() throws -> Void)? = nil
     ) {
         var formattedState = initialState
@@ -75,12 +75,7 @@ struct TransactionFormView: View {
                 )
                 .keyboardType(.numberPad)
                 .focused($focusedField, equals: .amount)
-                .onChange(of: formState.amountText) { _, newValue in
-                    let formattedAmount = CurrencyInputFormatter.format(newValue)
-                    if formattedAmount != newValue {
-                        formState.amountText = formattedAmount
-                    }
-                }
+                .currencyInputFormat($formState.amountText)
 
                 DatePicker(
                     "transaction.form.date".localized,
@@ -147,7 +142,7 @@ struct TransactionFormView: View {
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
 
-                Button("keyboard.done".localized) {
+                Button("common.done".localized) {
                     focusedField = nil
                 }
             }
@@ -183,7 +178,7 @@ private extension TransactionFormView {
             let input = try formState.validatedInput()
             try onSave(input)
             dismiss()
-        } catch let error as TransactionFormValidationError {
+        } catch let error as BudgetTransactionFormValidationError {
             errorMessage = error.localizationKey.localized
         } catch {
             errorMessage = "transaction.form.error.save".localized
@@ -200,7 +195,7 @@ private extension TransactionFormView {
     }
 }
 
-extension TransactionFormValidationError {
+extension BudgetTransactionFormValidationError {
     var localizationKey: String {
         switch self {
         case .descriptionRequired:
@@ -208,7 +203,7 @@ extension TransactionFormValidationError {
         case .allocationRequired:
             "transaction.form.error.allocation"
         case .invalidAmount:
-            "transaction.form.error.amount"
+            "transaction.form.error.amount.positive"
         }
     }
 }

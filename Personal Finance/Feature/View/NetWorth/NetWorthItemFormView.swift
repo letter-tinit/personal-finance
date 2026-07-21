@@ -60,12 +60,7 @@ struct NetWorthItemFormView: View {
                 )
                 .keyboardType(.numberPad)
                 .focused($focusedField, equals: .amount)
-                .onChange(of: formState.amountText) { _, newValue in
-                    let formattedAmount = CurrencyInputFormatter.format(newValue)
-                    if formattedAmount != newValue {
-                        formState.amountText = formattedAmount
-                    }
-                }
+                .currencyInputFormat($formState.amountText)
 
                 Text("networth.item.form.amount.help".localized)
                     .secondarySubHeadline()
@@ -111,7 +106,7 @@ struct NetWorthItemFormView: View {
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
 
-                Button("keyboard.done".localized) {
+                Button("common.done".localized) {
                     focusedField = nil
                 }
             }

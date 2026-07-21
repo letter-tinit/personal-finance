@@ -223,6 +223,14 @@ enum TransactionType: String, CaseIterable, Hashable, Codable {
             "arrow.up"
         }
     }
+    
+    var titleKey: String {
+        "transaction.type.\(rawValue)"
+    }
+    
+    var localizedTitle: String {
+        titleKey.localized
+    }
 }
 
 enum BudgetAllocationStatus: Hashable {

@@ -50,12 +50,7 @@ struct CreateBudgetView: View {
                 )
                 .keyboardType(.numberPad)
                 .focused($focusedField, equals: .income)
-                .onChange(of: formState.incomeText) { _, newValue in
-                    let formattedAmount = CurrencyInputFormatter.format(newValue)
-                    if formattedAmount != newValue {
-                        formState.incomeText = formattedAmount
-                    }
-                }
+                .currencyInputFormat($formState.incomeText)
 
                 Picker(
                     "budget.create.method".localized,
@@ -139,7 +134,7 @@ struct CreateBudgetView: View {
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
 
-                Button("keyboard.done".localized) {
+                Button("common.done".localized) {
                     focusedField = nil
                 }
             }

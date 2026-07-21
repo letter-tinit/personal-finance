@@ -12,7 +12,7 @@ struct FixedPlanView: View {
     let onAdd: (ValidatedFixedExpensePlanInput) throws -> Void
     let onUpdate: (UUID, ValidatedFixedExpensePlanInput) throws -> Void
     let onDelete: (UUID) throws -> Void
-    let onComplete: (UUID, ValidatedTransactionInput) throws -> Void
+    let onComplete: (UUID, ValidatedBudgetTransactionInput) throws -> Void
     
     @State private var isAddFormPresented = false
     @State private var selectedPlan: FixedExpensePlan?
@@ -26,7 +26,7 @@ struct FixedPlanView: View {
         onAdd: @escaping (ValidatedFixedExpensePlanInput) throws -> Void = { _ in },
         onUpdate: @escaping (UUID, ValidatedFixedExpensePlanInput) throws -> Void = { _, _ in },
         onDelete: @escaping (UUID) throws -> Void = { _ in },
-        onComplete: @escaping (UUID, ValidatedTransactionInput) throws -> Void = { _, _ in }
+        onComplete: @escaping (UUID, ValidatedBudgetTransactionInput) throws -> Void = { _, _ in }
     ) {
         self.plans = plans
         self.onAdd = onAdd

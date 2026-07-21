@@ -189,7 +189,7 @@ private extension BudgetScreen {
 
     func completeFixedExpensePlan(
         planID: UUID,
-        input: ValidatedTransactionInput
+        input: ValidatedBudgetTransactionInput
     ) throws {
         try budget.completeFixedExpensePlan(
             id: planID,
@@ -249,7 +249,7 @@ private extension BudgetScreen {
         }
     }
 
-    func addTransaction(_ input: ValidatedTransactionInput) throws {
+    func addTransaction(_ input: ValidatedBudgetTransactionInput) throws {
         guard let allocation = budget.allocations.first(
             where: { $0.id == input.allocationID }
         ) else {
@@ -269,7 +269,7 @@ private extension BudgetScreen {
 
     func updateTransaction(
         transactionID: UUID,
-        input: ValidatedTransactionInput
+        input: ValidatedBudgetTransactionInput
     ) throws {
         try budget.updateTransaction(
             id: transactionID,

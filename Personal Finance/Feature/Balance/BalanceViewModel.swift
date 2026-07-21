@@ -11,28 +11,23 @@ import Foundation
 final class BalanceViewModel {
     private let repository: BalanceRepository
     
-    var balance: Balance?
     var errorMessage: String?
     
     init(repository: BalanceRepository) {
         self.repository = repository
-        load()
     }
     
-    func load() {
-        errorMessage = nil
-        
+    func addTransaction(_ transaction: Transaction) {
         do {
-            self.balance = Balance(transactions: try repository.fetchTransactions())
+            try repository.addTransaction(transaction)
         } catch {
             errorMessage = error.localizedDescription
         }
     }
     
-    func addTransaction(_ transaction: BalanceTransaction) {
+    func removeTransaction(_ transaction: Transaction) {
         do {
-            try repository.addTransaction(transaction)
-            load()
+            try repository.deleteTransaction(transaction)
         } catch {
             errorMessage = error.localizedDescription
         }

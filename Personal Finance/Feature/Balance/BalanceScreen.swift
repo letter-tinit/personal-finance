@@ -9,33 +9,53 @@ import SwiftUI
 import SwiftData
 
 struct BalanceScreen: View {
+    @State private var title = "balance".localized
+    @State private var isCreateNewBalancePresented: Bool = false
     @State private var viewModel: BalanceViewModel
     @State var router: BalanceRouter = BalanceRouter()
+    @Query(
+        sort: \Transaction.occurredAt,
+        order: .reverse
+    )
+    private var transactions: [Transaction]
+    private var balance: Balance {
+        Balance(transactions: transactions)
+    }
     
     init(_ viewModel: BalanceViewModel) {
         self.viewModel = viewModel
     }
     
     var body: some View {
-        if let balance = viewModel.balance {
+        BaseScreen($title) {
             VStack {
                 // MARK: - BALANCE VIEW
                 BalanceCard(balance: balance)
-                
+                    .padding(.horizontal)
+
                 // MARK: - TRANSACTIONS
-                BalanceList(transactions: balance.transactions)
+                BalanceList(transactions: balance.transactionRows)
+                    .environment(viewModel)
             }
-            .padding(.horizontal)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        viewModel.addTransaction(.mockLunch)
-                    } label: {
-                        Image(systemName: "plus")
-                    }
+        }
+        .navigationBarTitleDisplayMode(.automatic)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    isCreateNewBalancePresented = true
+                } label: {
+                    Image(systemName: "plus")
                 }
             }
         }
+        .sheet(isPresented: $isCreateNewBalancePresented) {NavigationStack {
+                BalanceFormView(onCreate: viewModel.addTransaction)
+            }
+        }
+    }
+    
+    private func createTransaction(_ transaction: Transaction) {
+        viewModel.addTransaction(transaction)
     }
 }
 

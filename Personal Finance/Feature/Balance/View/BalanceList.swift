@@ -8,12 +8,15 @@
 import SwiftUI
 
 struct BalanceList: View {
-    let transactions: [BalanceTransaction]
+    @Environment(BalanceViewModel.self) private var balanceViewModel: BalanceViewModel
+    let transactions: [TransactionRowModel]
+    
     var body: some View {
-        List(transactions, id: \.self) { transaction in
-            let color = transaction.transactionType.color
-            let sign = transaction.transactionType == .income ? "+" : "-"
-            let paymentMethod = transaction.paymentMethod
+        List(transactions, id: \.self) { row in
+            let transaction = row.transaction
+            let color = transaction.type.color
+            let sign = transaction.type == .income ? "+" : "-"
+            let paymentMethod = transaction.method
             HStack {
                 VStack {
                     let transactionTime = transaction.occurredAt
@@ -30,7 +33,7 @@ struct BalanceList: View {
                 Divider()
                 
                 VStack(alignment: .leading) {
-                    Text(transaction.note)
+                    Text(transaction.title)
                         .secondarySubHeadline()
                         .lineLimit(nil)
                     
@@ -51,12 +54,13 @@ struct BalanceList: View {
                         .customSubHeadline()
                         .foregroundStyle(color)
                     
-                    Text(transaction.balanceSnapshot.formattedVND)
+                    Text(row.balanceSnapshot.formattedVND)
                         .font(.caption)
                 }
             }
             .swipeActions(edge: .trailing) {
                 Button {
+                    balanceViewModel.removeTransaction(transaction)
                 } label: {
                     Label(
                         "common.delete".localized,
@@ -67,11 +71,11 @@ struct BalanceList: View {
             }
             .lineSpacing(0)
         }
-        .listStyle(.inset)
+        .listStyle(.insetGrouped)
         .scrollIndicators(.hidden)
     }
 }
 
 #Preview {
-    BalanceList(transactions: Balance.mock.transactions)
+    BalanceList(transactions: [])
 }

@@ -24,11 +24,10 @@ struct BaseScreen<Content: View>: View {
     
     var body: some View {
         ZStack {
-            Color.Common.background
+            Color.white
                 .ignoresSafeArea()
 
             content()
-                .dismissKeyboardOnTap()
         }
         .toolbarTitleDisplayMode(.inline)
         .toolbar {
@@ -46,5 +45,6 @@ struct BaseScreen<Content: View>: View {
                 }
             }
         }
+        .keyboardDoneButton()
     }
 }

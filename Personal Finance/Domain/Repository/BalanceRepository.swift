@@ -6,11 +6,11 @@
 //
 
 protocol BalanceRepository {
-    func fetchTransactions() throws -> [BalanceTransaction]
+    func fetchTransactions() throws -> [Transaction]
     
-    func addTransaction(_ transaction: BalanceTransaction) throws
+    func addTransaction(_ transaction: Transaction) throws
     
-    func updateTransaction(_ transaction: BalanceTransaction) throws
+    func updateTransaction(_ transaction: Transaction) throws
     
-    func deleteTransaction(_ transaction: BalanceTransaction) throws
+    func deleteTransaction(_ transaction: Transaction) throws
 }

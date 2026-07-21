@@ -8,10 +8,12 @@
 import SwiftUI
 
 struct BalanceCard: View {
+    @State private var isExpand: Bool = false
+    
     let balance: Balance
     
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 0) {
             VStack {
                 HStack {
                     Image(systemName: balance.symbol)
@@ -20,6 +22,15 @@ struct BalanceCard: View {
                         .customSubHeadline()
                     
                     Spacer()
+                    
+                    Button {
+                        baseAnimation {
+                            isExpand.toggle()
+                        }
+                    } label: {
+                        Image(systemName: "chevron.right")
+                            .rotationEffect(.degrees(isExpand ? 90 : 0))
+                    }
                 }
                 
                 Text(balance.displayBalance)
@@ -29,54 +40,53 @@ struct BalanceCard: View {
             }
             .foregroundStyle(balance.color)
             
-            Divider()
-                .padding(.horizontal, -16)
-            
-            VStack {
-                let hasInflow = balance.inflow != .zero
-                let hasOutflow = balance.outflow != .zero
-                
-                HStack {
-                    Text("balance.inflow".localized)
+            if isExpand {
+                VStack {
+                    let hasInflow = balance.inflow != .zero
+                    let hasOutflow = balance.outflow != .zero
                     
-                    Spacer()
+                    Divider()
                     
-                    Text(hasInflow ? "+ \(balance.inflow.formattedVND)" : "0")
-                        .foregroundStyle(Color.Common.success)
+                    HStack {
+                        Text("balance.inflow".localized)
+                        
+                        Spacer()
+                        
+                        Text(hasInflow ? "+ \(balance.inflow.formattedVND)" : "0 ₫")
+                            .foregroundStyle(Color.Common.success)
+                    }
+                    .customHeadline()
+                    
+                    HStack {
+                        Text("balance.outflow".localized)
+                        
+                        Spacer()
+                        
+                        Text(hasOutflow ? "- \(balance.outflow.formattedVND)" : "0 ₫")
+                            .foregroundStyle(Color.Common.failure)
+                    }
+                    .customHeadline()
                 }
-                .customHeadline()
-                
-                HStack {
-                    Text("balance.outflow".localized)
-                    
-                    Spacer()
-                    
-                    Text(hasOutflow ? "- \(balance.outflow.formattedVND)" : "0")
-                        .foregroundStyle(Color.Common.failure)
-                }
-                .customHeadline()
             }
-            .padding(.vertical)
         }
         .frame(maxWidth: .infinity)
         .padding()
         .borderedBackground(
             linearGradient: LinearGradient(
                 colors: [
-                    .pink.opacity(0.25),
-                    .pink.opacity(0.12),
-                    .pink.opacity(0.30)
+                    .cyan.opacity(0.25),
+                    .cyan.opacity(0.12),
+                    .cyan.opacity(0.30)
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             ),
-            cornerRadius: 30,
+            cornerRadius: 16,
             lineWidth: 0
         )
-        .padding(.top)
     }
 }
 
 #Preview {
-    BalanceCard(balance: .mock)
+    BalanceCard(balance: .init(transactions: []))
 }

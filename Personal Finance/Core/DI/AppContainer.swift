@@ -15,7 +15,7 @@ final class AppContainer: BalanceViewModelFactory {
     init(inMemory: Bool = false) {
         let config = ModelConfiguration(isStoredInMemoryOnly: inMemory)
         modelContainer = try! ModelContainer(
-            for: BalanceTransaction.self,
+            for: Transaction.self,
             configurations: config
         )
         

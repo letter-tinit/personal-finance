@@ -7,13 +7,13 @@
 
 import Foundation
 
-enum TransactionFormValidationError: Error, Equatable {
+enum BudgetTransactionFormValidationError: Error, Equatable {
     case descriptionRequired
     case allocationRequired
     case invalidAmount
 }
 
-struct ValidatedTransactionInput: Equatable {
+struct ValidatedBudgetTransactionInput: Equatable {
     let description: String
     let allocationID: UUID
     let amount: Decimal
@@ -48,14 +48,14 @@ struct TransactionFormState: Equatable {
         self.occurredAt = occurredAt
     }
 
-    func validatedInput() throws -> ValidatedTransactionInput {
+    func validatedInput() throws -> ValidatedBudgetTransactionInput {
         let trimmedDescription = description.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedDescription.isEmpty else {
-            throw TransactionFormValidationError.descriptionRequired
+            throw BudgetTransactionFormValidationError.descriptionRequired
         }
 
         guard let allocationID else {
-            throw TransactionFormValidationError.allocationRequired
+            throw BudgetTransactionFormValidationError.allocationRequired
         }
 
         let normalizedAmount = amountText
@@ -64,10 +64,10 @@ struct TransactionFormState: Equatable {
             .trimmingCharacters(in: .whitespacesAndNewlines)
 
         guard let amount = Decimal(string: normalizedAmount), amount > 0 else {
-            throw TransactionFormValidationError.invalidAmount
+            throw BudgetTransactionFormValidationError.invalidAmount
         }
 
-        return ValidatedTransactionInput(
+        return ValidatedBudgetTransactionInput(
             description: trimmedDescription,
             allocationID: allocationID,
             amount: amount,
