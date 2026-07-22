@@ -7,17 +7,21 @@
 
 import SwiftData
 
-final class AppContainer: BalanceViewModelFactory {
+final class AppContainer: AppViewModelFactory {
 
     let modelContainer: ModelContainer
     private let mainContext: ModelContext
 
     init(inMemory: Bool = false) {
-        let config = ModelConfiguration(isStoredInMemoryOnly: inMemory)
-        modelContainer = try! ModelContainer(
-            for: Transaction.self,
-            configurations: config
-        )
+        let schema = Schema([
+            Transaction.self,
+            NetWorthYear.self,
+            NetWorthPlanItem.self,
+            NetWorthSnapshot.self,
+            NetWorthValue.self
+        ])
+        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: inMemory)
+        modelContainer = try! ModelContainer(for: schema, configurations: config)
         
         mainContext = modelContainer.mainContext
     }
@@ -25,5 +29,9 @@ final class AppContainer: BalanceViewModelFactory {
 
     func makeBalanceViewModel() -> BalanceViewModel {
         BalanceViewModel(repository: ImplBalanceRepository(modelContext: mainContext))
+    }
+    
+    func makeNetWorthViewModel() -> NetWorthViewModel {
+        NetWorthViewModel(repository: ImplNetWorthRepository(modelContext: mainContext))
     }
 }

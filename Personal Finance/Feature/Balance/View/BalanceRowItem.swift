@@ -62,6 +62,5 @@ struct BalanceRowItem: View {
                     )
             }
         }
-        .tint(.primary)
     }
 }

@@ -121,4 +121,37 @@ extension View {
             .font(.subheadline)
             .fontWeight(.regular)
     }
+    
+    // MARK: - Modifier
+    func deleteConfirmationDialog(
+        isPresented: Binding<Bool>,
+        title: String = "common.delete.title".localized,
+        message: String = "common.delete.warning".localized,
+        deleteAction: @escaping () -> Void
+    ) -> some View {
+        modifier(
+            DeleteConfirmationDialogModifier(
+                isPresented: isPresented,
+                title: title,
+                message: message,
+                deleteAction: deleteAction
+            )
+        )
+    }
+    
+    func toast(
+        message: ToastMessage?,
+        type: ToastModifier.ToastType = .success,
+        position: Alignment = .top,
+        duration: Double = 3
+    ) -> some View {
+        modifier(
+            ToastModifier(
+                message: message,
+                toastType: type,
+                position: position,
+                duration: duration
+            )
+        )
+    }
 }

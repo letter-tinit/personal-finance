@@ -164,8 +164,8 @@ final class NetWorthSnapshot {
 /// One year's reusable item plan and its monthly measurements.
 @Model
 final class NetWorthYear {
-    @Attribute(.unique) var id: UUID = UUID()
-    var year: Int = Calendar.current.component(.year, from: .now)
+    var id: UUID = UUID()
+    @Attribute(.unique) var year: Int
 
     @Relationship(deleteRule: .cascade, inverse: \NetWorthPlanItem.year)
     var planItems: [NetWorthPlanItem] = []

@@ -41,7 +41,7 @@ struct ProfileScreen: View {
                     }
                 }
             }
-            .listStyle(.plain)
+            .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
             .navigationTitle("profile.tab.title".localized)
             .toolbar {

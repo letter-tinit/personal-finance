@@ -70,6 +70,7 @@
 "networth.year.add" = "Tạo năm tài sản ròng tiếp theo";
 "networth.year.missing" = "Không tìm thấy năm tài sản ròng";
 "networth.year.monthCount" = "%d tháng";
+"networth.year.existed" = "Năm %lld đã tồn tại";
 "networth.snapshot.picker" = "Tháng tài sản ròng";
 "networth.snapshot.form.title" = "Tạo bảng tài sản ròng";
 "networth.snapshot.form.create" = "Tạo";
@@ -163,16 +164,6 @@
 "payment.method.banking" = "Chuyển khoản";
 "payment.method.cash" = "Tiền mặt";
 "payment.method.card" = "Thẻ";
-"common.optional" = "Tuỳ chọn";
-"common.optional.bracket" = "(Tuỳ chọn)";
-"common.cancel" = "Hủy";
-"common.save" = "Lưu";
-"common.ok" = "OK";
-"common.done" = "Xong";
-"common.delete" = "Xóa";
-"common.delete.warning" = "Bạn không thể hoàn tác thao tác này.";
-"common.error.unknown" = "Lỗi không xác định";
-"common.error" = "Lỗi";
 "budget.method.fiftyThirtyTwenty" = "50/30/20";
 "budget.method.sixJars" = "6 chiếc lọ";
 "bucket.needs" = "Nhu cầu";
@@ -203,3 +194,18 @@
 "transaction.category.other" = "Khác";
 "transaction.type.income" = " Thu nhập";
 "transaction.type.expense" = "Chi tiêu";
+
+"common.create" = "Tạo mới";
+"common.create.new" = "Tạo mới";
+"common.year" = "Năm";
+"common.optional" = "Tuỳ chọn";
+"common.optional.bracket" = "(Tuỳ chọn)";
+"common.cancel" = "Hủy";
+"common.save" = "Lưu";
+"common.ok" = "OK";
+"common.done" = "Xong";
+"common.delete" = "Xóa";
+"common.delete.title" = "Bạn có muốn xoá mục này?";
+"common.delete.warning" = "Bạn không thể hoàn tác thao tác này.";
+"common.error.unknown" = "Lỗi không xác định";
+"common.error" = "Lỗi";

@@ -16,4 +16,13 @@ struct PreviewHelper {
         
         return BalanceViewModel(repository: repository)
     }
+    
+    @MainActor
+    static func makeNetWorthViewModel() -> NetWorthViewModel {
+        let context = PreviewContainer.shared.container.mainContext
+        
+        let repository = ImplNetWorthRepository(modelContext: context)
+        
+        return NetWorthViewModel(repository: repository)
+    }
 }

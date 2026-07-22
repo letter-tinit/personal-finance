@@ -69,6 +69,7 @@
 "networth.list.title" = "Net Worth Years";
 "networth.year.add" = "Create next Net Worth year";
 "networth.year.missing" = "Net Worth year not found";
+"networth.year.existed" = "Year %lld already existed";
 "networth.year.monthCount" = "%d months";
 "networth.snapshot.picker" = "Net Worth month";
 "networth.snapshot.form.title" = "Create Net Worth Table";
@@ -163,16 +164,6 @@
 "payment.method.banking" = "Bank transfer";
 "payment.method.cash" = "Cash";
 "payment.method.card" = "Card";
-"common.optional" = "Optional";
-"common.optional.bracket" = "(Optional)";
-"common.cancel" = "Cancel";
-"common.save" = "Save";
-"common.ok" = "OK";
-"common.delete" = "Delete";
-"common.delete.warning" = "This action cannot be undone.";
-"common.done" = "Done";
-"common.error.unknown" = "Unknown error";
-"common.error" = "Error";
 "budget.method.fiftyThirtyTwenty" = "50/30/20";
 "budget.method.sixJars" = "6 Jars";
 "budget.delete.title" = "Delete this budget?";
@@ -204,3 +195,17 @@
 "transaction.type.income" = "Income";
 "transaction.type.expense" = "Expense";
 
+"common.create" = "Create";
+"common.create.new" = "Create new";
+"common.year" = "Year";
+"common.optional" = "Optional";
+"common.optional.bracket" = "(Optional)";
+"common.cancel" = "Cancel";
+"common.save" = "Save";
+"common.ok" = "OK";
+"common.delete" = "Delete";
+"common.delete.title" = "Delete this item?";
+"common.delete.warning" = "This action cannot be undone.";
+"common.done" = "Done";
+"common.error.unknown" = "Unknown error";
+"common.error" = "Error";

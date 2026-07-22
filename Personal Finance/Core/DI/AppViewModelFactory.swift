@@ -5,6 +5,7 @@
 //  Created by TiniT on 20/7/26.
 //
 
-protocol BalanceViewModelFactory {
+protocol AppViewModelFactory {
     func makeBalanceViewModel() -> BalanceViewModel
+    func makeNetWorthViewModel() -> NetWorthViewModel
 }

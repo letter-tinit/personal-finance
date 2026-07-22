@@ -7,13 +7,14 @@
 
 import SwiftUI
 
-typealias MainTabFactory = BalanceViewModelFactory
+typealias MainTabFactory = AppViewModelFactory
 
 struct MainTabScreen: View {
     private let factory: MainTabFactory
     
     // MARK: - Bindable
     @State private var balanceViewModel: BalanceViewModel
+    @State private var netWorthViewModel: NetWorthViewModel
     @State private var selectedTab: AppTab = .netWorth
     
     // MARK: - AppStorage
@@ -33,6 +34,7 @@ struct MainTabScreen: View {
     init(factory: MainTabFactory) {
         self.factory = factory
         _balanceViewModel = State(initialValue: factory.makeBalanceViewModel())
+        _netWorthViewModel = State(initialValue: factory.makeNetWorthViewModel())
     }
     
     // MARK: - View
@@ -50,7 +52,7 @@ struct MainTabScreen: View {
             
             // MARK: - Networth
             AppNavigationStack(path: $netWorthRouter.path) {
-                NetWorthListScreen()
+                NetWorthListScreen(netWorthViewModel)
                     .environment(netWorthRouter)
             } destination: { route in
                 switch route {
@@ -95,6 +97,7 @@ struct MainTabScreen: View {
             
         }
         .id(languageCode)
+        .tint(.primary)
         .environment(\.locale, selectedLanguage.locale)
     }
 }

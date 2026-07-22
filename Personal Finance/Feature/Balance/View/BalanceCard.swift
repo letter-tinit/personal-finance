@@ -73,10 +73,12 @@ struct BalanceCard: View {
         .padding()
         .borderedBackground(
             linearGradient: LinearGradient(
-                colors: [
-                    .cyan.opacity(0.25),
-                    .cyan.opacity(0.12),
-                    .cyan.opacity(0.30)
+                stops: [
+                    .init(color: Color(red: 0.45, green: 0.46, blue: 0.48), location: 0.0),
+                    .init(color: Color(red: 0.25, green: 0.26, blue: 0.28), location: 0.35),
+                    .init(color: Color(red: 0.12, green: 0.13, blue: 0.15), location: 0.55),
+                    .init(color: Color(red: 0.32, green: 0.33, blue: 0.35), location: 0.8),
+                    .init(color: Color(red: 0.15, green: 0.16, blue: 0.18), location: 1.0)
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
