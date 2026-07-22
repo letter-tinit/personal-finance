@@ -141,14 +141,12 @@ extension View {
     
     func toast(
         message: ToastMessage?,
-        type: ToastModifier.ToastType = .success,
         position: Alignment = .top,
         duration: Double = 3
     ) -> some View {
         modifier(
             ToastModifier(
                 message: message,
-                toastType: type,
                 position: position,
                 duration: duration
             )

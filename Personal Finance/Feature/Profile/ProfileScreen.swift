@@ -11,7 +11,6 @@ struct ProfileScreen: View {
     @State private var backupViewModel: ProfileBackupViewModel
     @AppStorage(AppLanguage.preferenceKey) private var languageCode = AppLanguage.system.rawValue
     @State private var isImporting = false
-    @State private var showingErrorAlert = false
 
     init(factory: AppViewModelFactory) {
         _backupViewModel = State(initialValue: factory.makeProfileBackupViewModel())
@@ -52,7 +51,6 @@ struct ProfileScreen: View {
                 Section {
                     Button {
                         backupViewModel.prepareExport()
-                        showingErrorAlert = backupViewModel.errorMessage != nil
                     } label: {
                         Label("profile.backup.export".localized, systemImage: "square.and.arrow.up")
                     }
@@ -85,8 +83,7 @@ struct ProfileScreen: View {
                 defaultFilename: "PersonalFinanceBackup"
             ) { result in
                 if case .failure = result {
-                    backupViewModel.errorMessage = "profile.backup.error.save".localized
-                    showingErrorAlert = true
+                    backupViewModel.makeToastError("profile.backup.error.save".localized)
                 }
                 backupViewModel.clearExport()
             }
@@ -99,10 +96,8 @@ struct ProfileScreen: View {
                 case .success(let urls):
                     guard let url = urls.first else { return }
                     backupViewModel.importBackup(from: url)
-                    showingErrorAlert = backupViewModel.errorMessage != nil
                 case .failure:
-                    backupViewModel.errorMessage = "profile.backup.error.invalidFile".localized
-                    showingErrorAlert = true
+                    backupViewModel.makeToastError("profile.backup.error.invalidFile".localized)
                 }
             }
             .toolbar {
@@ -114,11 +109,6 @@ struct ProfileScreen: View {
                     }
                     .accessibilityLabel("settings.title".localized)
                 }
-            }
-            .alert("common.error".localized, isPresented: $showingErrorAlert) {
-                Button("common.ok".localized, role: .cancel) { }
-            } message: {
-                Text(backupViewModel.errorMessage ?? "common.error.unknown".localized)
             }
             .toast(message: backupViewModel.toastMessage)
         }

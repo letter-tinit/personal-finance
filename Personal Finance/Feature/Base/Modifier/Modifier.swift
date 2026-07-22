@@ -58,32 +58,9 @@ struct DeleteConfirmationDialogModifier: ViewModifier {
 
 // MARK: - Toast message
 struct ToastModifier: ViewModifier {
-    enum ToastType {
-        case success
-        case failure
-        case warning
-        
-        var icon: String {
-            switch self {
-            case .success: "checkmark.circle.fill"
-            case .failure: "exclamationmark.circle.fill"
-            case .warning: "exclamationmark.triangle.fill"
-            }
-        }
-        
-        var color: Color {
-            switch self {
-            case .success: .green
-            case .failure: Color.Common.failure
-            case .warning: .orange
-            }
-        }
-    }
-    
     @State private var visibleMessage: ToastMessage?
     
     let message: ToastMessage?
-    let toastType: ToastType
     let position: Alignment
     let duration: Double
 
@@ -91,6 +68,7 @@ struct ToastModifier: ViewModifier {
         content
             .overlay(alignment: position) {
                 if let visibleMessage {
+                    let toastType = visibleMessage.type
                     HStack {
                         Image(module: toastType.icon)
                             .resizable()

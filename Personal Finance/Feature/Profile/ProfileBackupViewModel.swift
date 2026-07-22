@@ -14,7 +14,6 @@ import SwiftData
 final class ProfileBackupViewModel {
     var exportDocument: PersonalFinanceBackupDocument?
     var toastMessage: ToastMessage?
-    var errorMessage: String?
 
     private let store: PersonalFinanceBackupStore
 
@@ -24,10 +23,10 @@ final class ProfileBackupViewModel {
 
     func prepareExport() {
         do {
-            errorMessage = nil
+            toastMessage = nil
             exportDocument = PersonalFinanceBackupDocument(backup: try store.exportBackup())
         } catch {
-            errorMessage = error.localizedDescription
+            showError(error.localizedDescription)
         }
     }
 
@@ -37,7 +36,7 @@ final class ProfileBackupViewModel {
 
     func importBackup(from url: URL) {
         do {
-            errorMessage = nil
+            toastMessage = nil
             let scoped = url.startAccessingSecurityScopedResource()
             defer {
                 if scoped {
@@ -50,9 +49,24 @@ final class ProfileBackupViewModel {
             decoder.dateDecodingStrategy = .iso8601
             let backup = try decoder.decode(PersonalFinanceBackup.self, from: data)
             try store.importBackup(backup)
-            toastMessage = ToastMessage(text: "profile.backup.import.success".localized)
+            showSuccess("profile.backup.import.success".localized)
         } catch {
-            errorMessage = error.localizedDescription
+            showError(error.localizedDescription)
         }
+    }
+    
+    func makeToastError(_ message: String) {
+        showError(message)
+    }
+}
+
+// MARK: - PRIVATE HELPER
+private extension ProfileBackupViewModel {
+    func showError(_ text: String) {
+        toastMessage = ToastMessage(text: text, type: .failure)
+    }
+    
+    func showSuccess(_ text: String) {
+        toastMessage = ToastMessage(text: text, type: .success)
     }
 }

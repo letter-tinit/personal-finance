@@ -72,7 +72,7 @@ struct NetWorthListScreen: View {
                 }
             }
         }
-        .toast(message: viewModel.toastMessage, type: .failure, position: .top)
+        .toast(message: viewModel.toastMessage, position: .top)
         .deleteConfirmationDialog(isPresented: $isDeleteConfirmationPresented) {
             viewModel.removeNetWorth(netWorthYearToDelete)
         }

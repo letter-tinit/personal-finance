@@ -36,9 +36,9 @@ struct BalanceCard: View {
                 Text(balance.displayBalance)
                     .customTitle()
                     .frame(maxWidth: .infinity, alignment: .leading)
-                
+                    .foregroundStyle(balance.color)
+                    .shadow(color: .primary.opacity(0.3), radius: 1, x: 1, y: 1)
             }
-            .foregroundStyle(balance.color)
             
             if isExpand {
                 VStack {
@@ -48,37 +48,42 @@ struct BalanceCard: View {
                     Divider()
                     
                     HStack {
+                        Image(module: "chart.line.uptrend.xyaxis")
+                        
                         Text("balance.inflow".localized)
                         
                         Spacer()
                         
-                        Text(hasInflow ? "+ \(balance.inflow.formattedVND)" : "0 ₫")
+                        Text(hasInflow ? "+\(balance.inflow.formattedVND)" : "0 ₫")
                             .foregroundStyle(Color.Common.success)
                     }
                     .customHeadline()
                     
                     HStack {
+                        Image(module: "chart.line.downtrend.xyaxis")
+                        
                         Text("balance.outflow".localized)
                         
                         Spacer()
                         
-                        Text(hasOutflow ? "- \(balance.outflow.formattedVND)" : "0 ₫")
+                        Text(hasOutflow ? "-\(balance.outflow.formattedVND)" : "0 ₫")
                             .foregroundStyle(Color.Common.failure)
                     }
                     .customHeadline()
                 }
             }
         }
+        .foregroundStyle(Color.Common.surface)
         .frame(maxWidth: .infinity)
         .padding()
         .borderedBackground(
             linearGradient: LinearGradient(
                 stops: [
-                    .init(color: Color(red: 0.45, green: 0.46, blue: 0.48), location: 0.0),
-                    .init(color: Color(red: 0.25, green: 0.26, blue: 0.28), location: 0.35),
-                    .init(color: Color(red: 0.12, green: 0.13, blue: 0.15), location: 0.55),
-                    .init(color: Color(red: 0.32, green: 0.33, blue: 0.35), location: 0.8),
-                    .init(color: Color(red: 0.15, green: 0.16, blue: 0.18), location: 1.0)
+                    .init(color: Color(red: 0.78, green: 0.79, blue: 0.81), location: 0.0),
+                    .init(color: Color(red: 0.60, green: 0.61, blue: 0.63), location: 0.35),
+                    .init(color: Color(red: 0.42, green: 0.43, blue: 0.45), location: 0.55),
+                    .init(color: Color(red: 0.68, green: 0.69, blue: 0.71), location: 0.8),
+                    .init(color: Color(red: 0.48, green: 0.49, blue: 0.51), location: 1.0)
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing

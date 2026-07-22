@@ -97,3 +97,13 @@ extension PaymentMethod {
         }
     }
 }
+
+extension ToastType {
+    var color: Color {
+        switch self {
+        case .success: .green
+        case .failure: Color.Common.failure
+        case .warning: .orange
+        }
+    }
+}

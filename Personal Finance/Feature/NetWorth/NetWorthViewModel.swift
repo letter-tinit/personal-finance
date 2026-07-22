@@ -81,6 +81,6 @@ private extension NetWorthViewModel {
     }
     
     func showError(_ text: String) {
-        toastMessage = ToastMessage(text: text)
+        toastMessage = ToastMessage(text: text, type: .failure)
     }
 }

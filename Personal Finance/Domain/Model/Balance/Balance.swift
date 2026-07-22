@@ -88,7 +88,7 @@ extension Balance {
     }
     
     var displayBalance: String {
-        sign + " " + balance.formattedVND
+        sign + balance.formattedVND
     }
     
     var balance: Decimal {
