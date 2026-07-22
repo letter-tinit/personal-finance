@@ -209,6 +209,7 @@ final class NetWorthYear {
         item.name = name
     }
 
+    //TODO: Update remove in SwiftData
     func removeItem(id: UUID) throws {
         guard let index = planItems.firstIndex(where: { $0.id == id }) else {
             throw NetWorthPlanError.itemNotFound

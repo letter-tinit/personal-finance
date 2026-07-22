@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct CreateBudgetView: View {
+    @Environment(BudgetViewModel.self) private var budgetViewModel: BudgetViewModel
     @Environment(\.dismiss) private var dismiss
 
     let existingBudgets: [Budget]
     let templateBudget: Budget?
-    let onCreate: (Budget) -> Void
 
     @State private var formState: CreateBudgetFormState
     @State private var errorMessage: String?
@@ -21,12 +21,10 @@ struct CreateBudgetView: View {
 
     init(
         existingBudgets: [Budget],
-        templateBudget: Budget?,
-        onCreate: @escaping (Budget) -> Void
+        templateBudget: Budget?
     ) {
         self.existingBudgets = existingBudgets
         self.templateBudget = templateBudget
-        self.onCreate = onCreate
         _formState = State(
             initialValue: CreateBudgetFormState(
                 templateBudget: templateBudget
@@ -169,7 +167,7 @@ private extension CreateBudgetView {
             let input = try formState.validatedInput(
                 existingBudgets: existingBudgets
             )
-            var budget = Budget.make(
+            let budget = Budget.make(
                 periodStart: input.periodStart,
                 income: input.income,
                 method: input.method
@@ -180,7 +178,7 @@ private extension CreateBudgetView {
                 budget.copyFixedExpensePlans(from: templateBudget)
             }
 
-            onCreate(budget)
+            budgetViewModel.createBudget(budget)
             dismiss()
         } catch let error as CreateBudgetFormValidationError {
             errorMessage = error.localizationKey.localized
@@ -194,8 +192,7 @@ private extension CreateBudgetView {
     NavigationStack {
         CreateBudgetView(
             existingBudgets: [],
-            templateBudget: nil,
-            onCreate: { _ in }
+            templateBudget: nil
         )
     }
 }

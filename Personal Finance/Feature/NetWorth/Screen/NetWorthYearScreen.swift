@@ -46,7 +46,7 @@ struct NetWorthYearScreen: View {
     }
     
     private func createSnapshot(for month: Date) throws {
-        let snapshot = try data.addSnapshot(for: month)
+        _ = try data.addSnapshot(for: month)
     }
 
     private func deleteItem(id: UUID) throws {

@@ -52,7 +52,6 @@ struct TransactionInput: Equatable {
     
     mutating func validate() throws {
         let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
-        let trimmedDescription = description.trimmingCharacters(in: .whitespacesAndNewlines)
 
         let normalizedAmount = amountText
             .replacingOccurrences(of: ".", with: "")

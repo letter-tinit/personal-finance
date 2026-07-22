@@ -18,7 +18,11 @@ final class AppContainer: AppViewModelFactory {
             NetWorthYear.self,
             NetWorthPlanItem.self,
             NetWorthSnapshot.self,
-            NetWorthValue.self
+            NetWorthValue.self,
+            Budget.self,
+            BudgetAllocation.self,
+            FixedExpensePlan.self,
+            BudgetTransaction.self
         ])
         let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: inMemory)
         modelContainer = try! ModelContainer(for: schema, configurations: config)
@@ -26,6 +30,16 @@ final class AppContainer: AppViewModelFactory {
         mainContext = modelContainer.mainContext
     }
 
+    func makeBudgetViewModel() -> BudgetViewModel {
+        BudgetViewModel(repository: ImplBudgetRepository(modelContext: mainContext))
+    }
+
+    func makeBudgetDetailViewModel(budget: Budget) -> BudgetDetailViewModel {
+        BudgetDetailViewModel(
+            budget: budget,
+            repository: ImplBudgetRepository(modelContext: mainContext)
+        )
+    }
 
     func makeBalanceViewModel() -> BalanceViewModel {
         BalanceViewModel(repository: ImplBalanceRepository(modelContext: mainContext))

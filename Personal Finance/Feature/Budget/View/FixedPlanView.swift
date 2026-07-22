@@ -49,7 +49,7 @@ struct FixedPlanView: View {
                 } else {
                     ForEach(plans, id: \.self) { plan in
                         HStack(spacing: 12) {
-                            if plan.transactionID == nil {
+                            if plan.transaction == nil {
                                 Button {
                                     planPendingCompletion = plan
                                 } label: {

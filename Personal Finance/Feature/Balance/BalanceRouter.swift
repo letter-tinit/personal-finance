@@ -12,10 +12,4 @@ enum BalanceRoute: Hashable {
 }
 
 @Observable
-final class BalanceRouter: AppRouter<BalanceRoute> {
-    func popToView(_ target: BalanceRoute) {
-        if let index = path.lastIndex(of: target) {
-            path = Array(path.prefix(index + 1))
-        }
-    }
-}
+final class BalanceRouter: AppRouter<BalanceRoute> {}

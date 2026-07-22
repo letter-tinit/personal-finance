@@ -9,16 +9,18 @@ import SwiftUI
 
 struct BudgetListScreen: View {
     @Environment(BudgetRouter.self) private var router
-    @State private var budgets: [Budget] = []
-    @State private var isCreateBudgetPresented = false
+    @State private var viewModel: BudgetViewModel
     @State private var errorMessage: String?
-    @State private var hasLoadedBudgets = false
-    @State private var budgetToDelete: Budget?
+    @State private var isCreateBudgetPresented = false
     @State private var isDeleteConfirmationPresented = false
-
-    private let budgetStore: BudgetStore?
-    init(budgetStore: BudgetStore? = try? BudgetStore()) {
-        self.budgetStore = budgetStore
+    @State private var budgetToDelete: Budget?
+    
+    private var budgets: [Budget] {
+        viewModel.budgets
+    }
+    
+    init(_ viewModel: BudgetViewModel) {
+        self.viewModel = viewModel
     }
 
     private var latestBudget: Budget? {
@@ -114,76 +116,24 @@ struct BudgetListScreen: View {
                 NavigationStack {
                     CreateBudgetView(
                         existingBudgets: budgets,
-                        templateBudget: latestBudget,
-                        onCreate: createBudget
+                        templateBudget: latestBudget
                     )
+                    .environment(viewModel)
                 }
             }
             .task {
-                loadBudgetsIfNeeded()
-            }
-            .onChange(of: budgets) {
-                guard hasLoadedBudgets else {
-                    return
-                }
-
-                saveBudgets()
+                viewModel.load()
             }
     }
 }
 
 private extension BudgetListScreen {
-    func createBudget(_ budget: Budget) {
-        budgets.append(budget)
-    }
-
-    func loadBudgetsIfNeeded() {
-        guard !hasLoadedBudgets else {
-            return
-        }
-
-        hasLoadedBudgets = true
-
-        guard let budgetStore else {
-            errorMessage = "budget.storage.error.load".localized
-            return
-        }
-
-        do {
-            budgets = try budgetStore.loadBudgets()
-            errorMessage = nil
-        } catch {
-            budgets = []
-            errorMessage = "budget.storage.error.load".localized
-        }
-    }
-
-    func saveBudgets() {
-        guard let budgetStore else {
-            errorMessage = "budget.storage.error.save".localized
-            return
-        }
-
-        do {
-            try budgetStore.saveBudgets(budgets)
-            errorMessage = nil
-        } catch {
-            errorMessage = "budget.storage.error.save".localized
-        }
-    }
-    
     private func getBudget(offset: IndexSet, section: BudgetYearSection) -> Budget? {
         let idsToDelete = offset.map { index in
             section.budgets[index].id
         }
         
         return budgets.first { idsToDelete.contains($0.id) }
-    }
-    
-    private func deleteBudget() {
-        if let budgetToDelete {
-            budgets.removeAll { $0 == budgetToDelete }
-        }
     }
     
     private func sortedBudgetGroupByYear() -> [BudgetYearSection] {
@@ -199,6 +149,12 @@ private extension BudgetListScreen {
                 )
             }
             .sorted { $0.year > $1.year }
+    }
+
+    private func deleteBudget() {
+        guard let budgetToDelete else { return }
+        viewModel.deleteBudget(budgetToDelete)
+        self.budgetToDelete = nil
     }
     
     struct BudgetYearSection: Identifiable, Hashable {
@@ -235,5 +191,6 @@ private struct BudgetListRow: View {
 }
 
 #Preview {
-    BudgetListScreen()
+    // TODO
+//    BudgetListScreen()
 }

@@ -34,7 +34,7 @@ struct TransactionFormState: Equatable {
 
     init(transaction: BudgetTransaction) {
         description = transaction.title
-        allocationID = transaction.allocationID
+        allocationID = transaction.allocation?.id ?? UUID()
         amountText = NSDecimalNumber(decimal: transaction.amount).stringValue
         occurredAt = transaction.occurredAt
         paymentMethod = transaction.paymentMethod
@@ -43,7 +43,7 @@ struct TransactionFormState: Equatable {
 
     init(fixedExpensePlan: FixedExpensePlan, occurredAt: Date = .now) {
         description = fixedExpensePlan.name
-        allocationID = fixedExpensePlan.allocationID
+        allocationID = fixedExpensePlan.allocation?.id ?? UUID()
         amountText = NSDecimalNumber(decimal: fixedExpensePlan.amount).stringValue
         self.occurredAt = occurredAt
     }

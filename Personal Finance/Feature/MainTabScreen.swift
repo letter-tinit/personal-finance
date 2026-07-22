@@ -15,6 +15,7 @@ struct MainTabScreen: View {
     // MARK: - Bindable
     @State private var balanceViewModel: BalanceViewModel
     @State private var netWorthViewModel: NetWorthViewModel
+    @State private var budgetViewModel: BudgetViewModel
     @State private var selectedTab: AppTab = .netWorth
     
     // MARK: - AppStorage
@@ -35,6 +36,7 @@ struct MainTabScreen: View {
         self.factory = factory
         _balanceViewModel = State(initialValue: factory.makeBalanceViewModel())
         _netWorthViewModel = State(initialValue: factory.makeNetWorthViewModel())
+        _budgetViewModel = State(initialValue: factory.makeBudgetViewModel())
     }
     
     // MARK: - View
@@ -67,12 +69,12 @@ struct MainTabScreen: View {
             
             // MARK: - Budget
             AppNavigationStack(path: $budgetRouter.path) {
-                BudgetListScreen()
+                BudgetListScreen(budgetViewModel)
                     .environment(budgetRouter)
             } destination: { route in
                 switch route {
                 case .budget(let budget):
-                    BudgetScreen(budget)
+                    BudgetScreen(factory.makeBudgetDetailViewModel(budget: budget))
                 }
             }
             .tabItem {
