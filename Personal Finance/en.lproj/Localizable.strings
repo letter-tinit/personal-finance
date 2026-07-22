@@ -85,6 +85,14 @@
 "profile.header.title" = "Personal Finance";
 "profile.header.description" = "Manage app preferences.";
 "profile.preferences" = "Preferences";
+"profile.backup" = "Data backup";
+"profile.backup.description" = "Export or import your SwiftData data as a JSON backup.";
+"profile.backup.export" = "Export data";
+"profile.backup.import" = "Import data";
+"profile.backup.import.success" = "Backup imported successfully.";
+"profile.backup.error.invalidFile" = "The selected file could not be imported.";
+"profile.backup.error.unsupportedSchema" = "This backup file uses an unsupported version.";
+"profile.backup.error.save" = "The backup file could not be saved.";
 "settings.title" = "Settings";
 "settings.language" = "Language";
 "settings.language.description" = "Changes apply to the app immediately.";

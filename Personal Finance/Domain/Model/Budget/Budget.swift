@@ -59,11 +59,6 @@ final class Budget: Identifiable {
     }
 }
 
-extension Budget: Hashable {
-    static func == (lhs: Budget, rhs: Budget) -> Bool { lhs.id == rhs.id }
-    func hash(into hasher: inout Hasher) { hasher.combine(id) }
-}
-
 @Model
 final class BudgetAllocation: Identifiable {
     @Attribute(.unique) var id: UUID = UUID()
@@ -85,11 +80,6 @@ final class BudgetAllocation: Identifiable {
         self.ratio = ratio
         self.targetAmount = targetAmount
     }
-}
-
-extension BudgetAllocation: Hashable {
-    static func == (lhs: BudgetAllocation, rhs: BudgetAllocation) -> Bool { lhs.id == rhs.id }
-    func hash(into hasher: inout Hasher) { hasher.combine(id) }
 }
 
 extension BudgetAllocation {
@@ -125,11 +115,6 @@ final class FixedExpensePlan: Identifiable {
     }
 }
 
-extension FixedExpensePlan: Hashable {
-    static func == (lhs: FixedExpensePlan, rhs: FixedExpensePlan) -> Bool { lhs.id == rhs.id }
-    func hash(into hasher: inout Hasher) { hasher.combine(id) }
-}
-
 @Model
 final class BudgetTransaction: Identifiable {
     @Attribute(.unique) var id: UUID = UUID()
@@ -156,11 +141,6 @@ final class BudgetTransaction: Identifiable {
         self.amount = amount
         self.paymentMethod = paymentMethod
     }
-}
-
-extension BudgetTransaction: Hashable {
-    static func == (lhs: BudgetTransaction, rhs: BudgetTransaction) -> Bool { lhs.id == rhs.id }
-    func hash(into hasher: inout Hasher) { hasher.combine(id) }
 }
 
 enum PaymentMethod: String, CaseIterable, Codable {

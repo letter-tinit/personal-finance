@@ -47,6 +47,7 @@ struct BudgetBucket: Hashable {
     let amount: Decimal
 }
 
+nonisolated
 enum BudgetBucketKind: Hashable, Codable {
     case needs
     case wants

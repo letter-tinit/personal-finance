@@ -84,7 +84,7 @@ struct MainTabScreen: View {
             
             // MARK: - Profilte
             AppNavigationStack(path: $profileRouter.path) {
-                ProfileScreen()
+                ProfileScreen(factory: factory)
                     .environment(profileRouter)
             } destination: { route in
                 switch route {

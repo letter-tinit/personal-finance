@@ -38,7 +38,7 @@ final class BudgetViewModel {
     func deleteBudget(_ budget: Budget) {
         do {
             try repository.removeBudget(budget)
-            budgets.removeAll { $0 == budget }
+            budgets.removeAll { $0.id == budget.id }
         } catch {
             errorMessage = "budget.storage.error.save".localized
         }

@@ -85,6 +85,14 @@
 "profile.header.title" = "Personal Finance";
 "profile.header.description" = "Quản lý thiết lập ứng dụng.";
 "profile.preferences" = "Tuỳ chỉnh";
+"profile.backup" = "Sao lưu dữ liệu";
+"profile.backup.description" = "Xuất hoặc nhập dữ liệu SwiftData dưới dạng JSON.";
+"profile.backup.export" = "Xuất dữ liệu";
+"profile.backup.import" = "Nhập dữ liệu";
+"profile.backup.import.success" = "Đã nhập sao lưu thành công.";
+"profile.backup.error.invalidFile" = "Không thể nhập tệp đã chọn.";
+"profile.backup.error.unsupportedSchema" = "Tệp sao lưu này dùng phiên bản không được hỗ trợ.";
+"profile.backup.error.save" = "Không thể lưu tệp sao lưu.";
 "settings.title" = "Cài đặt";
 "settings.language" = "Ngôn ngữ";
 "settings.language.description" = "Thay đổi được áp dụng ngay trong ứng dụng.";

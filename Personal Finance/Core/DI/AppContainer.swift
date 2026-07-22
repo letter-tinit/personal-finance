@@ -48,4 +48,8 @@ final class AppContainer: AppViewModelFactory {
     func makeNetWorthViewModel() -> NetWorthViewModel {
         NetWorthViewModel(repository: ImplNetWorthRepository(modelContext: mainContext))
     }
+
+    func makeProfileBackupViewModel() -> ProfileBackupViewModel {
+        ProfileBackupViewModel(modelContext: mainContext)
+    }
 }

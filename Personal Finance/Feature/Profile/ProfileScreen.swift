@@ -4,10 +4,18 @@
 //
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct ProfileScreen: View {
     @Environment(ProfileRouter.self) private var router
+    @State private var backupViewModel: ProfileBackupViewModel
     @AppStorage(AppLanguage.preferenceKey) private var languageCode = AppLanguage.system.rawValue
+    @State private var isImporting = false
+    @State private var showingErrorAlert = false
+
+    init(factory: AppViewModelFactory) {
+        _backupViewModel = State(initialValue: factory.makeProfileBackupViewModel())
+    }
 
     private var selectedLanguage: AppLanguage {
         AppLanguage(rawValue: languageCode) ?? .system
@@ -40,10 +48,63 @@ struct ProfileScreen: View {
                         }
                     }
                 }
+                
+                Section {
+                    Button {
+                        backupViewModel.prepareExport()
+                        showingErrorAlert = backupViewModel.errorMessage != nil
+                    } label: {
+                        Label("profile.backup.export".localized, systemImage: "square.and.arrow.up")
+                    }
+                    
+                    Button {
+                        isImporting = true
+                    } label: {
+                        Label("profile.backup.import".localized, systemImage: "square.and.arrow.down")
+                    }
+                } header: {
+                    Text("profile.backup".localized)
+                } footer: {
+                    Text("profile.backup.description".localized)
+                }
             }
             .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
             .navigationTitle("profile.tab.title".localized)
+            .fileExporter(
+                isPresented: Binding(
+                    get: { backupViewModel.exportDocument != nil },
+                    set: { presented in
+                        if !presented {
+                            backupViewModel.clearExport()
+                        }
+                    }
+                ),
+                document: backupViewModel.exportDocument,
+                contentType: .json,
+                defaultFilename: "PersonalFinanceBackup"
+            ) { result in
+                if case .failure = result {
+                    backupViewModel.errorMessage = "profile.backup.error.save".localized
+                    showingErrorAlert = true
+                }
+                backupViewModel.clearExport()
+            }
+            .fileImporter(
+                isPresented: $isImporting,
+                allowedContentTypes: [.json],
+                allowsMultipleSelection: false
+            ) { result in
+                switch result {
+                case .success(let urls):
+                    guard let url = urls.first else { return }
+                    backupViewModel.importBackup(from: url)
+                    showingErrorAlert = backupViewModel.errorMessage != nil
+                case .failure:
+                    backupViewModel.errorMessage = "profile.backup.error.invalidFile".localized
+                    showingErrorAlert = true
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
@@ -54,6 +115,12 @@ struct ProfileScreen: View {
                     .accessibilityLabel("settings.title".localized)
                 }
             }
+            .alert("common.error".localized, isPresented: $showingErrorAlert) {
+                Button("common.ok".localized, role: .cancel) { }
+            } message: {
+                Text(backupViewModel.errorMessage ?? "common.error.unknown".localized)
+            }
+            .toast(message: backupViewModel.toastMessage)
         }
     }
 }
@@ -102,5 +169,5 @@ struct AppSettingsScreen: View {
 }
 
 #Preview {
-    ProfileScreen()
+    ProfileScreen(factory: AppContainer(inMemory: true))
 }
