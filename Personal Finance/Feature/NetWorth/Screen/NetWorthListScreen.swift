@@ -102,7 +102,7 @@ private struct NetWorthYearRow: View {
                 String(
                     format: "networth.year.monthCount".localized,
                     locale: .current,
-                    data.snapshots.count
+                    data.snapshots.filter({ !$0.isGhoshSnapshot() }).count
                 )
             )
             .font(.subheadline)

@@ -17,20 +17,17 @@ struct NetWorthScreen: View {
     
     let statusMessage: String?
     let onDeleteItem: (UUID) throws -> Void
-    let onCreateSnapshot: () -> Void
 
     init(
         year: NetWorthYear,
         snapshot: NetWorthSnapshot,
         statusMessage: String?,
-        onDeleteItem: @escaping (UUID) throws -> Void,
-        onCreateSnapshot: @escaping () -> Void
+        onDeleteItem: @escaping (UUID) throws -> Void
     ) {
         self.year = year
         _selectedSnapshot = State(initialValue: snapshot)
         self.statusMessage = statusMessage
         self.onDeleteItem = onDeleteItem
-        self.onCreateSnapshot = onCreateSnapshot
     }
 
     private var missingValueCount: Int {
@@ -90,14 +87,6 @@ struct NetWorthScreen: View {
                         ? "networth.edit.lock".localized
                         : "networth.edit.unlock".localized
                 )
-            }
-
-            ToolbarItem(placement: .topBarTrailing) {
-                Button(action: onCreateSnapshot) {
-                    Image(systemName: "calendar.badge.plus")
-                }
-                .accessibilityLabel("networth.snapshot.form.title".localized)
-                .disabled(!isEditingUnlocked)
             }
 
             ToolbarItem(placement: .topBarTrailing) {

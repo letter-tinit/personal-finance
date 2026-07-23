@@ -33,7 +33,7 @@ final class NetWorthViewModel {
             newNetWorthYear = NetWorthYear(year: year)
             
             do {
-                try newNetWorthYear.addSnapshot(for: .now)
+                try newNetWorthYear.addSnapshotsForAllMonths()
             } catch {
                 showError(error.localizedDescription)
                 return

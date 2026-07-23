@@ -218,3 +218,5 @@
 "common.done" = "Done";
 "common.error.unknown" = "Unknown error";
 "common.error" = "Error";
+"common.empty.title" = "No data yet";
+"common.empty.description" = "You do not have any data to show";

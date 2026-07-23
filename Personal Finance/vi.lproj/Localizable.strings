@@ -218,3 +218,5 @@
 "common.delete.warning" = "Bạn không thể hoàn tác thao tác này.";
 "common.error.unknown" = "Lỗi không xác định";
 "common.error" = "Lỗi";
+"common.empty.title" = "Chưa có dữ liệu";
+"common.empty.description" = "Bạn vẫn chưa có bất kỳ dữ liệu nào để hiển thị";

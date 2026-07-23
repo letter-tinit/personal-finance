@@ -9,7 +9,6 @@ import SwiftUI
 
 struct NetWorthYearScreen: View {
     let data: NetWorthYear
-    @State private var isSnapshotFormPresented = false
     
     init(data: NetWorthYear) {
         self.data = data
@@ -17,36 +16,28 @@ struct NetWorthYearScreen: View {
     
     var body: some View {
         @Bindable var data = data
-        if let snapshot = data.snapshots.first {
+        if let snapshot = data.snapshots.first(where: { $0.asOfDate.isInCurrentMonth }) {
             NetWorthScreen(
                 year: data,
                 snapshot: snapshot,
                 statusMessage: nil,
-                onDeleteItem: deleteItem,
-                onCreateSnapshot: {
-                    isSnapshotFormPresented = true
-                }
+                onDeleteItem: deleteItem
             )
-            .sheet(isPresented: $isSnapshotFormPresented) {
-                NavigationStack {
-                    CreateNetWorthSnapshotView(
-                        existingSnapshots: data.snapshots,
-                        year: data.year,
-                        suggestedMonth: suggestedMonth,
-                        onCreate: createSnapshot
-                    )
-                }
-            }
+        } else if let snapshot = data.snapshots.first(where: { $0.asOfDate.isMonth(1) }) {
+            NetWorthScreen(
+                year: data,
+                snapshot: snapshot,
+                statusMessage: nil,
+                onDeleteItem: deleteItem
+            )
+        } else {
+            CommonEmptyView()
         }
     }
 
     private var suggestedMonth: Date {
         Calendar.current.nextMonth(after: data.snapshots.max(by: { $0.asOfDate < $1.asOfDate })?.asOfDate
             ?? Calendar.current.startOfMonth(for: Date()))
-    }
-    
-    private func createSnapshot(for month: Date) throws {
-        _ = try data.addSnapshot(for: month)
     }
 
     private func deleteItem(id: UUID) throws {

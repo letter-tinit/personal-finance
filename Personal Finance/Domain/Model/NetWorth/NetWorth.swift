@@ -159,6 +159,12 @@ final class NetWorthSnapshot {
     }
 }
 
+extension NetWorthSnapshot {
+    func isGhoshSnapshot() -> Bool {
+        return values.isEmpty || values.filter({ $0.amount != .zero }).isEmpty
+    }
+}
+
 // MARK: - NetWorthYear
 
 /// One year's reusable item plan and its monthly measurements.
@@ -238,6 +244,13 @@ final class NetWorthYear {
         return snapshot
     }
 
+    func addSnapshotsForAllMonths(calendar: Calendar = .current) throws {
+        for month in 1...12 {
+            let monthStart = calendar.date(from: DateComponents(year: year, month: month, day: 1))!
+            _ = try addSnapshot(for: monthStart, calendar: calendar)
+        }
+    }
+
     func validate(calendar: Calendar = .current) throws {
         var snapshotMonths = Set<Date>()
 
@@ -264,7 +277,7 @@ final class NetWorthYear {
         }
     }
 
-    /// Tạo năm mới, sao chép danh sách hạng mục (planItems) nhưng không sao chép snapshot.
+    /// Tạo năm mới, sao chép danh sách hạng mục (planItems) và seed đủ 12 tháng.
     func reusingPlan(for newYear: Int) -> NetWorthYear {
         let data = NetWorthYear(year: newYear)
         for item in planItems {
@@ -276,8 +289,7 @@ final class NetWorthYear {
             copy.year = data
             data.planItems.append(copy)
         }
-        let firstMonth = Calendar.current.date(from: DateComponents(year: newYear, month: 1, day: 1))!
-        _ = try? data.addSnapshot(for: firstMonth)
+        _ = try? data.addSnapshotsForAllMonths()
         return data
     }
 }

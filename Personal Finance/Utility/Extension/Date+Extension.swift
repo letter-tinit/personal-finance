@@ -43,6 +43,10 @@ enum DateFormat {
 }
 
 extension Date {
+    var isInCurrentMonth: Bool {
+        isInSameMonth(as: .now)
+    }
+    
     func isToday() -> Bool {
         return Calendar.current.isDateInToday(self)
     }
@@ -61,5 +65,16 @@ extension Date {
 
     func isFutureDay() -> Bool {
         Calendar.current.startOfDay(for: self) > Calendar.current.startOfDay(for: Date())
+    }
+    
+    func isInSameMonth(as date: Date) -> Bool {
+        Calendar.current.isDate(self, equalTo: date, toGranularity: .month)
+    }
+    
+    /// This funtion to check if Date this define month or note
+    /// - Parameter month: month to compare
+    /// - Returns: is equal or not
+    func isMonth(_ month: Int) -> Bool {
+        Calendar.current.component(.month, from: self) == month
     }
 }
