@@ -29,3 +29,14 @@ extension String {
         Decimal(string: self) ?? 0
     }
 }
+
+extension Optional where Wrapped == String {
+    var isNullOrEmpty: Bool {
+        switch self {
+        case .none:
+            return true
+        case .some(let value):
+            return value.isEmpty
+        }
+    }
+}

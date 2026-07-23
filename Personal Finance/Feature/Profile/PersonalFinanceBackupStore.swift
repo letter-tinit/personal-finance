@@ -38,7 +38,6 @@ final class PersonalFinanceBackupStore {
         )).map {
             TransactionBackup(
                 id: $0.id,
-                title: $0.title,
                 note: $0.note,
                 type: $0.type,
                 category: $0.category,
@@ -170,7 +169,6 @@ final class PersonalFinanceBackupStore {
         for transaction in backup.transactions {
             modelContext.insert(Transaction(
                 id: transaction.id,
-                title: transaction.title,
                 note: transaction.note,
                 type: transaction.type,
                 category: transaction.category,

@@ -12,7 +12,6 @@ import Foundation
 final class Transaction: Identifiable {
     var id: UUID
     
-    var title: String
     /// This also called description
     var note: String?
     
@@ -25,9 +24,8 @@ final class Transaction: Identifiable {
     var occurredAt: Date
     var createAt: Date
     
-    init(id: UUID = UUID(), title: String, note: String? = nil, type: TransactionType, category: TransactionCategory, method: PaymentMethod, amount: Decimal, occurredAt: Date, createAt: Date = .now) {
+    init(id: UUID = UUID(), note: String? = nil, type: TransactionType, category: TransactionCategory, method: PaymentMethod, amount: Decimal, occurredAt: Date, createAt: Date = .now) {
         self.id = id
-        self.title = title
         self.note = note
         self.type = type
         self.category = category

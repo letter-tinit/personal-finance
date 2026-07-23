@@ -155,6 +155,7 @@
 "transaction.form.allocation" = "Allocation";
 "transaction.form.allocation.placeholder" = "Select an allocation";
 "transaction.form.amount" = "Amount";
+"transaction.form.infomation" = "Infomation";
 "transaction.form.date" = "Date";
 "transaction.form.paymentMethod" = "Payment method";
 "transaction.form.transactionType" = "Transaction Type";
@@ -220,3 +221,4 @@
 "common.error" = "Error";
 "common.empty.title" = "No data yet";
 "common.empty.description" = "You do not have any data to show";
+"common.nil.note" = "No descripton";

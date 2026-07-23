@@ -40,7 +40,7 @@ struct BalanceList: View {
         }
         .toast(message: balanceViewModel.toastMessage)
         .contentMargins(.top, 10, for: .scrollContent)
-        .listStyle(.insetGrouped)
+        .listStyle(.grouped)
         .scrollIndicators(.hidden)
         .scrollContentBackground(.hidden)
     }

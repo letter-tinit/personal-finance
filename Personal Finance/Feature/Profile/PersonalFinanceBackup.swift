@@ -20,7 +20,6 @@ struct PersonalFinanceBackup: Codable {
 
 struct TransactionBackup: Codable {
     let id: UUID
-    let title: String
     let note: String?
     let type: TransactionType
     let category: TransactionCategory

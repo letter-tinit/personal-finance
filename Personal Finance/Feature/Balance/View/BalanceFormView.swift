@@ -34,9 +34,7 @@ struct BalanceFormView: View {
     
     var body: some View {
         List {
-            Section("Infomation") {
-                TextField("transaction.form.title", text: $input.title)
-                
+            Section("transaction.form.infomation".localized) {
                 TextField("transaction.form.amount", text: $input.amountText)
                     .keyboardType(.numberPad)
                     .currencyInputFormat($input.amountText)

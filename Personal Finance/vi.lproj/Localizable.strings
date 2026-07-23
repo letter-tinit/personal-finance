@@ -155,6 +155,7 @@
 "transaction.form.allocation" = "Nhóm phân bổ";
 "transaction.form.allocation.placeholder" = "Chọn nhóm phân bổ";
 "transaction.form.amount" = "Số tiền";
+"transaction.form.infomation" = "Thông tin";
 "transaction.form.date" = "Ngày";
 "transaction.form.paymentMethod" = "Phương thức thanh toán";
 "transaction.form.transactionType" = "Loại giao dịch";
@@ -220,3 +221,4 @@
 "common.error" = "Lỗi";
 "common.empty.title" = "Chưa có dữ liệu";
 "common.empty.description" = "Bạn vẫn chưa có bất kỳ dữ liệu nào để hiển thị";
+"common.nil.note" = "Không có ghi chú";

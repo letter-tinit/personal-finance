@@ -16,7 +16,7 @@ struct MainTabScreen: View {
     @State private var balanceViewModel: BalanceViewModel
     @State private var netWorthViewModel: NetWorthViewModel
     @State private var budgetViewModel: BudgetViewModel
-    @State private var selectedTab: AppTab = .profile
+    @State private var selectedTab: AppTab = .balance
     
     // MARK: - AppStorage
     @AppStorage(AppLanguage.preferenceKey) private var languageCode = AppLanguage.system.rawValue

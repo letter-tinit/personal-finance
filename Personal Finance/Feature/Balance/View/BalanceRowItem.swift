@@ -15,27 +15,38 @@ struct BalanceRowItem: View {
         let color = transaction.type.color
         let sign = transaction.type == .income ? "+" : "-"
         let paymentMethod = transaction.method
-        HStack {
-            VStack {
+        HStack(alignment: .center) {
+            HStack {
                 let transactionTime = transaction.occurredAt
-                Text(transactionTime.toString(withFormat: .custom("d/M")))
-                    .customHeadline()
                 
-                Text(transactionTime.toString(withFormat: .custom("yyyy")))
-                    .customSubText()
+                VStack {
+                    Image(module: "calendar")
+                    
+                    Text(transactionTime.toString(withFormat: .dayName))
+                        .secondarySubHeadline()
+                }
                 
-                Text(transactionTime.toString(withFormat: .custom("EEE")))
-                    .secondarySubHeadline()
+                Divider()
+                
+                VStack {
+                    Text(transactionTime.toString(withFormat: .custom("d/M")))
+                        .customHeadline()
+                    
+                    Text(transactionTime.toString(withFormat: .custom("yyyy")))
+                        .customSubText()
+                    
+                    
+                }
             }
-            
-            Divider()
+            .padding()
+            .borderedBackground(fillColor: color.opacity(0.2), cornerRadius: 8, lineWidth: 0)
             
             VStack(alignment: .leading) {
-                Text(transaction.title)
+                Text(transaction.category.localizedTitle)
                     .customSubHeadline()
                     .lineLimit(nil)
                 
-                Text(transaction.note ?? "")
+                Text(transaction.note.isNullOrEmpty ? "common.nil.note".localized : transaction.note ?? "")
                     .secondarySubHeadline()
                     .lineLimit(nil)
                 

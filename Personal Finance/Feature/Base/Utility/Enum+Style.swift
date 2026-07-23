@@ -107,3 +107,14 @@ extension ToastType {
         }
     }
 }
+
+extension BudgetMethod {
+    var color: Color {
+        switch self {
+        case .fiftyThirtyTwenty:
+            return .blue
+        case .sixJars:
+            return .orange
+        }
+    }
+}

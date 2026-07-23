@@ -8,7 +8,6 @@
 import Foundation
 
 struct TransactionInput: Equatable {
-    var title: String
     var description: String
     var transactionType: TransactionType
     var category: TransactionCategory
@@ -18,7 +17,6 @@ struct TransactionInput: Equatable {
     
     static var template: TransactionInput {
         return TransactionInput.init(
-            title: "",
             description: "",
             transactionType: .income,
             category: .other,
@@ -30,8 +28,7 @@ struct TransactionInput: Equatable {
     
     private var amount: Decimal = .zero
     
-    init(title: String, description: String, transactionType: TransactionType, category: TransactionCategory, occurredAt: Date, amountText: String, paymentMethod: PaymentMethod) {
-        self.title = title
+    init(description: String, transactionType: TransactionType, category: TransactionCategory, occurredAt: Date, amountText: String, paymentMethod: PaymentMethod) {
         self.description = description
         self.transactionType = transactionType
         self.category = category
@@ -41,7 +38,6 @@ struct TransactionInput: Equatable {
     }
     
     init(transaction: Transaction) {
-        self.title = transaction.title
         self.description = transaction.note ?? ""
         self.transactionType = transaction.type
         self.category = transaction.category
@@ -51,16 +47,10 @@ struct TransactionInput: Equatable {
     }
     
     mutating func validate() throws {
-        let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
-
         let normalizedAmount = amountText
             .replacingOccurrences(of: ".", with: "")
             .replacingOccurrences(of: ",", with: "")
             .trimmingCharacters(in: .whitespacesAndNewlines)
-
-        guard !trimmedTitle.isEmpty else {
-            throw TransactionFormValidationError.titleRequired
-        }
 
         guard !normalizedAmount.isEmpty else {
             throw TransactionFormValidationError.amountRequired
@@ -81,7 +71,6 @@ struct TransactionInput: Equatable {
         try validate()
 
         return Transaction(
-            title: title,
             note: description.trimmingCharacters(in: .whitespacesAndNewlines),
             type: transactionType,
             category: category,
@@ -94,7 +83,6 @@ struct TransactionInput: Equatable {
     mutating func apply(to transaction: Transaction) throws {
         try validate()
 
-        transaction.title = title
         transaction.note = description.trimmingCharacters(in: .whitespacesAndNewlines)
         transaction.type = transactionType
         transaction.category = category
