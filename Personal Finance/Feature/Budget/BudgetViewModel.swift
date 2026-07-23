@@ -11,7 +11,7 @@ import Foundation
 final class BudgetViewModel {
     private let repository: BudgetRepository
     var budgets: [Budget] = []
-    var errorMessage: String?
+    var toastMessage: ToastMessage?
 
     init(repository: BudgetRepository) {
         self.repository = repository
@@ -22,7 +22,7 @@ final class BudgetViewModel {
         do {
             budgets = try repository.fetchBudgets()
         } catch {
-            errorMessage = "budget.storage.error.load".localized
+            showError("budget.storage.error.load".localized)
         }
     }
 
@@ -31,7 +31,7 @@ final class BudgetViewModel {
             try repository.addBudget(budget)
             budgets.append(budget)
         } catch {
-            errorMessage = "budget.create.error.save".localized
+            showError("budget.create.error.save".localized)
         }
     }
 
@@ -40,11 +40,22 @@ final class BudgetViewModel {
             try repository.removeBudget(budget)
             budgets.removeAll { $0.id == budget.id }
         } catch {
-            errorMessage = "budget.storage.error.save".localized
+            showError("budget.storage.error.save".localized)
         }
     }
-
+    
     func save() {
-        do { try repository.save() } catch { errorMessage = "budget.storage.error.save".localized }
+        do {
+            try repository.save()
+        }
+        catch {
+            showError("budget.storage.error.save".localized)
+        }
+    }
+}
+
+private extension BudgetViewModel {
+    func showError(_ message: String) {
+        toastMessage = ToastMessage(text: message, type: .failure)
     }
 }

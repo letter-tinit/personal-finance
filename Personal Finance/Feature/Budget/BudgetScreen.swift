@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct BudgetScreen: View {
+    @State private var title: String = "salary.budget".localized
     @State private var viewModel: BudgetDetailViewModel
     @State private var segmentOption: SegmentOption = .overview
     @State private var isFixedPlanPresented = false
@@ -37,7 +38,7 @@ struct BudgetScreen: View {
     }
 
     var body: some View {
-        BaseScreen {
+        BaseScreen($title) {
             VStack {
                 BudgetIncomeView(budget: budget)
 
@@ -64,7 +65,9 @@ struct BudgetScreen: View {
                 }
             }
             .padding()
-            .navigationTitle(budget.name)
+        }
+        .onAppear {
+            title = budget.name
         }
         .sheet(isPresented: $isFixedPlanPresented) {
             NavigationStack {
@@ -100,20 +103,14 @@ struct BudgetScreen: View {
                 )
             }
         }
-        .confirmationDialog(
-            "transaction.form.delete.confirmation.title".localized,
+        .deleteConfirmationDialog(
             isPresented: $isDeleteConfirmationPresented,
-            titleVisibility: .visible
+            title: "transaction.form.delete.confirmation.title".localized,
+            message: "common.delete.warning".localized
         ) {
-            Button("common.delete".localized, role: .destructive) {
-                deletePendingTransaction()
-            }
-
-            Button("common.cancel".localized, role: .cancel) {
-                transactionPendingDeletion = nil
-            }
-        } message: {
-            Text("common.delete.warning".localized)
+            deletePendingTransaction()
+        } cancelAction: {
+            transactionPendingDeletion = nil
         }
         .alert(
             "transaction.form.error.delete".localized,
@@ -179,7 +176,7 @@ private extension BudgetScreen {
                     }
                 }
             }
-            .listStyle(.plain)
+            .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
             .padding(.horizontal, -16)
         }
@@ -218,7 +215,7 @@ private extension BudgetScreen {
         guard let transactionPendingDeletion else { return }
         viewModel.deleteTransaction(transactionPendingDeletion)
         self.transactionPendingDeletion = nil
-        if viewModel.errorMessage != nil {
+        if viewModel.toastMessage != nil {
             isDeleteErrorPresented = true
         }
     }

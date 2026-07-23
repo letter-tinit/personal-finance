@@ -32,7 +32,7 @@ struct CreateBudgetFormState: Equatable {
     ) {
         if let templateBudget {
             periodStart = calendar.nextMonth(after: templateBudget.periodStart)
-            incomeText = NSDecimalNumber(decimal: templateBudget.income).stringValue
+            incomeText = templateBudget.income.toAmountString
             method = templateBudget.method
             reusesFixedExpensePlans = !templateBudget.fixedExpensePlans.isEmpty
         } else {

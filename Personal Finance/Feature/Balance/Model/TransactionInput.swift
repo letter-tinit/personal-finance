@@ -109,17 +109,17 @@ enum TransactionFormValidationError: LocalizedError {
     case amountRequired
     case invalidAmount
     case amountMustBePositive
-
-    var errorDescription: String? {
+    
+    var localizedDescription: String {
         switch self {
         case .titleRequired:
-            "transaction.form.error.title"
+            "transaction.form.error.title".localized
         case .amountRequired:
-            "transaction.form.error.amount.required"
+            "transaction.form.error.amount.required".localized
         case .invalidAmount:
-            "transaction.form.error.amount.invalid"
+            "transaction.form.error.amount.invalid".localized
         case .amountMustBePositive:
-            "transaction.form.error.amount.positive"
+            "transaction.form.error.amount.positive".localized
         }
     }
 }

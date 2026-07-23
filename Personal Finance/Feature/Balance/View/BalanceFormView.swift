@@ -12,11 +12,11 @@ struct BalanceFormView: View {
     
     @State private var title: String
     @State private var input: TransactionInput
-    @State private var errorMessage: String?
+    @State private var toastMessage: ToastMessage?
     @State private var isUpdate: Bool = false
     
     private let originalTransacion: Transaction?
-
+    
     var onSave: ((Transaction) -> Void)? = nil
     
     init(transaction: Transaction? = nil, onSave: ((Transaction) -> Void)? = nil) {
@@ -33,82 +33,78 @@ struct BalanceFormView: View {
     }
     
     var body: some View {
-        BaseScreen($title) {
-            List {
-                if let errorMessage {
-                    Section("common.error".localized) {
-                        Label(errorMessage.localized, systemImage: "exclamationmark.circle.fill")
-                            .foregroundStyle(Color.Common.failure)
+        List {
+            Section("Infomation") {
+                TextField("transaction.form.title", text: $input.title)
+                
+                TextField("transaction.form.amount", text: $input.amountText)
+                    .keyboardType(.numberPad)
+                    .currencyInputFormat($input.amountText)
+                
+                DatePicker(
+                    "transaction.form.date".localized,
+                    selection: $input.occurredAt,
+                    displayedComponents: .date
+                )
+            }
+            
+            Section("Preferences") {
+                Picker(
+                    "transaction.form.paymentMethod".localized,
+                    selection: $input.paymentMethod
+                ) {
+                    ForEach(PaymentMethod.allCases, id: \.self) { method in
+                        Text(method.localizationKey.localized)
+                            .tag(method)
                     }
                 }
                 
-                Section("Infomation") {
-                    TextField("transaction.form.title", text: $input.title)
-                    
-                    TextField("transaction.form.amount", text: $input.amountText)
-                        .keyboardType(.numberPad)
-                        .currencyInputFormat($input.amountText)
-                    
-                    DatePicker(
-                        "transaction.form.date".localized,
-                        selection: $input.occurredAt,
-                        displayedComponents: .date
-                    )
-                }
-                
-                Section("Preferences") {
-                    Picker(
-                        "transaction.form.paymentMethod".localized,
-                        selection: $input.paymentMethod
-                    ) {
-                        ForEach(PaymentMethod.allCases, id: \.self) { method in
-                            Text(method.localizationKey.localized)
-                                .tag(method)
-                        }
-                    }
-                    
-                    Picker(
-                        "transaction.form.transactionType".localized,
-                        selection: $input.transactionType
-                    ) {
-                        ForEach(TransactionType.allCases, id: \.self) { type in
-                            Text(type.localizedTitle)
-                                .tag(type)
-                        }
-                    }
-                    
-                    Picker(
-                        "transaction.form.category".localized,
-                        selection: $input.category
-                    ) {
-                        ForEach(TransactionCategory.allCases, id: \.self) { category in
-                            Label {
-                                Text(category.localizedTitle)
-                            } icon: {
-                                Image(module: category.icon)
-                            }
-                            .tag(category)
-                        }
+                Picker(
+                    "transaction.form.transactionType".localized,
+                    selection: $input.transactionType
+                ) {
+                    ForEach(TransactionType.allCases, id: \.self) { type in
+                        Text(type.localizedTitle)
+                            .tag(type)
                     }
                 }
                 
-                Section("transaction.form.description".localized + " " + "common.optional.bracket".localized) {
-                    TextEditor(text: $input.description)
+                Picker(
+                    "transaction.form.category".localized,
+                    selection: $input.category
+                ) {
+                    ForEach(TransactionCategory.allCases, id: \.self) { category in
+                        Label {
+                            Text(category.localizedTitle)
+                        } icon: {
+                            Image(module: category.icon)
+                        }
+                        .tag(category)
+                    }
                 }
             }
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        handleSave()
-                    } label: {
-                        Text("common.save".localized)
-                    }
+            
+            Section("transaction.form.description".localized + " " + "common.optional.bracket".localized) {
+                TextEditor(text: $input.description)
+            }
+        }
+        .navigationTitle(title)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    handleSave()
+                } label: {
+                    Text("common.save".localized)
                 }
             }
         }
+        .toast(message: toastMessage, position: .top)
     }
-    
-    private func handleSave() {
+}
+
+// MARK: - PRIVATE HELPER
+private extension BalanceFormView {
+    func handleSave() {
         do {
             if let transaction = originalTransacion {
                 try input.apply(to: transaction)
@@ -117,13 +113,21 @@ struct BalanceFormView: View {
                 let transaction = try input.validatedInputTransaction()
                 onSave?(transaction)
             }
-
+            
             dismiss()
         } catch let error as TransactionFormValidationError {
-            errorMessage = error.errorDescription
+            makeToastError(message: error.localizedDescription)
         } catch {
-            errorMessage = "common.error.unknown".localized
+            makeToastError(message: "common.error.unknown".localized)
         }
+    }
+    
+    func makeToastError(message: String?) {
+        guard let message else {
+            toastMessage = nil
+            return
+        }
+        toastMessage = ToastMessage(text: message.localized, type: .failure)
     }
 }
 

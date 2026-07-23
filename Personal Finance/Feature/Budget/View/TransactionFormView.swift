@@ -17,9 +17,8 @@ struct TransactionFormView: View {
     let onDelete: (() throws -> Void)?
 
     @State private var formState: TransactionFormState
-    @State private var errorMessage: String?
+    @State private var toastMessage: ToastMessage?
     @State private var isDeleteConfirmationPresented = false
-    @FocusState private var focusedField: Field?
 
     init(
         allocations: [BudgetAllocation],
@@ -49,7 +48,6 @@ struct TransactionFormView: View {
                     "transaction.form.description".localized,
                     text: $formState.description
                 )
-                .focused($focusedField, equals: .description)
 
                 if showsAllocationPicker {
                     Picker(
@@ -74,7 +72,6 @@ struct TransactionFormView: View {
                     text: $formState.amountText
                 )
                 .keyboardType(.numberPad)
-                .focused($focusedField, equals: .amount)
                 .currencyInputFormat($formState.amountText)
 
                 DatePicker(
@@ -101,14 +98,6 @@ struct TransactionFormView: View {
                     axis: .vertical
                 )
                 .lineLimit(2...4)
-                .focused($focusedField, equals: .note)
-            }
-
-            if let errorMessage {
-                Section {
-                    Label(errorMessage, systemImage: "exclamationmark.circle.fill")
-                        .foregroundStyle(Color.Common.failure)
-                }
             }
 
             if onDelete != nil {
@@ -138,30 +127,15 @@ struct TransactionFormView: View {
                     save()
                 }
             }
-
-            ToolbarItemGroup(placement: .keyboard) {
-                Spacer()
-
-                Button("common.done".localized) {
-                    focusedField = nil
-                }
-            }
         }
-        .confirmationDialog(
-            "transaction.form.delete.confirmation.title".localized,
+        .keyboardDoneButton()
+        .toast(message: toastMessage)
+        .deleteConfirmationDialog(
             isPresented: $isDeleteConfirmationPresented,
-            titleVisibility: .visible
+            title: "transaction.form.delete.confirmation.title".localized,
+            message: "common.delete.warning".localized
         ) {
-            Button(
-                "common.delete".localized,
-                role: .destructive
-            ) {
-                deleteTransaction()
-            }
-
-            Button("common.cancel".localized, role: .cancel) {}
-        } message: {
-            Text("common.delete.warning".localized)
+            deleteTransaction()
         }
     }
 }
@@ -179,9 +153,9 @@ private extension TransactionFormView {
             try onSave(input)
             dismiss()
         } catch let error as BudgetTransactionFormValidationError {
-            errorMessage = error.localizationKey.localized
+            showError(error.localizationKey.localized)
         } catch {
-            errorMessage = "transaction.form.error.save".localized
+            showError("transaction.form.error.save".localized)
         }
     }
 
@@ -190,8 +164,12 @@ private extension TransactionFormView {
             try onDelete?()
             dismiss()
         } catch {
-            errorMessage = "transaction.form.error.delete".localized
+            showError("transaction.form.error.delete".localized)
         }
+    }
+    
+    func showError(_ message: String) {
+        toastMessage = ToastMessage(text: message, type: .failure)
     }
 }
 

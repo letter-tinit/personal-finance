@@ -31,7 +31,8 @@ struct DeleteConfirmationDialogModifier: ViewModifier {
     let title: String
     let message: String
     let deleteAction: () -> Void
-
+    var cancelAction: (() -> Void)?
+    
     func body(content: Content) -> some View {
         content
             .confirmationDialog(
@@ -45,11 +46,13 @@ struct DeleteConfirmationDialogModifier: ViewModifier {
                 ) {
                     deleteAction()
                 }
-
+                
                 Button(
                     "common.cancel".localized,
                     role: .cancel
-                ) {}
+                ) {
+                    cancelAction?()
+                }
             } message: {
                 Text(message)
             }
@@ -95,6 +98,8 @@ struct ToastModifier: ViewModifier {
             }
             .onChange(of: message) { _, newValue in
                 guard let newValue else { return }
+                
+                makeHaptic(newValue.type)
 
                 visibleMessage = newValue
 
@@ -109,5 +114,16 @@ struct ToastModifier: ViewModifier {
                 }
             }
             .animation(.easeInOut, value: visibleMessage)
+    }
+    
+    private func makeHaptic(_ toastType: ToastType) {
+        switch toastType {
+        case .success:
+            Haptic.success()
+        case .failure:
+            Haptic.error()
+        case .warning:
+            Haptic.warning()
+        }
     }
 }

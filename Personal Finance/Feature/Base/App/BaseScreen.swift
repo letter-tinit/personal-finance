@@ -39,7 +39,6 @@ struct BaseScreen<Content: View>: View {
                         Text(title.uppercased())
                             .font(.headline)
                             .fontWeight(.semibold)
-                            .fontDesign(.rounded)
                     }
                     .allowsHitTesting(didTapOnTitle != nil)
                 }

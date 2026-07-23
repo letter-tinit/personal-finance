@@ -11,8 +11,8 @@ import Foundation
 final class BalanceViewModel {
     private let repository: BalanceRepository
     
-    var errorMessage: String?
-    
+    var toastMessage: ToastMessage?
+
     init(repository: BalanceRepository) {
         self.repository = repository
     }
@@ -21,7 +21,7 @@ final class BalanceViewModel {
         do {
             try repository.addTransaction(transaction)
         } catch {
-            errorMessage = error.localizedDescription
+            showError(error.localizedDescription)
         }
     }
     
@@ -29,7 +29,7 @@ final class BalanceViewModel {
         do {
             try repository.deleteTransaction(transaction)
         } catch {
-            errorMessage = error.localizedDescription
+            showError(error.localizedDescription)
         }
     }
     
@@ -37,7 +37,13 @@ final class BalanceViewModel {
         do {
             try repository.updateTransaction(transaction)
         } catch {
-            errorMessage = error.localizedDescription
+            showError(error.localizedDescription)
         }
+    }
+}
+
+private extension BalanceViewModel {
+    func showError(_ message: String) {
+        toastMessage = ToastMessage(text: message, type: .failure)
     }
 }

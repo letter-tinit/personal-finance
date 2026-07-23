@@ -15,9 +15,8 @@ struct FixedExpensePlanFormView: View {
     let onDelete: (() throws -> Void)?
 
     @State private var formState: FixedExpensePlanFormState
-    @State private var errorMessage: String?
+    @State private var toastMessage: ToastMessage?
     @State private var isDeleteConfirmationPresented = false
-    @FocusState private var focusedField: Field?
 
     init(
         initialState: FixedExpensePlanFormState = FixedExpensePlanFormState(),
@@ -43,14 +42,12 @@ struct FixedExpensePlanFormView: View {
                     "fixed.plan.form.name".localized,
                     text: $formState.name
                 )
-                .focused($focusedField, equals: .name)
 
                 TextField(
                     "fixed.plan.form.amount".localized,
                     text: $formState.amountText
                 )
                 .keyboardType(.numberPad)
-                .focused($focusedField, equals: .amount)
                 .currencyInputFormat($formState.amountText)
 
                 Text("fixed.plan.form.amount.help".localized)
@@ -66,14 +63,7 @@ struct FixedExpensePlanFormView: View {
                     }
                 }
             }
-
-            if let errorMessage {
-                Section {
-                    Label(errorMessage, systemImage: "exclamationmark.circle.fill")
-                        .foregroundStyle(Color.Common.failure)
-                }
-            }
-
+            
             if onDelete != nil {
                 Section {
                     Button("fixed.plan.form.delete".localized, role: .destructive) {
@@ -98,30 +88,15 @@ struct FixedExpensePlanFormView: View {
                     save()
                 }
             }
-
-            ToolbarItemGroup(placement: .keyboard) {
-                Spacer()
-
-                Button("common.done".localized) {
-                    focusedField = nil
-                }
-            }
         }
-        .confirmationDialog(
-            "fixed.plan.delete.confirmation.title".localized,
+        .keyboardDoneButton()
+        .toast(message: toastMessage)
+        .deleteConfirmationDialog(
             isPresented: $isDeleteConfirmationPresented,
-            titleVisibility: .visible
+            title: "fixed.plan.delete.confirmation.title".localized,
+            message: "fixed.plan.delete.confirmation.message".localized
         ) {
-            Button(
-                "common.delete".localized,
-                role: .destructive
-            ) {
-                deletePlan()
-            }
-
-            Button("common.cancel".localized, role: .cancel) {}
-        } message: {
-            Text("fixed.plan.delete.confirmation.message".localized)
+            deletePlan()
         }
     }
 }
@@ -138,9 +113,9 @@ private extension FixedExpensePlanFormView {
             try onSave(input)
             dismiss()
         } catch let error as FixedExpensePlanFormValidationError {
-            errorMessage = error.localizationKey.localized
+            showError(error.localizationKey.localized)
         } catch {
-            errorMessage = "fixed.plan.form.error.save".localized
+            showError("fixed.plan.form.error.save".localized)
         }
     }
 
@@ -149,8 +124,12 @@ private extension FixedExpensePlanFormView {
             try onDelete?()
             dismiss()
         } catch {
-            errorMessage = "fixed.plan.form.error.delete".localized
+            showError("fixed.plan.form.error.delete".localized)
         }
+    }
+    
+    func showError(_ message: String) {
+        toastMessage = ToastMessage(text: message, type: .failure)
     }
 }
 

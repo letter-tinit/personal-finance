@@ -171,7 +171,7 @@ struct BudgetAllocationSummary: Hashable {
 
 extension Budget {
     var name: String {
-        Calendar.current.startOfMonth(for: periodStart).toString(withFormat: .month).capitalizingFirstLetter
+        Calendar.current.startOfMonth(for: periodStart).toString(withFormat: .month)
     }
 
     static func make(periodStart: Date, income: Decimal, method: BudgetMethod, calendar: Calendar = .current) -> Budget {

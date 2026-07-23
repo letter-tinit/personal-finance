@@ -15,6 +15,7 @@ enum DateFormat {
     case dayNameWithNo // Tue, 26 (combine of day number and day name)
     case monthAndYear // July 2026
     case month
+    case year
     case custom(String) // Passing date format throught string
     
     var value: String {
@@ -33,6 +34,8 @@ enum DateFormat {
             "MMMM yyyy"
         case .month:
             "MMMM"
+        case .year:
+            "YYYY"
         case .custom(let value):
             value
         }
@@ -49,7 +52,7 @@ extension Date {
         let formatter = DateFormatter()
         formatter.dateFormat = dateFormat.value
         formatter.locale = appLanguage.locale
-        return formatter.string(from: self)
+        return formatter.string(from: self).capitalizingFirstLetter
     }
     
     func isEqual(with targetDate: Date) -> Bool {

@@ -15,8 +15,7 @@ struct CreateBudgetView: View {
     let templateBudget: Budget?
 
     @State private var formState: CreateBudgetFormState
-    @State private var errorMessage: String?
-    @FocusState private var focusedField: Field?
+    @State private var toastMessage: ToastMessage?
     @State private var showPicker = false
 
     init(
@@ -38,7 +37,7 @@ struct CreateBudgetView: View {
                 Button {
                     showPicker = true
                 } label: {
-                    Text(formState.periodStart.toString(withFormat: .monthAndYear).capitalizingFirstLetter)
+                    Text(formState.periodStart.toString(withFormat: .monthAndYear))
                         .customHeadline()
                 }
 
@@ -47,7 +46,6 @@ struct CreateBudgetView: View {
                     text: $formState.incomeText
                 )
                 .keyboardType(.numberPad)
-                .focused($focusedField, equals: .income)
                 .currencyInputFormat($formState.incomeText)
 
                 Picker(
@@ -99,13 +97,6 @@ struct CreateBudgetView: View {
                     }
                 }
             }
-
-            if let errorMessage {
-                Section {
-                    Label(errorMessage, systemImage: "exclamationmark.circle.fill")
-                        .foregroundStyle(Color.Common.failure)
-                }
-            }
         }
         .navigationTitle("budget.create.title".localized)
         .navigationBarTitleDisplayMode(.inline)
@@ -128,15 +119,9 @@ struct CreateBudgetView: View {
                     createBudget()
                 }
             }
-
-            ToolbarItemGroup(placement: .keyboard) {
-                Spacer()
-
-                Button("common.done".localized) {
-                    focusedField = nil
-                }
-            }
         }
+        .toast(message: toastMessage)
+        .keyboardDoneButton()
     }
 }
 
@@ -181,10 +166,14 @@ private extension CreateBudgetView {
             budgetViewModel.createBudget(budget)
             dismiss()
         } catch let error as CreateBudgetFormValidationError {
-            errorMessage = error.localizationKey.localized
+            showError(error.localizationKey.localized)
         } catch {
-            errorMessage = "budget.create.error.save".localized
+            showError("budget.create.error.save".localized)
         }
+    }
+    
+    func showError(_ message: String) {
+        toastMessage = ToastMessage(text: message, type: .failure)
     }
 }
 

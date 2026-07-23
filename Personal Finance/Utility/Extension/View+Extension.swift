@@ -127,14 +127,16 @@ extension View {
         isPresented: Binding<Bool>,
         title: String = "common.delete.title".localized,
         message: String = "common.delete.warning".localized,
-        deleteAction: @escaping () -> Void
+        deleteAction: @escaping () -> Void,
+        cancelAction: (() -> Void)? = nil
     ) -> some View {
         modifier(
             DeleteConfirmationDialogModifier(
                 isPresented: isPresented,
                 title: title,
                 message: message,
-                deleteAction: deleteAction
+                deleteAction: deleteAction,
+                cancelAction: cancelAction
             )
         )
     }

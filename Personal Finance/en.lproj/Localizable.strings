@@ -120,6 +120,7 @@
 "budget.status.over" = "Over";
 "budget.status.done" = "Done";
 "budget.status.needMore" = "Need more";
+"fixed.plan.title" = "Fixed Need Plan";
 "fixed.plan.total" = "Planned total";
 "fixed.plan.empty.title" = "No essential expenses";
 "fixed.plan.empty.description" = "Your essential expense plans will appear here.";

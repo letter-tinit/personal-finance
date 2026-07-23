@@ -147,23 +147,14 @@ struct FixedPlanView: View {
                 )
             }
         }
-        .confirmationDialog(
-            "fixed.plan.delete.confirmation.title".localized,
+        .deleteConfirmationDialog(
             isPresented: $isDeleteConfirmationPresented,
-            titleVisibility: .visible
+            title: "fixed.plan.delete.confirmation.title".localized,
+            message: "fixed.plan.delete.confirmation.message".localized
         ) {
-            Button(
-                "common.delete".localized,
-                role: .destructive
-            ) {
-                deletePendingPlan()
-            }
-            
-            Button("common.cancel".localized, role: .cancel) {
-                planPendingDeletion = nil
-            }
-        } message: {
-            Text("fixed.plan.delete.confirmation.message".localized)
+            deletePendingPlan()
+        } cancelAction: {
+            planPendingDeletion = nil
         }
         .alert(
             "fixed.plan.form.error.delete".localized,
@@ -171,6 +162,7 @@ struct FixedPlanView: View {
         ) {
             Button("common.ok".localized, role: .cancel) {}
         }
+        .ignoresSafeArea(.container, edges: .bottom)
     }
 }
 
@@ -199,6 +191,7 @@ private extension FixedPlanView {
             )
         )
         .padding()
+        .padding(.bottom)
         .background(
             Color(uiColor: .secondarySystemGroupedBackground)
                 .overlay(BudgetBucketKind.needs.topicColor.opacity(0.12))

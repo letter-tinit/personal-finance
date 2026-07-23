@@ -9,13 +9,15 @@ import SwiftUI
 
 struct NetWorthScreen: View {
     let year: NetWorthYear
+    @State private var title: String = "networth.tab.title".localized
     @State private var selectedSnapshot: NetWorthSnapshot
-    let statusMessage: String?
-    let onDeleteItem: (UUID) throws -> Void
-    let onCreateSnapshot: () -> Void
     @State private var isItemFormPresented = false
     @State private var selectedItem: NetWorthPlanItem?
     @State private var isEditingUnlocked = false
+    
+    let statusMessage: String?
+    let onDeleteItem: (UUID) throws -> Void
+    let onCreateSnapshot: () -> Void
 
     init(
         year: NetWorthYear,
@@ -36,10 +38,11 @@ struct NetWorthScreen: View {
     }
 
     var body: some View {
-        BaseScreen {
+        BaseScreen($title) {
             AppScrollView(.vertical) {
                 VStack(spacing: 16) {
                     header
+                    
                     summary
 
                     if let statusMessage {
@@ -72,7 +75,9 @@ struct NetWorthScreen: View {
                 .padding()
             }
         }
-        .navigationTitle("networth.tab.title".localized)
+        .onAppear {
+            title = String(describing: selectedSnapshot.asOfDate.toString(withFormat: .year))
+        }
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
@@ -170,7 +175,7 @@ private extension NetWorthScreen {
                         selection: $selectedSnapshot
                     ) {
                         ForEach(year.snapshots.sorted { $0.asOfDate > $1.asOfDate }) { snapshot in
-                            Text(snapshot.asOfDate, format: .dateTime.month(.wide).year())
+                            Text(snapshot.asOfDate.toString(withFormat: .month))
                                 .tag(snapshot)
                         }
                     }
@@ -195,7 +200,7 @@ private extension NetWorthScreen {
                 .foregroundStyle(.secondary)
 
             Text(selectedSnapshot.netWorth(using: year.planItems).formattedVND)
-                .font(.system(.largeTitle, design: .rounded, weight: .bold))
+                .customTitle()
                 .foregroundStyle(.primary)
 
             if missingValueCount > 0 {

@@ -54,6 +54,7 @@ struct BalanceScreen: View {
                 BalanceFormView(onSave: viewModel.addTransaction)
             }
         }
+        .toast(message: viewModel.toastMessage)
     }
     
     private func createTransaction(_ transaction: Transaction) {

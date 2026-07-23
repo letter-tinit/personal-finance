@@ -11,7 +11,7 @@ import Foundation
 final class BudgetDetailViewModel {
     let budget: Budget
     private let repository: BudgetRepository
-    var errorMessage: String?
+    var toastMessage: ToastMessage?
 
     init(budget: Budget, repository: BudgetRepository) {
         self.budget = budget
@@ -136,10 +136,14 @@ private extension BudgetDetailViewModel {
     func perform(_ action: () throws -> Void) {
         do {
             try action()
-            errorMessage = nil
+            toastMessage = nil
             try repository.save()
         } catch {
-            errorMessage = error.localizedDescription
+            showError(error.localizedDescription)
         }
+    }
+    
+    func showError(_ message: String) {
+        toastMessage = ToastMessage(text: message, type: .failure)
     }
 }

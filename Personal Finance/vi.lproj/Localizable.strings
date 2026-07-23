@@ -120,6 +120,7 @@
 "budget.status.over" = "Vượt";
 "budget.status.done" = "Đã xong";
 "budget.status.needMore" = "Cần thêm";
+"fixed.plan.title" = "Chi tiêu dự kiến";
 "fixed.plan.total" = "Tổng dự kiến";
 "fixed.plan.empty.title" = "Chưa có khoản chi thiết yếu";
 "fixed.plan.empty.description" = "Các khoản chi thiết yếu dự kiến sẽ xuất hiện tại đây.";

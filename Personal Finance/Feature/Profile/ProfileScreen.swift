@@ -8,6 +8,7 @@ import UniformTypeIdentifiers
 
 struct ProfileScreen: View {
     @Environment(ProfileRouter.self) private var router
+    @State private var title: String = "profile.tab.title".localized
     @State private var backupViewModel: ProfileBackupViewModel
     @AppStorage(AppLanguage.preferenceKey) private var languageCode = AppLanguage.system.rawValue
     @State private var isImporting = false
@@ -21,29 +22,15 @@ struct ProfileScreen: View {
     }
     
     var body: some View {
-        BaseScreen {
+        BaseScreen($title) {
             List {
-                Section {
-                    profileHeader
-                }
-                .listRowBackground(Color.clear)
+                profileHeader
                 
                 Section("profile.preferences".localized) {
-                    Button {
-                        router.push(.changeLanguage)
-                    } label: {
-                        Label {
-                            HStack {
-                                Text("settings.language".localized)
-                                
-                                Spacer()
-                                
-                                Text(selectedLanguage.localizationKey.localized)
-                                    .foregroundStyle(.secondary)
-                            }
-                        } icon: {
-                            Image(systemName: "globe")
-                                .foregroundStyle(.tint)
+                    Picker("settings.language".localized, selection: $languageCode) {
+                        ForEach(AppLanguage.allCases) { language in
+                            Text(language.localizationKey.localized)
+                                .tag(language.rawValue)
                         }
                     }
                 }
@@ -68,7 +55,6 @@ struct ProfileScreen: View {
             }
             .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
-            .navigationTitle("profile.tab.title".localized)
             .fileExporter(
                 isPresented: Binding(
                     get: { backupViewModel.exportDocument != nil },
@@ -100,16 +86,6 @@ struct ProfileScreen: View {
                     backupViewModel.makeToastError("profile.backup.error.invalidFile".localized)
                 }
             }
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        router.push(.changeLanguage)
-                    } label: {
-                        Image(systemName: "gearshape")
-                    }
-                    .accessibilityLabel("settings.title".localized)
-                }
-            }
             .toast(message: backupViewModel.toastMessage)
         }
     }
@@ -133,28 +109,6 @@ private extension ProfileScreen {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 12)
-    }
-}
-
-struct AppSettingsScreen: View {
-    @AppStorage(AppLanguage.preferenceKey) private var languageCode = AppLanguage.system.rawValue
-
-    var body: some View {
-        Form {
-            Section {
-                Picker("settings.language".localized, selection: $languageCode) {
-                    ForEach(AppLanguage.allCases) { language in
-                        Text(language.localizationKey.localized)
-                            .tag(language.rawValue)
-                    }
-                }
-                .pickerStyle(.navigationLink)
-            } footer: {
-                Text("settings.language.description".localized)
-            }
-        }
-        .navigationTitle("settings.title".localized)
-        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

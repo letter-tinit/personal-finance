@@ -38,6 +38,7 @@ struct BalanceList: View {
                 BalanceFormView(transaction: transaction, onSave: balanceViewModel.updateTransaction)
             }
         }
+        .toast(message: balanceViewModel.toastMessage)
         .contentMargins(.top, 10, for: .scrollContent)
         .listStyle(.insetGrouped)
         .scrollIndicators(.hidden)

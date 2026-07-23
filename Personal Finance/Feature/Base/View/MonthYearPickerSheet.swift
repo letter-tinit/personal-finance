@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MonthYearPickerSheet: View {
     @Environment(\.dismiss) private var dismiss
+    @State private var title: String = "salary.budget".localized
 
     @Binding var selectedDate: Date
 

@@ -11,6 +11,7 @@ import SwiftData
 struct NetWorthListScreen: View {
     @Environment(NetWorthRouter.self) private var router
     
+    @State private var title: String = "networth.list.title".localized
     @State private var viewModel: NetWorthViewModel
     @State private var selectedYear = Calendar.current.component(
         .year,
@@ -36,7 +37,7 @@ struct NetWorthListScreen: View {
     }
     
     var body: some View {
-        BaseScreen {
+        BaseScreen($title) {
             List {
                 ForEach(netWorthYears.sorted { $0.year > $1.year }) { data in
                     Button {
@@ -61,7 +62,6 @@ struct NetWorthListScreen: View {
             }
             .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
-            .navigationTitle("networth.list.title".localized)
         }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {

@@ -8,15 +8,7 @@
 import SwiftUI
 import Observation
 
-enum ProfileRoute: Hashable {
-    case changeLanguage
-}
+enum ProfileRoute: Hashable {}
 
 @Observable
-final class ProfileRouter: AppRouter<ProfileRoute> {
-    func popToView(_ target: ProfileRoute) {
-        if let index = path.lastIndex(of: target) {
-            path = Array(path.prefix(index + 1))
-        }
-    }
-}
+final class ProfileRouter: AppRouter<ProfileRoute> {}
