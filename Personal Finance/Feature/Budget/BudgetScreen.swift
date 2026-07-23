@@ -142,9 +142,9 @@ private extension BudgetScreen {
     @ViewBuilder
     var transactionList: some View {
         if budget.transactions.isEmpty {
-            ContentUnavailableView(
-                "budget.transactions.empty".localized,
-                systemImage: "list.bullet.rectangle"
+            CommonEmptyView(
+                systemImage: "list.bullet.rectangle",
+                description: "budget.transactions.empty".localized
             )
         } else {
             List {

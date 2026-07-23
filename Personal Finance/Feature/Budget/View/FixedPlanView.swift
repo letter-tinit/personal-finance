@@ -199,14 +199,11 @@ private extension FixedPlanView {
     }
     
     var emptyView: some View {
-        ContentUnavailableView {
-            Label(
-                "fixed.plan.empty.title".localized,
-                systemImage: "list.bullet.rectangle"
-            )
-        } description: {
-            Text("fixed.plan.empty.description".localized)
-        }
+        CommonEmptyView(
+            "fixed.plan.empty.title".localized,
+            systemImage: "list.bullet.rectangle",
+            description: "fixed.plan.empty.description".localized
+        )
     }
 }
 

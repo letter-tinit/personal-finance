@@ -13,11 +13,11 @@ struct BalanceCard: View {
     let balance: Balance
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        VStack(alignment: .leading) {
             VStack {
                 HStack {
                     Image(systemName: balance.symbol)
-                
+                    
                     Text(balance.name.localized)
                         .customSubHeadline()
                     
@@ -35,9 +35,9 @@ struct BalanceCard: View {
                 
                 Text(balance.displayBalance)
                     .customTitle()
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .foregroundStyle(balance.color)
-                    .shadow(color: .primary.opacity(0.3), radius: 1, x: 1, y: 1)
+                    .padding(.vertical, 4)
+                    .padding(.horizontal, 8)
+                    .borderedBackground(fillColor: balance.color.opacity(0.5), cornerRadius: 8, lineWidth: 0)
             }
             
             if isExpand {
@@ -55,7 +55,9 @@ struct BalanceCard: View {
                         Spacer()
                         
                         Text(hasInflow ? "+\(balance.inflow.formattedVND)" : "0 ₫")
-                            .foregroundStyle(Color.Common.success)
+                            .padding(.vertical, 4)
+                            .padding(.horizontal, 8)
+                            .borderedBackground(fillColor: Color.Common.success.opacity(0.5), cornerRadius: 8, lineWidth: 0)
                     }
                     .customHeadline()
                     
@@ -67,7 +69,9 @@ struct BalanceCard: View {
                         Spacer()
                         
                         Text(hasOutflow ? "-\(balance.outflow.formattedVND)" : "0 ₫")
-                            .foregroundStyle(Color.Common.failure)
+                            .padding(.vertical, 4)
+                            .padding(.horizontal, 8)
+                            .borderedBackground(fillColor: Color.Common.failure.opacity(0.5), cornerRadius: 8, lineWidth: 0)
                     }
                     .customHeadline()
                 }
@@ -76,6 +80,7 @@ struct BalanceCard: View {
         .foregroundStyle(Color.Common.surface)
         .frame(maxWidth: .infinity)
         .padding()
+        .shadow(color: .primary.opacity(0.3), radius: 1, x: 1, y: 1)
         .borderedBackground(
             linearGradient: LinearGradient(
                 stops: [

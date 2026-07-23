@@ -37,10 +37,10 @@ struct BudgetListScreen: View {
         BaseScreen($title) {
             Group {
                 if budgets.isEmpty {
-                    ContentUnavailableView(
+                    CommonEmptyView(
                         "budget.list.empty".localized,
                         systemImage: "calendar.badge.plus",
-                        description: Text("budget.list.empty.description".localized)
+                        description: "budget.list.empty.description".localized
                     )
                 } else {
                     List(sortedBudgetGroupByYear()) { section in

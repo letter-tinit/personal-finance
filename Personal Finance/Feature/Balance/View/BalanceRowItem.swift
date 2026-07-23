@@ -15,36 +15,33 @@ struct BalanceRowItem: View {
         let color = transaction.type.color
         let sign = transaction.type == .income ? "+" : "-"
         let paymentMethod = transaction.method
-        HStack(alignment: .center) {
+        HStack(alignment: .center, spacing: 16) {
             HStack {
                 let transactionTime = transaction.occurredAt
                 
                 VStack {
-                    Image(module: "calendar")
+                    Image(module: "\(transactionTime.toString(withFormat: .dayNo)).calendar")
+                        .font(.system(size: 36))
                     
-                    Text(transactionTime.toString(withFormat: .dayName))
+                    Text(transactionTime.toString(withFormat: .custom("EEE")))
                         .secondarySubHeadline()
                 }
-                
-                Divider()
-                
-                VStack {
-                    Text(transactionTime.toString(withFormat: .custom("d/M")))
-                        .customHeadline()
-                    
-                    Text(transactionTime.toString(withFormat: .custom("yyyy")))
-                        .customSubText()
-                    
-                    
-                }
             }
-            .padding()
-            .borderedBackground(fillColor: color.opacity(0.2), cornerRadius: 8, lineWidth: 0)
+            
+            Divider()
             
             VStack(alignment: .leading) {
-                Text(transaction.category.localizedTitle)
-                    .customSubHeadline()
-                    .lineLimit(nil)
+                HStack {
+                    Image(module: transaction.category.icon)
+                        .resizable()
+                        .frame(width: 20, height: 20)
+                    
+                    Text(transaction.category.localizedTitle)
+                        .customSubHeadline()
+                        .lineLimit(nil)
+                    Spacer()
+                }
+                
                 
                 Text(transaction.note.isNullOrEmpty ? "common.nil.note".localized : transaction.note ?? "")
                     .secondarySubHeadline()
@@ -56,13 +53,6 @@ struct BalanceRowItem: View {
             Spacer()
             
             VStack(alignment: .trailing) {
-                Text("\(sign)\(transaction.amount.formattedVND)")
-                    .customSubHeadline()
-                    .foregroundStyle(color)
-                
-                Text(rowModel.balanceSnapshot.formattedVND)
-                    .font(.caption)
-                
                 Text(paymentMethod.localizationKey.localized)
                     .font(.caption)
                     .padding(.horizontal, 8)
@@ -71,6 +61,13 @@ struct BalanceRowItem: View {
                         Capsule()
                             .foregroundStyle(paymentMethod.color.opacity(0.3))
                     )
+                
+                Text("\(sign)\(transaction.amount.formattedVND)")
+                    .customSubHeadline()
+                    .foregroundStyle(color)
+                
+                Text(rowModel.balanceSnapshot.formattedVND)
+                    .font(.caption)
             }
         }
     }

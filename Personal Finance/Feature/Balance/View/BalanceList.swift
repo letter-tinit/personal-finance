@@ -12,26 +12,33 @@ struct BalanceList: View {
     @State private var selectedTransaction: Transaction?
     
     let transactions: [TransactionRowModel]
+    private var groupedTransactions: [YearMonthGroup<TransactionRowModel>] {
+        transactions.groupedByYearMonth { $0.transaction.occurredAt }
+    }
     
     var body: some View {
-        List(transactions) { rowModel in
-            Button {
-                selectedTransaction = rowModel.transaction
-            } label: {
-                BalanceRowItem(rowModel: rowModel)
-            }
-            .swipeActions(edge: .trailing) {
-                Button {
-                    balanceViewModel.removeTransaction(rowModel.transaction)
-                } label: {
-                    Label(
-                        "common.delete".localized,
-                        systemImage: "trash"
-                    )
+        List(groupedTransactions) { group in
+            ForEach(group.items) { rowModel in
+                Section(group.title) {
+                    Button {
+                        selectedTransaction = rowModel.transaction
+                    } label: {
+                        BalanceRowItem(rowModel: rowModel)
+                    }
+                    .swipeActions(edge: .trailing) {
+                        Button {
+                            balanceViewModel.removeTransaction(rowModel.transaction)
+                        } label: {
+                            Label(
+                                "common.delete".localized,
+                                systemImage: "trash"
+                            )
+                        }
+                        .tint(Color.Common.failure)
+                    }
+                    .lineSpacing(0)
                 }
-                .tint(Color.Common.failure)
             }
-            .lineSpacing(0)
         }
         .sheet(item: $selectedTransaction) { transaction in
             NavigationStack {
@@ -39,7 +46,6 @@ struct BalanceList: View {
             }
         }
         .toast(message: balanceViewModel.toastMessage)
-        .contentMargins(.top, 10, for: .scrollContent)
         .listStyle(.grouped)
         .scrollIndicators(.hidden)
         .scrollContentBackground(.hidden)
