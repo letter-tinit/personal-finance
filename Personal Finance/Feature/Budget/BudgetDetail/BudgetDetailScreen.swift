@@ -20,11 +20,7 @@ struct BudgetDetailScreen: View {
     @State private var isFixedPlanPresented = false
     @State private var isTransactionFormPresented = false
     @State private var selectedTransaction: BudgetTransaction?
-    @State private var transactionPendingDeletion: BudgetTransaction? {
-        didSet {
-            isDeleteConfirmationPresented = true
-        }
-    }
+    @State private var transactionPendingDeletion: BudgetTransaction?
     @State private var isDeleteConfirmationPresented = false
     @State private var isDeleteErrorPresented = false
     
@@ -98,6 +94,11 @@ struct BudgetDetailScreen: View {
                         viewModel.deleteTransaction(transaction)
                     }
                 )
+            }
+        }
+        .onChange(of: transactionPendingDeletion) { _, newValue in
+            if newValue != nil {
+                isDeleteConfirmationPresented = true
             }
         }
         .deleteConfirmationDialog(
@@ -175,9 +176,8 @@ private extension BudgetDetailScreen {
                         selectedTransaction: $selectedTransaction,
                         transactionPendingDeletion: $transactionPendingDeletion
                     )
-                    .padding(.horizontal)
-                    .padding(.top)
                 }
+                .padding()
             }
         }
     }

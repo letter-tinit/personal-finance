@@ -11,8 +11,7 @@ struct BudgetTransactionItemView: View {
     let transaction: BudgetTransaction
     
     var body: some View {
-        let isSaving = transaction.type == .income
-        let color = isSaving ? Color.Common.success : Color.Common.failure
+        let color = transaction.allocation?.kind.topicColor ?? .primary
         
         VStack(alignment: .leading) {
             HStack {

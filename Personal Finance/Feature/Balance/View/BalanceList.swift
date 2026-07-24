@@ -13,7 +13,7 @@ struct BalanceList: View {
     
     let transactions: [TransactionRowModel]
     private var groupedTransactions: [YearMonthGroup<TransactionRowModel>] {
-        transactions.groupedByYearMonth { $0.transaction.occurredAt }
+        transactions.groupedByYearMonth { $0.transaction.occurredAt }.sorted { $0.originalDate > $1.originalDate }
     }
     
     var body: some View {

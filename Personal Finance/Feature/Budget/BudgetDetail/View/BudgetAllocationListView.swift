@@ -15,9 +15,9 @@ struct BudgetAllocationListView: View {
             VStack {
                 ForEach(budget.allocations) { allocation in
                     BudgetAllocationView(summary: budget.allocationSummary(for: allocation))
-                        .padding(.horizontal, 16)
                 }
             }
+            .padding()
         }
     }
 }

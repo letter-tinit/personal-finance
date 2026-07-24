@@ -34,14 +34,14 @@ struct BalanceRowItem: View {
                 HStack {
                     Image(systemName: transaction.category.icon)
                         .resizable()
-                        .frame(width: 20, height: 20)
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 24)
                     
                     Text(transaction.category.localizedTitle)
                         .customSubHeadline()
                         .lineLimit(nil)
                     Spacer()
                 }
-                
                 
                 Text(transaction.note.isNullOrEmpty ? "common.nil.note".localized : transaction.note ?? "")
                     .secondarySubHeadline()
