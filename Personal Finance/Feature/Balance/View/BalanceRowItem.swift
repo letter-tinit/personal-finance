@@ -15,7 +15,7 @@ struct BalanceRowItem: View {
         let color = transaction.type.color
         let sign = transaction.type == .income ? "+" : "-"
         let paymentMethod = transaction.method
-        HStack(alignment: .center, spacing: 16) {
+        HStack(alignment: .center, spacing: 8) {
             HStack {
                 let transactionTime = transaction.occurredAt
                 
@@ -46,11 +46,7 @@ struct BalanceRowItem: View {
                 Text(transaction.note.isNullOrEmpty ? "common.nil.note".localized : transaction.note ?? "")
                     .secondarySubHeadline()
                     .lineLimit(nil)
-                
-                Spacer()
             }
-            
-            Spacer()
             
             VStack(alignment: .trailing) {
                 Text(paymentMethod.localizationKey.localized)
