@@ -16,16 +16,19 @@ struct BudgetTransactionItemView: View {
         VStack(alignment: .leading) {
             HStack {
                 Text(transaction.title)
+                    .customNormalText()
+                    .multilineTextAlignment(.leading)
                 
                 Spacer()
                 
                 Text(transaction.amount.formattedVND)
+                    .customSubHeadline()
             }
-            .customSubHeadline()
             
             if !transaction.note.isEmpty {
                 Text(transaction.note)
                     .secondarySubHeadline()
+                    .multilineTextAlignment(.leading)
             }
         }
         .padding(.vertical, 4)
