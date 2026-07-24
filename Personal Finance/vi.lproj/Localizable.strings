@@ -69,8 +69,8 @@
 "networth.list.title" = "Các năm tài sản ròng";
 "networth.year.add" = "Tạo năm tài sản ròng tiếp theo";
 "networth.year.missing" = "Không tìm thấy năm tài sản ròng";
-"networth.year.monthCount" = "%d tháng";
 "networth.year.existed" = "Năm %lld đã tồn tại";
+"networth.year.monthCount" = "%d tháng";
 "networth.snapshot.picker" = "Tháng tài sản ròng";
 "networth.snapshot.form.title" = "Tạo bảng tài sản ròng";
 "networth.snapshot.form.create" = "Tạo";
@@ -82,7 +82,7 @@
 "networth.storage.error.load" = "Không thể tải dữ liệu tài sản ròng đã lưu.";
 "networth.storage.error.save" = "Không thể lưu thay đổi tài sản ròng.";
 "profile.tab.title" = "Hồ sơ";
-"profile.header.title" = "Personal Finance";
+"profile.header.title" = "Tài chính cá nhân";
 "profile.header.description" = "Quản lý thiết lập ứng dụng.";
 "profile.preferences" = "Tuỳ chỉnh";
 "profile.backup" = "Sao lưu dữ liệu";
@@ -102,7 +102,7 @@
 "budget.create.title" = "Tạo ngân sách";
 "budget.create.action" = "Tạo";
 "budget.create.section.setup" = "Thiết lập ngân sách";
-"budget.create.section.preview" = "Tỉ lệ phân bổ";
+"budget.create.section.preview" = "Phân bổ";
 "budget.create.month" = "Tháng ngân sách";
 "budget.create.income" = "Thu nhập tháng";
 "budget.create.method" = "Phương pháp ngân sách";
@@ -174,11 +174,11 @@
 "payment.method.banking" = "Chuyển khoản";
 "payment.method.cash" = "Tiền mặt";
 "payment.method.card" = "Thẻ";
-"payment.method.mixed" = "Mixed";
+"payment.method.mixed" = "Hỗn hợp";
 "budget.method.fiftyThirtyTwenty" = "50/30/20";
 "budget.method.sixJars" = "6 chiếc lọ";
-"bucket.needs" = "Nhu cầu";
 "budget.delete.title" = "Xóa ngân sách này?";
+"bucket.needs" = "Nhu cầu";
 "bucket.wants" = "Mong muốn";
 "bucket.savings" = "Tiết kiệm";
 "bucket.necessities" = "Nhu cầu thiết yếu";
@@ -203,7 +203,7 @@
 "transaction.category.salary" = "Lương";
 "transaction.category.investment" = "Đầu tư";
 "transaction.category.other" = "Khác";
-"transaction.type.income" = " Thu nhập";
+"transaction.type.income" = "Thu nhập";
 "transaction.type.expense" = "Chi tiêu";
 
 "common.create" = "Tạo mới";

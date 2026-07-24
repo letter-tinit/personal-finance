@@ -224,5 +224,5 @@
 "common.empty" = "Empty";
 "common.empty.title" = "No data yet";
 "common.empty.description" = "You do not have any data to show";
-"common.nil.note" = "No descripton";
+"common.nil.note" = "No description";
 "common.template" = "Template";

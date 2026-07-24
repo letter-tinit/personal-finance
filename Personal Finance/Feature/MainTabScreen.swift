@@ -42,60 +42,64 @@ struct MainTabScreen: View {
     // MARK: - View
     var body: some View {
         TabView(selection: $selectedTab) {
-            // MARK: - Balance
-            AppNavigationStack(path: $balanceRouter.path) {
-                BalanceScreen(balanceViewModel)
-            } destination: { _ in
-            }
-            .tabItem {
-                Label(AppTab.balance.name.localized, systemImage: AppTab.balance.icon)
-            }
-            .tag(AppTab.balance)
-            
-            // MARK: - Networth
-            AppNavigationStack(path: $netWorthRouter.path) {
-                NetWorthListScreen(netWorthViewModel)
-                    .environment(netWorthRouter)
-            } destination: { route in
-                switch route {
-                case .yearNetworth(let data):
-                    NetWorthYearScreen(data: data)
-                }
-            }
-            .tabItem {
-                Label(AppTab.netWorth.name.localized, systemImage: AppTab.netWorth.icon)
-            }
-            .tag(AppTab.netWorth)
-            
-            // MARK: - Budget
-            AppNavigationStack(path: $budgetRouter.path) {
-                BudgetListScreen(budgetViewModel)
-                    .environment(budgetRouter)
-            } destination: { route in
-                switch route {
-                case .budget(let budget):
-                    BudgetDetailScreen(factory.makeBudgetDetailViewModel(budget: budget))
-                }
-            }
-            .tabItem {
-                Label(AppTab.budget.name.localized, systemImage: AppTab.budget.icon)
-            }
-            .tag(AppTab.budget)
-            
-            // MARK: - Profilte
-            AppNavigationStack(path: $profileRouter.path) {
-                ProfileScreen(factory: factory)
-                    .environment(profileRouter)
-            } destination: { _ in }
-                .tabItem {
-                    Label(AppTab.profile.name.localized, systemImage: AppTab.profile.icon)
-                }
-                .tag(AppTab.profile)
-            
+            balanceTab
+            netWorthTab
+            budgetTab
+            profileTab
         }
         .id(languageCode)
         .tint(.primary)
         .environment(\.locale, selectedLanguage.locale)
+    }
+
+    private var balanceTab: some View {
+        AppNavigationStack(path: $balanceRouter.path) {
+            BalanceScreen(balanceViewModel)
+        } destination: { _ in
+        }
+        .tabItem { tabLabel(.balance) }
+        .tag(AppTab.balance)
+    }
+
+    private var netWorthTab: some View {
+        AppNavigationStack(path: $netWorthRouter.path) {
+            NetWorthListScreen(netWorthViewModel)
+                .environment(netWorthRouter)
+        } destination: { route in
+            switch route {
+            case .yearNetworth(let data):
+                NetWorthYearScreen(data: data)
+            }
+        }
+        .tabItem { tabLabel(.netWorth) }
+        .tag(AppTab.netWorth)
+    }
+
+    private var budgetTab: some View {
+        AppNavigationStack(path: $budgetRouter.path) {
+            BudgetListScreen(budgetViewModel)
+                .environment(budgetRouter)
+        } destination: { route in
+            switch route {
+            case .budget(let budget):
+                BudgetDetailScreen(factory.makeBudgetDetailViewModel(budget: budget))
+            }
+        }
+        .tabItem { tabLabel(.budget) }
+        .tag(AppTab.budget)
+    }
+
+    private var profileTab: some View {
+        AppNavigationStack(path: $profileRouter.path) {
+            ProfileScreen(factory: factory)
+                .environment(profileRouter)
+        } destination: { _ in }
+        .tabItem { tabLabel(.profile) }
+        .tag(AppTab.profile)
+    }
+
+    private func tabLabel(_ tab: AppTab) -> some View {
+        Label(tab.name.localized, systemImage: tab.icon)
     }
 }
 
