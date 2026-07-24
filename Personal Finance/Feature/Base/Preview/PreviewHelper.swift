@@ -9,6 +9,15 @@ import SwiftData
 
 struct PreviewHelper {
     @MainActor
+    static func makeBudgetViewModel() -> BudgetViewModel {
+        let context = PreviewContainer.shared.container.mainContext
+        
+        let repository = ImplBudgetRepository(modelContext: context)
+        
+        return BudgetViewModel(repository: repository)
+    }
+    
+    @MainActor
     static func makeBalanceViewModel() -> BalanceViewModel {
         let context = PreviewContainer.shared.container.mainContext
         

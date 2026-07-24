@@ -16,7 +16,7 @@ struct MainTabScreen: View {
     @State private var balanceViewModel: BalanceViewModel
     @State private var netWorthViewModel: NetWorthViewModel
     @State private var budgetViewModel: BudgetViewModel
-    @State private var selectedTab: AppTab = .budget
+    @State private var selectedTab: AppTab = .balance
     
     // MARK: - AppStorage
     @AppStorage(AppLanguage.preferenceKey) private var languageCode = AppLanguage.system.rawValue
@@ -74,7 +74,7 @@ struct MainTabScreen: View {
             } destination: { route in
                 switch route {
                 case .budget(let budget):
-                    BudgetScreen(factory.makeBudgetDetailViewModel(budget: budget))
+                    BudgetDetailScreen(factory.makeBudgetDetailViewModel(budget: budget))
                 }
             }
             .tabItem {

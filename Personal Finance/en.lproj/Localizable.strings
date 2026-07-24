@@ -86,7 +86,7 @@
 "profile.header.description" = "Manage app preferences.";
 "profile.preferences" = "Preferences";
 "profile.backup" = "Data backup";
-"profile.backup.description" = "Export or import your SwiftData data as a JSON backup.";
+"profile.backup.description" = "Export or import your data as a JSON backup.";
 "profile.backup.export" = "Export data";
 "profile.backup.import" = "Import data";
 "profile.backup.import.success" = "Backup imported successfully.";
@@ -174,6 +174,7 @@
 "payment.method.banking" = "Bank transfer";
 "payment.method.cash" = "Cash";
 "payment.method.card" = "Card";
+"payment.method.mixed" = "Mixed";
 "budget.method.fiftyThirtyTwenty" = "50/30/20";
 "budget.method.sixJars" = "6 Jars";
 "budget.delete.title" = "Delete this budget?";
@@ -208,6 +209,7 @@
 "common.create" = "Create";
 "common.create.new" = "Create new";
 "common.year" = "Year";
+"common.year.select" = "Select Year";
 "common.optional" = "Optional";
 "common.optional.bracket" = "(Optional)";
 "common.cancel" = "Cancel";
@@ -219,6 +221,8 @@
 "common.done" = "Done";
 "common.error.unknown" = "Unknown error";
 "common.error" = "Error";
+"common.empty" = "Empty";
 "common.empty.title" = "No data yet";
 "common.empty.description" = "You do not have any data to show";
 "common.nil.note" = "No descripton";
+"common.template" = "Template";

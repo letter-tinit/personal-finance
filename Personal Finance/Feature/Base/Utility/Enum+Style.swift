@@ -94,6 +94,9 @@ extension PaymentMethod {
             
         case .card:
             return .indigo
+            
+        case .mixed:
+            return .cyan
         }
     }
 }

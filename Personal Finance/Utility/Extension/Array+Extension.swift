@@ -14,21 +14,24 @@ extension Array {
     ) -> [YearMonthGroup<Element>] {
         
         let groups = Dictionary(grouping: self) { item -> YearMonthKey in
-            
             let date = dateProvider(item)
+            
             
             return YearMonthKey(
                 year: calendar.component(.year, from: date),
-                month: calendar.component(.month, from: date)
+                month: calendar.component(.month, from: date),
+                originalDate: date
             )
         }
         
         return groups
             .map { key, items in
+                let date = dateProvider(items[0])
                 
-                YearMonthGroup(
+                return YearMonthGroup(
                     year: key.year,
                     month: key.month,
+                    originalDate: date,
                     items: items
                 )
             }

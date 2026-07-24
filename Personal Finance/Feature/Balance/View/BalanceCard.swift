@@ -51,7 +51,7 @@ struct BalanceCard: View {
                             Divider()
                             
                             HStack {
-                                Image(module: "chart.line.uptrend.xyaxis")
+                                Image(systemName: "chart.line.uptrend.xyaxis")
                                 
                                 Text("balance.inflow".localized)
                                 
@@ -65,7 +65,7 @@ struct BalanceCard: View {
                             .customHeadline()
                             
                             HStack {
-                                Image(module: "chart.line.downtrend.xyaxis")
+                                Image(systemName: "chart.line.downtrend.xyaxis")
                                 
                                 Text("balance.outflow".localized)
                                 

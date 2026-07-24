@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct BudgetSengmentSelectionView: View {
-    @Binding var selectedSegment: BudgetScreen.SegmentOption
+    @Binding var selectedSegment: BudgetDetailScreen.SegmentOption
     var body: some View {
         Picker("budget.view.mode".localized, selection: $selectedSegment) {
-            ForEach(BudgetScreen.SegmentOption.allCases, id: \.self) { option in
+            ForEach(BudgetDetailScreen.SegmentOption.allCases, id: \.self) { option in
                 Text(option.localizationKey.localized)
             }
         }

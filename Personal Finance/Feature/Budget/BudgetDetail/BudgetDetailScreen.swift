@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  BudgetDetailScreen.swift
 //  Personal Finance
 //
 //  Created by TiniT on 9/7/26.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct BudgetScreen: View {
+struct BudgetDetailScreen: View {
     @Environment(\.verticalSizeClass) private var verticalSizeClass
     
     private var isPortrait: Bool {
@@ -20,7 +20,11 @@ struct BudgetScreen: View {
     @State private var isFixedPlanPresented = false
     @State private var isTransactionFormPresented = false
     @State private var selectedTransaction: BudgetTransaction?
-    @State private var transactionPendingDeletion: BudgetTransaction?
+    @State private var transactionPendingDeletion: BudgetTransaction? {
+        didSet {
+            isDeleteConfirmationPresented = true
+        }
+    }
     @State private var isDeleteConfirmationPresented = false
     @State private var isDeleteErrorPresented = false
     
@@ -46,12 +50,15 @@ struct BudgetScreen: View {
     var body: some View {
         BaseScreen($title) {
             VStack {
-                if isPortrait {
-                    BudgetIncomeCardView(budget: budget, isPortrait: isPortrait)
-                    
-                    BudgetSengmentSelectionView(selectedSegment: $segmentOption)
-                        .padding(.top)
+                Group {
+                    if isPortrait {
+                        BudgetIncomeCardView(budget: budget, isPortrait: isPortrait)
+                        
+                        BudgetSengmentSelectionView(selectedSegment: $segmentOption)
+                            .padding(.top)
+                    }
                 }
+                .padding(.horizontal)
                 
                 content
             }
@@ -109,7 +116,7 @@ struct BudgetScreen: View {
             Button("common.ok".localized, role: .cancel) {}
         }
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
+            ToolbarItem(placement: .topBarTrailing) {
                 if !isPortrait {
                     BudgetIncomeCardView(budget: budget, isPortrait: isPortrait)
                 }
@@ -143,55 +150,35 @@ struct BudgetScreen: View {
     }
 }
 
-private extension BudgetScreen {
+private extension BudgetDetailScreen {
     @ViewBuilder
     var content: some View {
         if segmentOption == .overview {
             BudgetAllocationListView(budget: budget)
         } else {
-            transactionList
+            groupTransactionList
         }
     }
     
     @ViewBuilder
-    var transactionList: some View {
+    var groupTransactionList: some View {
         if budget.transactions.isEmpty {
             CommonEmptyView(
                 systemImage: "list.bullet.rectangle",
                 description: "budget.transactions.empty".localized
             )
         } else {
-            List {
+            AppScrollView {
                 ForEach(transactionGroups) { group in
-                    Section {
-                        ForEach(group.transactions) { transaction in
-                            Button {
-                                selectedTransaction = transaction
-                            } label: {
-                                BudgetTransactionRow(
-                                    transaction: transaction,
-                                    allocation: budget.allocation(for: transaction)
-                                )
-                            }
-                            .buttonStyle(.plain)
-                            .accessibilityHint("transaction.edit.accessibilityHint".localized)
-                            .swipeActions(edge: .trailing) {
-                                Button {
-                                    transactionPendingDeletion = transaction
-                                    isDeleteConfirmationPresented = true
-                                } label: {
-                                    Label("common.delete".localized, systemImage: "trash")
-                                }
-                                .tint(Color.Common.failure)
-                            }
-                        }
-                    } header: {
-                        Text(group.date.toString(withFormat: .dayNameWithNo))
-                    }
+                    BudgetTransactionGroupRow(
+                        group: group,
+                        selectedTransaction: $selectedTransaction,
+                        transactionPendingDeletion: $transactionPendingDeletion
+                    )
+                    .padding(.horizontal)
+                    .padding(.top)
                 }
             }
-            .listStyle(.insetGrouped)
-            .scrollContentBackground(.hidden)
         }
     }
     
@@ -234,7 +221,7 @@ private extension BudgetScreen {
     }
 }
 
-extension BudgetScreen {
+extension BudgetDetailScreen {
     struct TransactionGroup: Identifiable {
         let date: Date
         let transactions: [BudgetTransaction]

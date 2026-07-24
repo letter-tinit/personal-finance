@@ -10,6 +10,7 @@ import Foundation
 struct YearMonthKey: Hashable {
     let year: Int
     let month: Int
+    let originalDate: Date
 }
 
 
@@ -18,21 +19,10 @@ struct YearMonthGroup<Model>: Identifiable {
     
     let year: Int
     let month: Int
+    let originalDate: Date
     let items: [Model]
     
     var title: String {
-        let date = Calendar.current.date(
-            from: DateComponents(
-                year: year,
-                month: month
-            )
-        )
-        
-        return date?
-            .formatted(
-                .dateTime
-                .month(.wide)
-                .year()
-            ) ?? "\(month)/\(year)"
+        return originalDate.toString(withFormat: .monthAndYear)
     }
 }

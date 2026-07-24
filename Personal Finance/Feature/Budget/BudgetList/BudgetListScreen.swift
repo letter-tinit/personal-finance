@@ -60,7 +60,7 @@ struct BudgetListScreen: View {
                                             Text("common.delete".localized)
                                                 .secondarySubHeadline()
                                             
-                                            Image(module: "trash")
+                                            Image(systemName: "trash")
                                                 .tint(.red)
                                         }
                                     }
@@ -144,7 +144,10 @@ private extension BudgetListScreen {
     }
 }
 
+import SwiftData
 #Preview {
-    // TODO
-    //    BudgetListScreen()
+    BudgetListScreen(PreviewHelper.makeBudgetViewModel())
+        .modelContainer(
+            PreviewContainer.shared.container
+        )
 }

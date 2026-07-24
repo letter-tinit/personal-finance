@@ -163,6 +163,16 @@ extension NetWorthSnapshot {
     func isGhoshSnapshot() -> Bool {
         return values.isEmpty || values.filter({ $0.amount != .zero }).isEmpty
     }
+    
+    var displayName: String {
+        var name = asOfDate.toString(withFormat: .month)
+
+        if isGhoshSnapshot() {
+            name += " (" + "common.empty".localized + ")"
+        }
+
+        return name
+    }
 }
 
 // MARK: - NetWorthYear
@@ -215,7 +225,6 @@ final class NetWorthYear {
         item.name = name
     }
 
-    //TODO: Update remove in SwiftData
     func removeItem(id: UUID) throws {
         guard let index = planItems.firstIndex(where: { $0.id == id }) else {
             throw NetWorthPlanError.itemNotFound

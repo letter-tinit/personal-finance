@@ -17,14 +17,14 @@ struct NetWorthYearScreen: View {
     var body: some View {
         @Bindable var data = data
         if let snapshot = data.snapshots.first(where: { $0.asOfDate.isInCurrentMonth }) {
-            NetWorthScreen(
+            NetWorthView(
                 year: data,
                 snapshot: snapshot,
                 statusMessage: nil,
                 onDeleteItem: deleteItem
             )
         } else if let snapshot = data.snapshots.first(where: { $0.asOfDate.isMonth(1) }) {
-            NetWorthScreen(
+            NetWorthView(
                 year: data,
                 snapshot: snapshot,
                 statusMessage: nil,

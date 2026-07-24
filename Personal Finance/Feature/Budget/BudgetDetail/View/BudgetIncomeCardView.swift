@@ -35,7 +35,7 @@ struct BudgetIncomeCardView: View {
                             .padding(.vertical, 4)
                             .background(
                                 Capsule()
-                                    .foregroundStyle(budget.method.color.opacity(0.12))
+                                    .foregroundStyle(budget.method.color.opacity(0.3))
                             )
                     }
                 }
@@ -59,7 +59,7 @@ struct BudgetIncomeCardView: View {
                     .customSubHeadline()
                     .padding(.vertical, 4)
                     .padding(.horizontal, 8)
-                    .frame(width: 200, alignment: .leading)
+                    .frame(width: 160, alignment: .leading)
                     .customHeadline()
                     .borderedBackground(fillColor: Color.Common.success.opacity(0.5), cornerRadius: 8, lineWidth: 0)
             }

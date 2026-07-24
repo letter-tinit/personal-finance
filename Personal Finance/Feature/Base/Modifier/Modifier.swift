@@ -73,7 +73,7 @@ struct ToastModifier: ViewModifier {
                 if let visibleMessage {
                     let toastType = visibleMessage.type
                     HStack {
-                        Image(module: toastType.icon)
+                        Image(systemName: toastType.icon)
                             .resizable()
                             .frame(width: 24, height: 24)
                         

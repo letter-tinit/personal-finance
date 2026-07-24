@@ -75,7 +75,7 @@ struct BalanceFormView: View {
                         Label {
                             Text(category.localizedTitle)
                         } icon: {
-                            Image(module: category.icon)
+                            Image(systemName: category.icon)
                         }
                         .tag(category)
                     }

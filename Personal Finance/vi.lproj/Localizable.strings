@@ -12,7 +12,7 @@
 "budget.method" = "Loại ngân sách";
 "budget.buckets.title" = "Nhóm ngân sách";
 "budget.buckets.count" = "%d nhóm";
-"budget.segment.overview" = "Tổng quan ngân sách";
+"budget.segment.overview" = "Tổng quan";
 "budget.segment.transactions" = "Giao dịch";
 "budget.metric.target" = "Mục tiêu";
 "budget.metric.spent" = "Đã chi";
@@ -45,14 +45,14 @@
 "networth.category.empty" = "Chưa có khoản nào";
 "networth.value.missing" = "Chưa cập nhật";
 "networth.missing.count" = "%d giá trị chưa cập nhật.";
-"networth.item.form.add" = "Thêm khoản mục";
-"networth.item.form.title" = "Khoản mục tài sản ròng mới";
-"networth.item.form.edit.title" = "Sửa khoản mục tài sản ròng";
+"networth.item.form.add" = "Thêm tài sản";
+"networth.item.form.title" = "Thêm tài sản";
+"networth.item.form.edit.title" = "Sửa tài sản";
 "networth.item.form.edit.accessibilityHint" = "Mở khoản mục này để chỉnh sửa.";
 "networth.item.form.edit.reuse.help" = "Tên và nhóm được dùng lại cho mọi tháng. Giá trị chỉ áp dụng cho tháng đang chọn.";
-"networth.item.form.section" = "Thông tin khoản mục";
+"networth.item.form.section" = "Thông tin tài sản";
 "networth.item.form.category" = "Nhóm";
-"networth.item.form.name" = "Tên khoản mục";
+"networth.item.form.name" = "Tên tài sản";
 "networth.item.form.amount" = "Giá trị";
 "networth.item.form.amount.help" = "Nhập 0 nếu khoản mục hiện chưa có giá trị.";
 "networth.item.form.error.name" = "Hãy nhập tên khoản mục.";
@@ -61,7 +61,7 @@
 "networth.edit.unlock" = "Mở khóa chỉnh sửa";
 "networth.edit.lock" = "Khóa chỉnh sửa";
 "networth.item.form.error.delete" = "Không thể xóa khoản mục.";
-"networth.item.form.delete" = "Xóa khoản mục";
+"networth.item.form.delete" = "Xóa tài sản";
 "networth.item.delete.confirmation.title" = "Xóa khoản mục này?";
 "networth.item.delete.confirmation.message" = "Khoản mục sẽ bị xóa khỏi mọi tháng tài sản ròng. Bạn không thể hoàn tác thao tác này.";
 "networth.list.empty" = "Chưa có bảng tài sản ròng";
@@ -86,7 +86,7 @@
 "profile.header.description" = "Quản lý thiết lập ứng dụng.";
 "profile.preferences" = "Tuỳ chỉnh";
 "profile.backup" = "Sao lưu dữ liệu";
-"profile.backup.description" = "Xuất hoặc nhập dữ liệu SwiftData dưới dạng JSON.";
+"profile.backup.description" = "Xuất hoặc nhập dữ liệu dưới dạng JSON.";
 "profile.backup.export" = "Xuất dữ liệu";
 "profile.backup.import" = "Nhập dữ liệu";
 "profile.backup.import.success" = "Đã nhập sao lưu thành công.";
@@ -174,6 +174,7 @@
 "payment.method.banking" = "Chuyển khoản";
 "payment.method.cash" = "Tiền mặt";
 "payment.method.card" = "Thẻ";
+"payment.method.mixed" = "Mixed";
 "budget.method.fiftyThirtyTwenty" = "50/30/20";
 "budget.method.sixJars" = "6 chiếc lọ";
 "bucket.needs" = "Nhu cầu";
@@ -208,6 +209,7 @@
 "common.create" = "Tạo mới";
 "common.create.new" = "Tạo mới";
 "common.year" = "Năm";
+"common.year.select" = "Chọn năm";
 "common.optional" = "Tuỳ chọn";
 "common.optional.bracket" = "(Tuỳ chọn)";
 "common.cancel" = "Hủy";
@@ -219,6 +221,8 @@
 "common.delete.warning" = "Bạn không thể hoàn tác thao tác này.";
 "common.error.unknown" = "Lỗi không xác định";
 "common.error" = "Lỗi";
+"common.empty" = "Rỗng";
 "common.empty.title" = "Chưa có dữ liệu";
 "common.empty.description" = "Bạn vẫn chưa có bất kỳ dữ liệu nào để hiển thị";
 "common.nil.note" = "Không có ghi chú";
+"common.template" = "Mẫu";

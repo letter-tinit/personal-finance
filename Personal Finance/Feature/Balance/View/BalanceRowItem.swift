@@ -20,7 +20,7 @@ struct BalanceRowItem: View {
                 let transactionTime = transaction.occurredAt
                 
                 VStack {
-                    Image(module: "\(transactionTime.toString(withFormat: .dayNo)).calendar")
+                    Image(systemName: "\(transactionTime.toString(withFormat: .dayNo)).calendar")
                         .font(.system(size: 36))
                     
                     Text(transactionTime.toString(withFormat: .custom("EEE")))
@@ -32,7 +32,7 @@ struct BalanceRowItem: View {
             
             VStack(alignment: .leading) {
                 HStack {
-                    Image(module: transaction.category.icon)
+                    Image(systemName: transaction.category.icon)
                         .resizable()
                         .frame(width: 20, height: 20)
                     

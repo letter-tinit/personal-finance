@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct NetWorthScreen: View {
+struct NetWorthView: View {
     let year: NetWorthYear
     @State private var title: String = "networth.tab.title".localized
     @State private var selectedSnapshot: NetWorthSnapshot
@@ -125,7 +125,7 @@ struct NetWorthScreen: View {
     }
 }
 
-private extension NetWorthScreen {
+private extension NetWorthView {
     func addItem(_ input: ValidatedNetWorthItemInput) throws {
         let item = year.addItem(
             category: input.category,
@@ -153,35 +153,35 @@ private extension NetWorthScreen {
 
     var header: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
                     Text("networth.screen.title".localized)
                         .customHeadline()
                         .foregroundStyle(.secondary)
-
-                    Picker(
-                        "networth.snapshot.picker".localized,
-                        selection: $selectedSnapshot
-                    ) {
-                        ForEach(year.snapshots.sorted { $0.asOfDate > $1.asOfDate }) { snapshot in
-                            Text(snapshot.asOfDate.toString(withFormat: .month))
-                                .tag(snapshot)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .labelsHidden()
-                    .accessibilityLabel("networth.snapshot.picker".localized)
-                    .customSubTitle()
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chart.line.uptrend.xyaxis")
+                        .font(.title2)
+                        .foregroundStyle(.tint)
+                        .accessibilityHidden(true)
                 }
-
-                Spacer()
-
-                Image(systemName: "chart.line.uptrend.xyaxis")
-                    .font(.title2)
-                    .foregroundStyle(.tint)
-                    .accessibilityHidden(true)
+                
+                Picker(
+                    "networth.snapshot.picker".localized,
+                    selection: $selectedSnapshot
+                ) {
+                    ForEach(year.snapshots.sorted { $0.asOfDate > $1.asOfDate }) { snapshot in
+                        Text(snapshot.displayName)
+                            .tag(snapshot)
+                    }
+                }
+                .pickerStyle(.menu)
+                .labelsHidden()
+                .accessibilityLabel("networth.snapshot.picker".localized)
+                .customSubTitle()
             }
-
+            
             Divider()
 
             Text("networth.total".localized)

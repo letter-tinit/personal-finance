@@ -31,7 +31,7 @@ struct YearPickerSheet: View {
     var body: some View {
         NavigationStack {
             VStack {
-                Picker("Year", selection: $year) {
+                Picker("common.year", selection: $year) {
                     ForEach(years, id: \.self) { year in
                         Text(String(year))
                             .tag(year)
@@ -39,17 +39,17 @@ struct YearPickerSheet: View {
                 }
                 .pickerStyle(.wheel)
             }
-            .navigationTitle("Select Year")
+            .navigationTitle("common.year.select")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button("common.cancel") {
                         dismiss()
                     }
                 }
 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") {
+                    Button("common.done") {
                         onCreate?(year)
                         dismiss()
                     }
