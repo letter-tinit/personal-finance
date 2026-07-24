@@ -16,7 +16,7 @@ struct MainTabScreen: View {
     @State private var balanceViewModel: BalanceViewModel
     @State private var netWorthViewModel: NetWorthViewModel
     @State private var budgetViewModel: BudgetViewModel
-    @State private var selectedTab: AppTab = .balance
+    @State private var selectedTab: AppTab = .budget
     
     // MARK: - AppStorage
     @AppStorage(AppLanguage.preferenceKey) private var languageCode = AppLanguage.system.rawValue
@@ -87,10 +87,10 @@ struct MainTabScreen: View {
                 ProfileScreen(factory: factory)
                     .environment(profileRouter)
             } destination: { _ in }
-            .tabItem {
-                Label(AppTab.profile.name.localized, systemImage: AppTab.profile.icon)
-            }
-            .tag(AppTab.profile)
+                .tabItem {
+                    Label(AppTab.profile.name.localized, systemImage: AppTab.profile.icon)
+                }
+                .tag(AppTab.profile)
             
         }
         .id(languageCode)

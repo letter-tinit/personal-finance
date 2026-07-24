@@ -156,6 +156,22 @@ enum TransactionType: String, CaseIterable, Codable {
 
 enum BudgetAllocationStatus: Hashable {
     case done, needMore, ok, over
+    var localizationKey: String {
+        switch self {
+        case .ok: "budget.status.ok"
+        case .over: "budget.status.over"
+        case .done: "budget.status.done"
+        case .needMore: "budget.status.needMore"
+        }
+    }
+    
+    var systemImageName: String {
+        switch self {
+        case .ok, .done: "checkmark.circle.fill"
+        case .over: "exclamationmark.circle.fill"
+        case .needMore: "circle"
+        }
+    }
 }
 
 struct BudgetAllocationSummary: Hashable {

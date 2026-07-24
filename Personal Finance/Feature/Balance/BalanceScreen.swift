@@ -9,10 +9,16 @@ import SwiftUI
 import SwiftData
 
 struct BalanceScreen: View {
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+    
     @State var router: BalanceRouter = BalanceRouter()
     @State private var title = "balance".localized
     @State private var isCreateNewBalancePresented: Bool = false
     @State private var viewModel: BalanceViewModel
+    
+    private var isPortrait: Bool {
+        verticalSizeClass == .regular
+    }
     
     @Query(
         sort: \Transaction.occurredAt,
@@ -31,8 +37,10 @@ struct BalanceScreen: View {
         BaseScreen($title) {
             VStack {
                 // MARK: - BALANCE VIEW
-                BalanceCard(balance: balance)
-                    .padding(.horizontal)
+                if isPortrait {
+                    BalanceCard(balance: balance)
+                        .padding(.horizontal)
+                }
 
                 // MARK: - TRANSACTIONS
                 BalanceList(transactions: balance.transactionRows)
@@ -41,6 +49,13 @@ struct BalanceScreen: View {
         }
         .navigationBarTitleDisplayMode(.automatic)
         .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                if !isPortrait {
+                    BalanceCard(balance: balance)
+                }
+            }
+            .sharedBackgroundVisibility(.hidden)
+            
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     isCreateNewBalancePresented = true

@@ -118,3 +118,13 @@ extension BudgetMethod {
         }
     }
 }
+
+extension BudgetAllocationStatus {
+    func tintColor(for kind: BudgetBucketKind) -> Color {
+        switch self {
+        case .ok, .done: kind.topicColor
+        case .over: Color.Common.failure
+        case .needMore: Color.secondary
+        }
+    }
+}

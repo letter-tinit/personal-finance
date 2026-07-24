@@ -12,7 +12,7 @@
 "budget.method" = "Budget Method";
 "budget.buckets.title" = "Budget Buckets";
 "budget.buckets.count" = "%d buckets";
-"budget.segment.overview" = "Budget Overview";
+"budget.segment.overview" = "Overview";
 "budget.segment.transactions" = "Transactions";
 "budget.metric.target" = "Target";
 "budget.metric.spent" = "Spent";

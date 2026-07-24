@@ -9,7 +9,7 @@
 "salary.budget" = "Ngân sách";
 "monthly.salary" = "Lương tháng";
 "salary.input.placeholder" = "Thu nhập";
-"budget.method" = "Phương pháp lập ngân sách";
+"budget.method" = "Loại ngân sách";
 "budget.buckets.title" = "Nhóm ngân sách";
 "budget.buckets.count" = "%d nhóm";
 "budget.segment.overview" = "Tổng quan ngân sách";
@@ -157,7 +157,7 @@
 "transaction.form.amount" = "Số tiền";
 "transaction.form.infomation" = "Thông tin";
 "transaction.form.date" = "Ngày";
-"transaction.form.paymentMethod" = "Phương thức thanh toán";
+"transaction.form.paymentMethod" = "Hình thức thanh toán";
 "transaction.form.transactionType" = "Loại giao dịch";
 "transaction.form.category" = "Danh mục";
 "transaction.form.note" = "Ghi chú (không bắt buộc)";
