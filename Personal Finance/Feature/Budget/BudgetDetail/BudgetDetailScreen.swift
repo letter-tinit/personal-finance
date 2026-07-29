@@ -23,6 +23,10 @@ struct BudgetDetailScreen: View {
     @State private var transactionPendingDeletion: BudgetTransaction?
     @State private var isDeleteConfirmationPresented = false
     @State private var isDeleteErrorPresented = false
+    private var isExpandAllTransaction: Bool {
+        !transactionGroupRowModels.isEmpty &&
+        transactionGroupRowModels.allSatisfy(\.isExpand)
+    }
     
     private var budget: Budget { viewModel.budget }
     
@@ -43,6 +47,8 @@ struct BudgetDetailScreen: View {
         .sorted { $0.date > $1.date }
     }
     
+    @State private var transactionGroupRowModels: [BudgetTransactionGroupRowModel] = []
+    
     var body: some View {
         BaseScreen($title) {
             VStack {
@@ -61,6 +67,7 @@ struct BudgetDetailScreen: View {
         }
         .onAppear {
             title = budget.name
+            transactionGroupRowModels = transactionGroups.map({ BudgetTransactionGroupRowModel(group: $0) })
         }
         .sheet(isPresented: $isFixedPlanPresented) {
             NavigationStack {
@@ -117,6 +124,20 @@ struct BudgetDetailScreen: View {
             Button("common.ok".localized, role: .cancel) {}
         }
         .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                if segmentOption == .transaction {
+                    Button {
+                        let shouldExpand = !isExpandAllTransaction
+                        
+                        transactionGroupRowModels.forEach {
+                            $0.isExpand = shouldExpand
+                        }
+                    } label: {
+                        Image(systemName: isExpandAllTransaction ? "rectangle.arrowtriangle.2.inward" : "rectangle.arrowtriangle.2.outward" )
+                    }
+                }
+            }
+            
             ToolbarItem(placement: .topBarTrailing) {
                 if !isPortrait {
                     BudgetIncomeCardView(budget: budget, isPortrait: isPortrait)
@@ -170,9 +191,9 @@ private extension BudgetDetailScreen {
             )
         } else {
             AppScrollView {
-                ForEach(transactionGroups) { group in
+                ForEach($transactionGroupRowModels) { $rowModel in
                     BudgetTransactionGroupRow(
-                        group: group,
+                        model: $rowModel,
                         selectedTransaction: $selectedTransaction,
                         transactionPendingDeletion: $transactionPendingDeletion
                     )
@@ -226,6 +247,25 @@ extension BudgetDetailScreen {
         let date: Date
         let transactions: [BudgetTransaction]
         var id: Date { date }
+    }
+    
+    @Observable
+    class BudgetTransactionGroupRowModel: Identifiable, Hashable {
+        var group: TransactionGroup
+        var isExpand: Bool
+        
+        init(group: TransactionGroup, isExpand: Bool = false) {
+            self.group = group
+            self.isExpand = isExpand
+        }
+        
+        static func == (lhs: BudgetTransactionGroupRowModel, rhs: BudgetTransactionGroupRowModel) -> Bool {
+            lhs === rhs
+        }
+
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(ObjectIdentifier(self))
+        }
     }
     
     enum SegmentOption: CaseIterable, Hashable {
