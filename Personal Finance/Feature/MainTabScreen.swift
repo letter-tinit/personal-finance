@@ -55,6 +55,7 @@ struct MainTabScreen: View {
     private var balanceTab: some View {
         AppNavigationStack(path: $balanceRouter.path) {
             BalanceScreen(balanceViewModel)
+                .environment(balanceRouter)
         } destination: { _ in
         }
         .tabItem { tabLabel(.balance) }

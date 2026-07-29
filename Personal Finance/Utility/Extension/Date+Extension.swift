@@ -77,4 +77,44 @@ extension Date {
     func isMonth(_ month: Int) -> Bool {
         Calendar.current.component(.month, from: self) == month
     }
+    
+    var startOfMonth: Date {
+        Calendar.current.date(
+            from: Calendar.current.dateComponents([.year, .month], from: self)
+        )!
+    }
+    
+    func generateMonthsTo(to end: Date) -> [Date] {
+        var months: [Date] = []
+        var current = end.startOfMonth
+        
+        while current >= self.startOfMonth {
+            months.append(current)
+            
+            current = Calendar.current.date(
+                byAdding: .month,
+                value: -1,
+                to: current
+            )!
+        }
+        
+        return months
+    }
+    
+    func generateMonthsFrom(to start: Date) -> [Date] {
+        var months: [Date] = []
+        var current = self.startOfMonth
+        
+        while current >= start.startOfMonth {
+            months.append(current)
+            
+            current = Calendar.current.date(
+                byAdding: .month,
+                value: -1,
+                to: current
+            )!
+        }
+        
+        return months
+    }
 }

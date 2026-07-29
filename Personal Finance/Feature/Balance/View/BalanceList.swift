@@ -17,27 +17,36 @@ struct BalanceList: View {
     }
     
     var body: some View {
-        List(groupedTransactions) { group in
-            ForEach(group.items) { rowModel in
-                Section(group.title) {
-                    Button {
-                        selectedTransaction = rowModel.transaction
-                    } label: {
-                        BalanceRowItem(rowModel: rowModel)
-                    }
-                    .swipeActions(edge: .trailing) {
-                        Button {
-                            balanceViewModel.removeTransaction(rowModel.transaction)
-                        } label: {
-                            Label(
-                                "common.delete".localized,
-                                systemImage: "trash"
-                            )
+        Group {
+            if !groupedTransactions.isEmpty {
+                List(groupedTransactions) { group in
+                    ForEach(group.items) { rowModel in
+                        Section(group.title) {
+                            Button {
+                                selectedTransaction = rowModel.transaction
+                            } label: {
+                                BalanceRowItem(rowModel: rowModel)
+                            }
+                            .swipeActions(edge: .trailing) {
+                                Button {
+                                    balanceViewModel.removeTransaction(rowModel.transaction)
+                                } label: {
+                                    Label(
+                                        "common.delete".localized,
+                                        systemImage: "trash"
+                                    )
+                                }
+                                .tint(Color.Common.failure)
+                            }
+                            .lineSpacing(0)
                         }
-                        .tint(Color.Common.failure)
                     }
-                    .lineSpacing(0)
                 }
+                .scrollIndicators(.hidden)
+                .scrollContentBackground(.hidden)
+                .listStyle(.grouped)
+            } else {
+                CommonEmptyView()
             }
         }
         .sheet(item: $selectedTransaction) { transaction in
@@ -46,9 +55,6 @@ struct BalanceList: View {
             }
         }
         .toast(message: balanceViewModel.toastMessage)
-        .listStyle(.grouped)
-        .scrollIndicators(.hidden)
-        .scrollContentBackground(.hidden)
     }
 }
 

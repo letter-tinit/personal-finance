@@ -5,8 +5,14 @@
 //  Created by TiniT on 20/7/26.
 //
 
+import Foundation
+
 protocol BalanceRepository {
     func fetchTransactions() throws -> [Transaction]
+    
+    func fetchTransactionsByMonth(in date: Date) throws -> [Transaction]
+
+    func firstTransactionMonth() throws -> Date?
     
     func addTransaction(_ transaction: Transaction) throws
     
