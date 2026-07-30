@@ -205,7 +205,7 @@
 "transaction.category.education" = "Education";
 "transaction.category.salary" = "Salary";
 "transaction.category.investment" = "Investment";
-"transaction.category.budgetSettlement" = "Budget settlement money";
+"transaction.category.carryover" = "Carryover";
 "transaction.category.other" = "Other";
 "transaction.type.income" = "Income";
 "transaction.type.expense" = "Expense";

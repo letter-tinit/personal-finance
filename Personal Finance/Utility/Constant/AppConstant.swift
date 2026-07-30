@@ -7,6 +7,6 @@
 
 struct AppConstant {
     struct Transaction {
-        static let BudgetSettlementNote: String = "Budget Settlement"
+        static let BudgetCarryoverNote: String = "Budget Carryover"
     }
 }

@@ -37,11 +37,11 @@ final class Transaction: Identifiable {
 }
 
 extension Transaction {
-    static func makeBudgetSettlementTransaction(_ amount: Decimal) -> Transaction {
+    static func makeBudgetCarryoverTransaction(_ amount: Decimal) -> Transaction {
         .init(
-            note: AppConstant.Transaction.BudgetSettlementNote,
+            note: AppConstant.Transaction.BudgetCarryoverNote,
             type: .income,
-            category: .budgetSettlement,
+            category: .carryover,
             method: .banking,
             amount: amount,
             occurredAt: .now,
@@ -69,7 +69,7 @@ enum TransactionCategory: String, CaseIterable, Codable, Identifiable {
     case education
     case salary
     case investment
-    case budgetSettlement
+    case carryover
     case other
     
     var id: String {
@@ -100,7 +100,7 @@ enum TransactionCategory: String, CaseIterable, Codable, Identifiable {
             "banknote"
         case .investment:
             "chart.line.uptrend.xyaxis"
-        case .budgetSettlement:
+        case .carryover:
             "checkmark.seal.text.page"
         case .other:
             "ellipsis.circle"

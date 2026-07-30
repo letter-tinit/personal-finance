@@ -40,10 +40,10 @@ final class BudgetViewModel {
     func lockBudget(_ budget: Budget) {
         do {
             try repository.lockBudget(budget)
-            let amount = budget.settlementAmount()
+            let amount = budget.carryoverAmount()
             if amount != .zero {
                 try balanceRepository.addTransaction(
-                    Transaction.makeBudgetSettlementTransaction(amount)
+                    Transaction.makeBudgetCarryoverTransaction(amount)
                 )
             }
             showInfo(String(format: "budget.locked.info".localized, budget.name))

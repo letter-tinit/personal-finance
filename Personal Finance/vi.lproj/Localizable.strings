@@ -205,7 +205,7 @@
 "transaction.category.education" = "Giáo dục";
 "transaction.category.salary" = "Lương";
 "transaction.category.investment" = "Đầu tư";
-"transaction.category.budgetSettlement" = "Tiền chốt sổ";
+"transaction.category.carryover" = "Dư chuyển kỳ";
 "transaction.category.other" = "Khác";
 "transaction.type.income" = "Thu nhập";
 "transaction.type.expense" = "Chi tiêu";
