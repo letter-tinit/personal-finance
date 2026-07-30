@@ -41,6 +41,7 @@ struct BudgetDetailScreen: View {
         .map { date, transactions in
             TransactionGroup(
                 date: date,
+                isLocked: budget.isLocked,
                 transactions: transactions.sorted { $0.occurredAt > $1.occurredAt }
             )
         }
@@ -161,12 +162,14 @@ struct BudgetDetailScreen: View {
                 }
                 .accessibilityLabel("fixed.plan.title".localized)
                 
-                Button {
-                    isTransactionFormPresented = true
-                } label: {
-                    Image(systemName: "plus")
+                if !budget.isLocked {
+                    Button {
+                        isTransactionFormPresented = true
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                    .accessibilityLabel("transaction.form.add".localized)
                 }
-                .accessibilityLabel("transaction.form.add".localized)
             }
         }
     }
@@ -245,6 +248,7 @@ private extension BudgetDetailScreen {
 extension BudgetDetailScreen {
     struct TransactionGroup: Identifiable {
         let date: Date
+        let isLocked: Bool
         let transactions: [BudgetTransaction]
         var id: Date { date }
     }

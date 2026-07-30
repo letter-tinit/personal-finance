@@ -38,6 +38,7 @@ final class Budget: Identifiable {
     @Attribute(.unique) var id: UUID = UUID()
     var periodStart: Date = Date()
     var income: Decimal = 0
+    var lockAt: Date?
     var method: BudgetMethod = BudgetMethod.fiftyThirtyTwenty
     var createdAt: Date = Date()
     
@@ -90,6 +91,10 @@ final class BudgetTransaction: Identifiable {
 extension Budget {
     var name: String {
         Calendar.current.startOfMonth(for: periodStart).toString(withFormat: .month)
+    }
+    
+    var isLocked: Bool {
+        lockAt != nil
     }
     
     static func make(periodStart: Date, income: Decimal, method: BudgetMethod, calendar: Calendar = .current) -> Budget {
@@ -179,5 +184,11 @@ extension Budget {
             barProgress: barProgress,
             displayBarProgress: min(max(barProgress.doubleValue, 0), 1)
         )
+    }
+    
+    func settlementAmount() -> Decimal {
+        allocations.reduce(.zero) { result, allocation in
+            result + remainingAmount(for: allocation)
+        }
     }
 }

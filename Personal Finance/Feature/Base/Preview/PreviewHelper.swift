@@ -14,7 +14,9 @@ struct PreviewHelper {
         
         let repository = ImplBudgetRepository(modelContext: context)
         
-        return BudgetViewModel(repository: repository)
+        let balanceRepository = ImplBalanceRepository(modelContext: context)
+        
+        return BudgetViewModel(repository: repository, balanceRepository: balanceRepository)
     }
     
     @MainActor

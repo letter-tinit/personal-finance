@@ -47,6 +47,7 @@ final class NetWorthViewModel {
         guard let netWorth else { return }
         do {
             try repository.removeNetWorth(netWorth)
+            Haptic.warning()
         } catch {
             showError(error.localizedDescription)
         }

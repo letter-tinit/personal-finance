@@ -11,17 +11,20 @@ struct BudgetListRow: View {
     let budget: Budget
     
     var body: some View {
+        let isLocked = budget.isLocked
         HStack {
+            if isLocked {
+                Image(systemName: "lock")
+                    .font(.system(size: 36))
+            }
+            
             VStack(alignment: .leading, spacing: 6) {
                 Text(budget.name)
-                    .font(.headline)
+                    .customHeadline()
                     .foregroundStyle(.primary)
                 
-                Image(systemName: "chart.pie.fill")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 24, height: 24)
-                    .foregroundStyle(.orange)
+                Text("budget.create.method".localized)
+                    .secondarySubHeadline()
             }
             
             Spacer()
@@ -32,7 +35,7 @@ struct BudgetListRow: View {
                     .foregroundStyle(.primary)
                 
                 Text(budget.method.localizationKey.localized)
-                    .font(.subheadline)
+                    .customSubHeadline()
                     .foregroundStyle(.secondary)
                     .padding(.vertical, 4)
                     .padding(.horizontal, 8)
@@ -41,5 +44,6 @@ struct BudgetListRow: View {
             
         }
         .padding(.vertical, 8)
+        .foregroundStyle(isLocked ? .secondary : .primary)
     }
 }

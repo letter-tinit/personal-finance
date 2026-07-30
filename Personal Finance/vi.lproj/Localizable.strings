@@ -26,6 +26,7 @@
 "budget.list.empty.description" = "Tạo ngân sách tháng này để bắt đầu theo dõi thu nhập, giao dịch và chi thiết yếu.";
 "budget.detail.missing" = "Không tìm thấy ngân sách";
 "budget.view.mode" = "Chế độ xem ngân sách";
+"budget.locked.info" = "Ngân sách %@ đã bị khoá";
 "networth.tab.title" = "Tài sản ròng";
 "networth.empty.title" = "Tài sản ròng";
 "networth.empty.description" = "Tab này sẵn sàng cho việc theo dõi tài sản và nợ phải trả.";
@@ -105,7 +106,7 @@
 "budget.create.section.preview" = "Phân bổ";
 "budget.create.month" = "Tháng ngân sách";
 "budget.create.income" = "Thu nhập tháng";
-"budget.create.method" = "Phương pháp ngân sách";
+"budget.create.method" = "Loại ngân sách";
 "budget.create.reuseValues.description" = "Thu nhập và phương pháp được lấy sẵn từ ngân sách gần nhất để tạo tháng sau nhanh hơn.";
 "budget.create.reuseFixedPlans" = "Tái sử dụng chi thiết yếu";
 "budget.create.reuseFixedPlans.description" = "Sao chép tên, số tiền dự kiến và loại số tiền từ ngân sách gần nhất. Giao dịch đã hoàn tất không được sao chép.";
@@ -120,6 +121,8 @@
 "budget.status.over" = "Vượt";
 "budget.status.done" = "Đã xong";
 "budget.status.needMore" = "Cần thêm";
+"budget.lock.title" = "Khoá ngân sách";
+"budget.lock.warning" = "Bạn có chắc muốn khoá Ngân sách không? Thao tác này sẽ không thể thay đổi!!!";
 "fixed.plan.title" = "Chi tiêu dự kiến";
 "fixed.plan.total" = "Tổng dự kiến";
 "fixed.plan.empty.title" = "Chưa có khoản chi thiết yếu";
@@ -202,6 +205,7 @@
 "transaction.category.education" = "Giáo dục";
 "transaction.category.salary" = "Lương";
 "transaction.category.investment" = "Đầu tư";
+"transaction.category.budgetSettlement" = "Tiền chốt sổ";
 "transaction.category.other" = "Khác";
 "transaction.type.income" = "Thu nhập";
 "transaction.type.expense" = "Chi tiêu";
@@ -212,6 +216,7 @@
 "common.year.select" = "Chọn năm";
 "common.optional" = "Tuỳ chọn";
 "common.optional.bracket" = "(Tuỳ chọn)";
+"common.confirm" = "Xác nhận";
 "common.cancel" = "Hủy";
 "common.save" = "Lưu";
 "common.ok" = "OK";
@@ -226,3 +231,4 @@
 "common.empty.description" = "Bạn vẫn chưa có bất kỳ dữ liệu nào để hiển thị";
 "common.nil.note" = "Không có ghi chú";
 "common.template" = "Mẫu";
+"common.lock" = "Khoá";

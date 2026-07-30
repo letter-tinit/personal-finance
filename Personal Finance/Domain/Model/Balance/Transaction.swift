@@ -37,6 +37,18 @@ final class Transaction: Identifiable {
 }
 
 extension Transaction {
+    static func makeBudgetSettlementTransaction(_ amount: Decimal) -> Transaction {
+        .init(
+            note: AppConstant.Transaction.BudgetSettlementNote,
+            type: .income,
+            category: .budgetSettlement,
+            method: .banking,
+            amount: amount,
+            occurredAt: .now,
+            createAt: .now
+        )
+    }
+    
     func snapshot(from previousBalance: Decimal) -> Decimal {
         switch type {
         case .expense:
@@ -57,6 +69,7 @@ enum TransactionCategory: String, CaseIterable, Codable, Identifiable {
     case education
     case salary
     case investment
+    case budgetSettlement
     case other
     
     var id: String {
@@ -87,6 +100,8 @@ enum TransactionCategory: String, CaseIterable, Codable, Identifiable {
             "banknote"
         case .investment:
             "chart.line.uptrend.xyaxis"
+        case .budgetSettlement:
+            "checkmark.seal.text.page"
         case .other:
             "ellipsis.circle"
         }

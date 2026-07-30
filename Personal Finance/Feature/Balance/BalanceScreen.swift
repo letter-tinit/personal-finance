@@ -14,12 +14,29 @@ struct BalanceScreen: View {
     
     @State private var viewModel: BalanceViewModel
     
+    @Query
+    private var transactions: [Transaction]
+    
+    var balance: Balance {
+        Balance(transactions: transactions)
+    }
+    
     private var isPortrait: Bool {
         verticalSizeClass == .regular
     }
     
     init(_ viewModel: BalanceViewModel) {
         self.viewModel = viewModel
+        
+        let start = viewModel.selectedMonth.startOfMonth
+        let end = Calendar.current.date(byAdding: .month, value: 1, to: start)!
+        let predicate = #Predicate<Transaction> {
+            $0.occurredAt >= start && $0.occurredAt < end
+        }
+        _transactions = Query(
+            filter: predicate,
+            sort: [SortDescriptor(\.occurredAt, order: .reverse)]
+        )
     }
     
     var body: some View {
@@ -27,12 +44,12 @@ struct BalanceScreen: View {
             VStack {
                 // MARK: - BALANCE VIEW
                 if isPortrait {
-                    BalanceCard(balance: viewModel.balance)
+                    BalanceCard(balance: balance)
                         .padding(.horizontal)
                 }
 
                 // MARK: - TRANSACTIONS
-                BalanceList(transactions: viewModel.balance.transactionRows)
+                BalanceList(transactions: balance.transactionRows)
                     .environment(viewModel)
             }
         }
@@ -47,7 +64,7 @@ struct BalanceScreen: View {
             
             ToolbarItem(placement: .topBarLeading) {
                 if !isPortrait {
-                    BalanceCard(balance: viewModel.balance)
+                    BalanceCard(balance: balance)
                 }
             }
             .sharedBackgroundVisibility(.hidden)
@@ -66,12 +83,6 @@ struct BalanceScreen: View {
             }
         }
         .toast(message: viewModel.toastMessage)
-        .onAppear {
-            viewModel.fetchTransactionByMonth()
-        }
-        .onChange(of: viewModel.selectedMonth) { _, _ in
-            viewModel.fetchTransactionByMonth()
-        }
     }
     
     private func createTransaction(_ transaction: Transaction) {

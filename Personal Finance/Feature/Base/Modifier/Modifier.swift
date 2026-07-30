@@ -124,6 +124,8 @@ struct ToastModifier: ViewModifier {
             Haptic.error()
         case .warning:
             Haptic.warning()
+        case .info:
+            Haptic.info()
         }
     }
 }

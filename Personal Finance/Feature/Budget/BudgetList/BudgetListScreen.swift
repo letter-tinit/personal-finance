@@ -18,6 +18,7 @@ struct BudgetListScreen: View {
             isDeleteConfirmationPresented = true
         }
     }
+    @State private var budgetToLock: Budget?
     
     private var budgets: [Budget] {
         viewModel.budgets
@@ -52,7 +53,7 @@ struct BudgetListScreen: View {
                                     BudgetListRow(budget: budget)
                                 }
                                 .buttonStyle(.plain)
-                                .swipeActions {
+                                .swipeActions(edge: .trailing) {
                                     Button {
                                         budgetToDelete = budget
                                     } label: {
@@ -65,14 +66,55 @@ struct BudgetListScreen: View {
                                         }
                                     }
                                 }
+                                .swipeActions(edge: .leading) {
+                                    if !budget.isLocked {
+                                        Button {
+                                            budgetToLock = budget
+                                        } label: {
+                                            VStack {
+                                                Text("common.lock".localized)
+                                                    .secondarySubHeadline()
+                                                
+                                                Image(systemName: "archivebox")
+                                                    .tint(.purple)
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                     .scrollContentBackground(.hidden)
-                    .listStyle(.insetGrouped)
+                    .listStyle(.grouped)
                 }
             }
         }
+        .confirmationDialog(
+            "budget.lock.title".localized,
+            isPresented: Binding(
+                get: {
+                    budgetToLock != nil
+                }, set: { isPresented in
+                    if !isPresented {
+                        budgetToLock = nil
+                    }
+                }
+            ),
+            titleVisibility: .visible,
+            actions: {
+                Button(role: .destructive) {
+                    lockBudget()
+                } label: {
+                    Text("common.confirm")
+                }
+                
+                Button {} label: {
+                    Text("common.cancel")
+                }
+            }, message: {
+                Text("budget.lock.warning".localized)
+            }
+        )
         .deleteConfirmationDialog(
             isPresented: $isDeleteConfirmationPresented,
             title: "budget.delete.title".localized,
@@ -128,6 +170,12 @@ private extension BudgetListScreen {
                 )
             }
             .sorted { $0.year > $1.year }
+    }
+    
+    private func lockBudget() {
+        guard let budgetToLock else { return }
+        viewModel.lockBudget(budgetToLock)
+        self.budgetToLock = nil
     }
     
     private func deleteBudget() {

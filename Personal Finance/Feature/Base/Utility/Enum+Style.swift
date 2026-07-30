@@ -107,6 +107,7 @@ extension ToastType {
         case .success: .green
         case .failure: Color.Common.failure
         case .warning: .orange
+        case .info: .blue
         }
     }
 }

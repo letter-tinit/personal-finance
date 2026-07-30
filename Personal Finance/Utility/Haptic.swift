@@ -20,21 +20,28 @@ enum Haptic {
         generator.selectionChanged()
     }
 
-    static func success() {
-        notification(.success)
-    }
-
-    static func warning() {
-        notification(.warning)
-    }
-
-    static func error() {
-        notification(.error)
-    }
-
-    private static func notification(_ type: UINotificationFeedbackGenerator.FeedbackType) {
+    static func notification(_ type: UINotificationFeedbackGenerator.FeedbackType) {
         let generator = UINotificationFeedbackGenerator()
         generator.prepare()
         generator.notificationOccurred(type)
+    }
+}
+
+// MARK: - HAPTIC STYLE
+extension Haptic {
+    static func success() {
+        notification(.success)
+    }
+    
+    static func warning() {
+        notification(.warning)
+    }
+    
+    static func error() {
+        notification(.error)
+    }
+    
+    static func info() {
+        notification(.warning)
     }
 }

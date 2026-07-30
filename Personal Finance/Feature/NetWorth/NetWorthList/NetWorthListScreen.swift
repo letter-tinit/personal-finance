@@ -60,7 +60,7 @@ struct NetWorthListScreen: View {
                     }
                 }
             }
-            .listStyle(.insetGrouped)
+            .listStyle(.plain)
             .scrollContentBackground(.hidden)
         }
         .toolbar {

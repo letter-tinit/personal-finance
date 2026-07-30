@@ -10,26 +10,14 @@ import Foundation
 @Observable
 final class BalanceViewModel {
     private let repository: BalanceRepository
-    private var transactions: [Transaction] = []
     
     var title = "balance".localized
     var isCreateNewBalancePresented: Bool = false
-    var balance: Balance {
-        Balance(transactions: transactions)
-    }
     var toastMessage: ToastMessage?
     var selectedMonth: Date = Date()
 
     init(repository: BalanceRepository) {
         self.repository = repository
-    }
-    
-    func fetchTransactionByMonth() {
-        do {
-            transactions = try repository.fetchTransactionsByMonth(in: selectedMonth)
-        } catch {
-            showError(error.localizedDescription)
-        }
     }
     
     func months() -> [Date] {
@@ -47,6 +35,7 @@ final class BalanceViewModel {
     func removeTransaction(_ transaction: Transaction) {
         do {
             try repository.deleteTransaction(transaction)
+            Haptic.warning()
         } catch {
             showError(error.localizedDescription)
         }
@@ -67,12 +56,11 @@ private extension BalanceViewModel {
     }
     
     func firstTransactionMonth() -> Date {
-        Calendar.current.date(byAdding: .month, value: -3, to: .now) ?? Date()
-//        do {
-//            return try repository.firstTransactionMonth() ?? Date()
-//        } catch {
-//            showError(error.localizedDescription)
-//            return Date()
-//        }
+        do {
+            return try repository.firstTransactionMonth() ?? Date()
+        } catch {
+            showError(error.localizedDescription)
+            return Date()
+        }
     }
 }

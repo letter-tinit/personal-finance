@@ -31,7 +31,10 @@ final class AppContainer: AppViewModelFactory {
     }
 
     func makeBudgetViewModel() -> BudgetViewModel {
-        BudgetViewModel(repository: ImplBudgetRepository(modelContext: mainContext))
+        BudgetViewModel(
+            repository: ImplBudgetRepository(modelContext: mainContext),
+            balanceRepository: ImplBalanceRepository(modelContext: mainContext)
+        )
     }
 
     func makeBudgetDetailViewModel(budget: Budget) -> BudgetDetailViewModel {

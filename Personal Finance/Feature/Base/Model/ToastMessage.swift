@@ -11,12 +11,18 @@ enum ToastType {
     case success
     case failure
     case warning
+    case info
     
     var icon: String {
         switch self {
-        case .success: "checkmark.circle.fill"
-        case .failure: "exclamationmark.circle.fill"
-        case .warning: "exclamationmark.triangle.fill"
+        case .success:
+            "checkmark.circle"
+        case .failure:
+            "exclamationmark.circle"
+        case .warning:
+            "exclamationmark.triangle"
+        case .info:
+            "info.circle"
         }
     }
 }
