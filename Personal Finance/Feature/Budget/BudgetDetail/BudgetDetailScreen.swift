@@ -6,14 +6,15 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct BudgetDetailScreen: View {
     @Environment(\.verticalSizeClass) private var verticalSizeClass
-    
+
     private var isPortrait: Bool {
         verticalSizeClass == .regular
     }
-    
+
     @State private var title: String = "salary.budget".localized
     @State private var viewModel: BudgetDetailViewModel
     @State private var segmentOption: SegmentOption = .overview
@@ -23,17 +24,30 @@ struct BudgetDetailScreen: View {
     @State private var transactionPendingDeletion: BudgetTransaction?
     @State private var isDeleteConfirmationPresented = false
     @State private var isDeleteErrorPresented = false
+
+    @Query
+    private var observedBudgets: [Budget]
+
     private var isExpandAllTransaction: Bool {
-        !transactionGroupRowModels.isEmpty &&
-        transactionGroupRowModels.allSatisfy(\.isExpand)
+        !transactionGroups.isEmpty &&
+        transactionGroups.allSatisfy { expandedTransactionGroupDates.contains($0.date) }
     }
-    
-    private var budget: Budget { viewModel.budget }
-    
+
+    private var budget: Budget {
+        observedBudgets.first ?? viewModel.budget
+    }
+
     init(_ viewModel: BudgetDetailViewModel) {
         _viewModel = State(initialValue: viewModel)
+
+        let budgetID = viewModel.budget.id
+        _observedBudgets = Query(
+            filter: #Predicate<Budget> { budget in
+                budget.id == budgetID
+            }
+        )
     }
-    
+
     private var transactionGroups: [TransactionGroup] {
         Dictionary(grouping: budget.transactions) {
             Calendar.current.startOfDay(for: $0.occurredAt)
@@ -47,28 +61,32 @@ struct BudgetDetailScreen: View {
         }
         .sorted { $0.date > $1.date }
     }
-    
-    @State private var transactionGroupRowModels: [BudgetTransactionGroupRowModel] = []
-    
+
+    @State private var expandedTransactionGroupDates: Set<Date> = []
+
     var body: some View {
         BaseScreen($title) {
             VStack {
                 Group {
                     if isPortrait {
                         BudgetIncomeCardView(budget: budget, isPortrait: isPortrait)
-                        
+
                         BudgetSengmentSelectionView(selectedSegment: $segmentOption)
                             .padding(.top)
                     }
                 }
                 .padding(.horizontal)
-                
+
                 content
             }
         }
         .onAppear {
             title = budget.name
-            transactionGroupRowModels = transactionGroups.map({ BudgetTransactionGroupRowModel(group: $0) })
+            // MARK: - Make default toggle all transaction groups
+            expandedTransactionGroupDates = Set(transactionGroups.map(\.date))
+        }
+        .onChange(of: budget.name) { _, newValue in
+            title = newValue
         }
         .sheet(isPresented: $isFixedPlanPresented) {
             NavigationStack {
@@ -129,23 +147,25 @@ struct BudgetDetailScreen: View {
                 if segmentOption == .transaction {
                     Button {
                         let shouldExpand = !isExpandAllTransaction
-                        
-                        transactionGroupRowModels.forEach {
-                            $0.isExpand = shouldExpand
+
+                        if shouldExpand {
+                            expandedTransactionGroupDates = Set(transactionGroups.map(\.date))
+                        } else {
+                            expandedTransactionGroupDates.removeAll()
                         }
                     } label: {
                         Image(systemName: isExpandAllTransaction ? "rectangle.arrowtriangle.2.inward" : "rectangle.arrowtriangle.2.outward" )
                     }
                 }
             }
-            
+
             ToolbarItem(placement: .topBarTrailing) {
                 if !isPortrait {
                     BudgetIncomeCardView(budget: budget, isPortrait: isPortrait)
                 }
             }
             .sharedBackgroundVisibility(.hidden)
-            
+
             ToolbarItem(placement: .topBarTrailing) {
                 if !isPortrait {
                     BudgetSengmentSelectionView(selectedSegment: $segmentOption)
@@ -153,7 +173,7 @@ struct BudgetDetailScreen: View {
                 }
             }
             .sharedBackgroundVisibility(.hidden)
-            
+
             ToolbarItemGroup(placement: .topBarTrailing) {
                 Button {
                     isFixedPlanPresented = true
@@ -161,7 +181,7 @@ struct BudgetDetailScreen: View {
                     Image(systemName: "gearshape")
                 }
                 .accessibilityLabel("fixed.plan.title".localized)
-                
+
                 if !budget.isLocked {
                     Button {
                         isTransactionFormPresented = true
@@ -184,7 +204,7 @@ private extension BudgetDetailScreen {
             groupTransactionList
         }
     }
-    
+
     @ViewBuilder
     var groupTransactionList: some View {
         if budget.transactions.isEmpty {
@@ -194,9 +214,10 @@ private extension BudgetDetailScreen {
             )
         } else {
             AppScrollView {
-                ForEach($transactionGroupRowModels) { $rowModel in
+                ForEach(transactionGroups) { group in
                     BudgetTransactionGroupRow(
-                        model: $rowModel,
+                        group: group,
+                        isExpand: expandedState(for: group.date),
                         selectedTransaction: $selectedTransaction,
                         transactionPendingDeletion: $transactionPendingDeletion
                     )
@@ -205,36 +226,48 @@ private extension BudgetDetailScreen {
             }
         }
     }
-    
+
+    func expandedState(for date: Date) -> Binding<Bool> {
+        Binding {
+            expandedTransactionGroupDates.contains(date)
+        } set: { isExpanded in
+            if isExpanded {
+                expandedTransactionGroupDates.insert(date)
+            } else {
+                expandedTransactionGroupDates.remove(date)
+            }
+        }
+    }
+
     func addFixedExpensePlan(_ input: ValidatedFixedExpensePlanInput) throws {
         viewModel.addFixedExpensePlan(input)
     }
-    
+
     func updateFixedExpensePlan(planID: UUID, input: ValidatedFixedExpensePlanInput) throws {
         guard let plan = budget.fixedExpensePlans.first(where: { $0.id == planID }) else {
             throw BudgetError.fixedExpensePlanNotFound
         }
         viewModel.updateFixedExpensePlan(plan, input: input)
     }
-    
+
     func deleteFixedExpensePlan(_ planID: UUID) throws {
         guard let plan = budget.fixedExpensePlans.first(where: { $0.id == planID }) else {
             throw BudgetError.fixedExpensePlanNotFound
         }
         viewModel.deleteFixedExpensePlan(plan)
     }
-    
+
     func completeFixedExpensePlan(planID: UUID, input: ValidatedBudgetTransactionInput) throws {
         guard let plan = budget.fixedExpensePlans.first(where: { $0.id == planID }) else {
             throw BudgetError.fixedExpensePlanNotFound
         }
         viewModel.completeFixedExpensePlan(plan, input: input)
     }
-    
+
     func addTransaction(_ input: ValidatedBudgetTransactionInput) throws {
         viewModel.addTransaction(input)
     }
-    
+
     func deletePendingTransaction() {
         guard let transactionPendingDeletion else { return }
         viewModel.deleteTransaction(transactionPendingDeletion)
@@ -252,30 +285,11 @@ extension BudgetDetailScreen {
         let transactions: [BudgetTransaction]
         var id: Date { date }
     }
-    
-    @Observable
-    class BudgetTransactionGroupRowModel: Identifiable, Hashable {
-        var group: TransactionGroup
-        var isExpand: Bool
-        
-        init(group: TransactionGroup, isExpand: Bool = false) {
-            self.group = group
-            self.isExpand = isExpand
-        }
-        
-        static func == (lhs: BudgetTransactionGroupRowModel, rhs: BudgetTransactionGroupRowModel) -> Bool {
-            lhs === rhs
-        }
 
-        func hash(into hasher: inout Hasher) {
-            hasher.combine(ObjectIdentifier(self))
-        }
-    }
-    
     enum SegmentOption: CaseIterable, Hashable {
         case overview
         case transaction
-        
+
         var localizationKey: String {
             switch self {
             case .overview: "budget.segment.overview"

@@ -33,6 +33,6 @@ struct BudgetTransactionItemView: View {
         }
         .padding(.vertical, 4)
         .padding(.horizontal, 8)
-        .borderedBackground(fillColor: color.opacity(0.3), cornerRadius: 8, lineWidth: 0)
+        .borderedBackground(fillColor: color.opacity(0.1), cornerRadius: 8, lineWidth: 0)
     }
 }

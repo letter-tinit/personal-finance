@@ -6,21 +6,20 @@
 //
 
 import SwiftUI
-import Observation
 
 struct BudgetTransactionGroupRow: View {
-    @Binding var model: BudgetDetailScreen.BudgetTransactionGroupRowModel
+    let group: BudgetDetailScreen.TransactionGroup
+    @Binding var isExpand: Bool
     @Binding var selectedTransaction: BudgetTransaction?
     @Binding var transactionPendingDeletion: BudgetTransaction?
     
     private var totalAmount: Decimal {
-        model.group.transactions.reduce(Decimal.zero) { partialResult, transaction in
+        group.transactions.reduce(Decimal.zero) { partialResult, transaction in
             partialResult + transaction.amount
         }
     }
     
     var body: some View {
-        let group = model.group
         VStack {
             HStack {
                 VStack {
@@ -38,12 +37,12 @@ struct BudgetTransactionGroupRow: View {
                 VStack(alignment: .trailing) {
                     Button {
                         baseAnimation {
-                            model.isExpand.toggle()
+                            isExpand.toggle()
                         }
                     } label: {
                         Image(systemName: "chevron.right")
                             .rotationEffect(.degrees(
-                                model.isExpand ? 90 : 0
+                                isExpand ? 90 : 0
                             ))
                     }
                     
@@ -55,7 +54,7 @@ struct BudgetTransactionGroupRow: View {
                 }
             }
             
-            if model.isExpand {
+            if isExpand {
                 VStack {
                     Divider()
                     
